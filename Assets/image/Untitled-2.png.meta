@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5caf214d4b7597a45ae35c24810ade72
+guid: 251ef7577486dde4fbed269d84ca78bb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 754352307031186287
-    second: email_0
+      213: -5392625257635239999
+    second: Untitled-2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,23 +126,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: email_0
+      name: Untitled-2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 613
-        height: 85
+        width: 42
+        height: 42
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 20, y: 20, z: 20, w: 20}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f6b17103d6ff77a00800000000000000
-      internalID: 754352307031186287
+      spriteID: 1c72ad746eb8925b0800000000000000
+      internalID: -5392625257635239999
       vertices: []
       indices: 
       edges: []
@@ -151,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 919983bc194ca1e44b6e4ca34f1868bd
     internalID: 0
     vertices: []
     indices: 
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      email_0: 754352307031186287
+      Untitled-2_0: -5392625257635239999
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
