@@ -7,9 +7,9 @@ import PvPIcon from "../assets/images/PvP Icon.png";
 
 const NavigationBar = () => {
   return (
-    <div className="bg-[#1F274D] h-screen w-20 flex flex-col items-center py-8 space-y-8 px-1 border-r-1 border-gray-200">
+    <div className="fixed bg-[#1F274D] h-screen w-20 flex flex-col items-center py-8 space-y-8 px-1 border-r-1 border-gray-200  ">
       {/* Navigation Icons */}
-      <nav className="flex flex-col space-y-8">
+      <nav className="flex flex-col space-y-8 ">
         <NavItem icon={LearnIcon} label="Learn" />
         <NavItem icon={CodeIcon} label="Code" />
         <NavItem icon={PvPIcon} label="PvP" />
