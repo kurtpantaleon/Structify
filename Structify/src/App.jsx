@@ -4,13 +4,13 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import NavigationBar from './components/NavigationBar'
 import Header from './components/Header'
+import SubHeading from './components/SubHeading'
 
 function App() {
-  const [count, setCount] = useState(0)
- 
   return (
     <>
       <Header></Header>
+      <SubHeading></SubHeading>
       <NavigationBar></NavigationBar>
     </>
   )
