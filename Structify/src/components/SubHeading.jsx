@@ -1,8 +1,8 @@
 import React from 'react'
 import HamburgerMenu from '../assets/images/Hamburger Menu.png'
-import MenuButton from '../assets/images/Menu Button.png'
+import MenuButton from '../assets/images/Menu Button.png'  
 
-function SubHeading({ toggleNav }) {
+function SubHeading({ toggleNav, toggleLearningPath }) {
   return (
     <div className="bg-[#1F274D] flex items-center justify-between px-7 py-3 shadow-md border-b-1 border-gray-200">
       {/* ✅ Click Button to Toggle Sidebar */}
@@ -15,8 +15,8 @@ function SubHeading({ toggleNav }) {
         Introduction to Data Structures
       </h2>
 
-      {/* Right: Swap/Refresh Icon */}
-      <button>
+      {/* Right: Mene Icon */}
+      <button className="cursor-pointer" onClick={toggleLearningPath}>
         <img src={MenuButton} alt="Swap Icon" className="h-6 w-7" />
       </button>
     </div>

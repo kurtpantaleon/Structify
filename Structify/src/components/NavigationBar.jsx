@@ -3,7 +3,7 @@ import CodeIcon from "../assets/images/Code Icon.png";
 import LeaderboardIcon from "../assets/images/Leaderboard Icon.png";
 import ProfileIcon from "../assets/images/sample profile.png";
 import LearnIcon from "../assets/images/Learn Icon.png";
-import PvPIcon from "../assets/images/PvP Icon.png";
+import PvPIcon from "../assets/images/PvP Icon.png"; 
 
 const NavigationBar = () => {
   return (
