@@ -1,13 +1,13 @@
 import React from 'react';
-import SubHeading2 from '../../components/SubHeading2';
-import Header from '../../components/Header';
-import LessonPages from '../../components/LessonPages';
+import SubHeading2 from '../../../components/SubHeading2';
+import Header from '../../../components/Header';
+import LessonPages from '../../../components/LessonPages';
 import Bullet1 from '../../assets/images/Lesson1 Images/Week1/Page 1/Bullet 1.png';
 import BigLeftNextIcon from '../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../assets/images/Big Right Next Icon.png';
-import LessonFooter from '../../components/LessonFooter';
+import LessonFooter from '../../../components/LessonFooter';
 
-function Lesson1() {
+function Page1() {
   return (
     <div className="min-h-screen bg-[#1F274D] text-white flex flex-col">
       <Header />
@@ -28,4 +28,4 @@ function Lesson1() {
   )
 }
 
-export default Lesson1
+export default Page1
