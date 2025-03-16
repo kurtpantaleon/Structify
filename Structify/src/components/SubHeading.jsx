@@ -8,7 +8,7 @@ function SubHeading({ toggleNav, toggleLearningPath }) {
       {/* ✅ Click Button to Toggle Sidebar */}
       <button onClick={toggleNav}>
         <img src={HamburgerMenu} alt="Menu Icon" className="h-4 w-7 cursor-pointer" />
-      </button>
+      </button> 
 
       {/* Center: Subheading Title */}
       <h2 className="text-white font-bold text-lg tracking-wide">
@@ -16,8 +16,8 @@ function SubHeading({ toggleNav, toggleLearningPath }) {
       </h2>
 
       {/* Right: Mene Icon */}
-      <button className="cursor-pointer" onClick={toggleLearningPath}>
-        <img src={MenuButton} alt="Swap Icon" className="h-6 w-7" />
+      <button onClick={toggleLearningPath}>
+        <img src={MenuButton} alt="Swap Icon" className="h-6 w-7 cursor-pointer" />
       </button>
     </div>
   )
