@@ -2,10 +2,10 @@ import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import StartPage from './pages/Start'
 import MainPage from './pages/MainPage'
-import Lesson1 from './pages/week1pages/Lesson1'
-import Lesson2 from './pages/week1pages/Lesson2'
-import Lesson3 from './pages/week1pages/Lesson3'
-import Activity1 from './pages/week1pages/Activity1'
+import Lesson1 from './pages/Week 1 Pages/Lesson 1/Page1'
+import Lesson2 from './pages/Week 1 Pages/Lesson 1/Page2'
+import Lesson3 from './pages/Week 1 Pages/Lesson 1/Page3'
+import Activity1 from './pages/Week 1 Pages/Activity1'
 
 
 

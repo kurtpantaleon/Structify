@@ -2,9 +2,9 @@ import React from 'react';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../assets/images/Lesson1 Images/Week1/Page 1/Bullet 1.png';
-import BigLeftNextIcon from '../../assets/images/Big Left Next Icon.png';
-import BigRightNextIcon from '../../assets/images/Big Right Next Icon.png';
+import Bullet1 from '../../../assets/images/Lesson1 Images/Week1/Page 1/Bullet 1.png';
+import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
+import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
 
 function Page1() {
