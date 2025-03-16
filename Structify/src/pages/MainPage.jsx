@@ -9,8 +9,7 @@ import UncheckIcon from '../assets/images/Uncheck Icon.png';
 import PracticeIcon from '../assets/images/Practice Icon.png';
 import StudyIcon from '../assets/images/Study Icon.png';
 import LearningPath from '../components/LearningPath';
-import Lesson1 from './week1pages/Lesson1';
-
+import Lesson1 from './Week 1 Pages/Lesson 1/Page1';
 
 function MainPage() {
   const [isNavOpen, setIsNavOpen] = useState(false); // Sidebar toggle state

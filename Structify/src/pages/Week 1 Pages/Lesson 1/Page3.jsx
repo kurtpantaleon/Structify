@@ -1,9 +1,9 @@
 import React from 'react'
 
-function Lesson3() {
+function Page3() {
   return (
     <div>Lesson3</div>
   )
 }
 
-export default Lesson3
+export default Page3
