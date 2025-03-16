@@ -14,16 +14,16 @@ const weeks = [
     { week: "Week 17", topic: "Hashing" },
     ];
   return (
-    <div className="w-100 bg-[#1F274D] text-white rounded-lg border border-white/20 p-4">
+    <div className="w-100 bg-[#1F274D] text-white border-l border-white/100 p-4">
     {/* Header */}
     <div className="flex items-center justify-between mb-2">
       <h2 className="font-bold text-lg">Learning Path</h2>
+      <p className="right-0 text-xs">0/17</p>
     </div>
 
     {/* Progress Bar */}
     <div className="w-full bg-gray-700 h-2 rounded-full relative mb-4">
       <div className="bg-white h-2 rounded-full w-1/5"></div>
-      <span className="absolute right-0 text-xs">0/17</span>
     </div>
 
     {/* List of Weeks */}
@@ -31,10 +31,10 @@ const weeks = [
       {weeks.map((item, index) => (
         <button
           key={index}
-          className="w-full px-4 py-3 bg-[#0F1A3A] rounded-lg border border-white/40 text-left"
+          className="w-full px-3 py-3 bg-[#020B4A] rounded-lg border border-white/40 text-center cursor-pointer"
         >
-          <span className="font-bold text-sm">{item.week}</span>
-          <p className="text-xs">{item.topic}</p>
+          <span className="font-bold text-md">{item.week}</span>
+          <p className="text-s">{item.topic}</p>
         </button>
       ))}
     </div>

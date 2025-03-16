@@ -21,7 +21,7 @@ function MainPage() {
       <Header />
 
       {/* Sub Heading Below Header */}
-      <SubHeading
+      <SubHeading 
         toggleNav={() => setIsNavOpen(!isNavOpen)}
         toggleLearningPath={() => setIsLearningPathOpen(!isLearningPathOpen)}
       />

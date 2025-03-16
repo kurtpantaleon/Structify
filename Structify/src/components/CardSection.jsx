@@ -2,7 +2,7 @@ import React from 'react'
 
 function CardSection({title, subtitle, progress, active}) { //yyung active para sa pag highlight ng card
   return (
-    <div className='relative w-83 h-55 rounded-xl border-2 border-white flex flex-col justify-between bg-[#30418B] '>  
+    <div className='relative w-83 h-55 rounded-xl border-2 border-white flex flex-col justify-between bg-[#30418B] cursor-pointer'>  
       <div>
         {/** place holder ng image */}
       </div>
