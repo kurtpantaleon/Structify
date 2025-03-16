@@ -18,49 +18,38 @@ function MainPage() {
 
       {/* Main Layout Grid */}
       <div className="flex flex-1 overflow-hidden">
-
         {/* Sidebar (left) */}
         {isNavOpen && (
           <div className="w-20 border-r border-white/20">
             <NavigationBar />
           </div>
         )}
-
         {/* Main Content  */}
-        <main className="flex-1 p-20 overflow-y-auto bg-[#1F274D]">
-
+        <main className="flex-1 p-10 ml-10 overflow-y-auto bg-[#1F274D]">
           <h2 className="text-xl font-bold mb-4">SECTION</h2>
-
+          <div className="border-t border-white/100 w-137 mb-4"></div>  
           {/* Cards  */}
-
-
-          <div className=" grid w-140 grid-cols-2  gap-4 p-1" >
+          <div className="grid w-140 grid-cols-2 gap-4 p-1">
             <CardSection
               title="Introduction to Data Structures"
               subtitle="Lesson 1"
-              progress="20%"
-              
+              progress="1/8"
             />
             <CardSection
               title="Computers and Data Structures"
               subtitle="Lesson 2"
-              progress="0%"
-              
+              progress="0/8"
             />
             <CardSection
               title="Types of Data Structures?"
               subtitle="Lesson 3"
-              progress="0%"
-              
+              progress="0/8" 
             />
             <CardSection
               title="Create a Mini Library"
               subtitle="Challenge"
-              progress="0%"
-              
             />
           </div>
-
         </main>
       </div>
     </div>

@@ -8,17 +8,12 @@ function App() {
  
 
   return (
-    
-        <Routes>
+    <Routes>
 
-          <Route path="/" element={<StartPage/>} />
-          <Route path="/mainPage" element={<MainPage/>} />
-                 
-        </Routes>
-       
-
-   
-    
+      <Route path="/" element={<StartPage/>} />
+      <Route path="/mainPage" element={<MainPage/>} />
+              
+    </Routes> 
   )
 }
 

@@ -4,7 +4,7 @@ import MenuButton from '../assets/images/Menu Button.png'
 
 function SubHeading({ toggleNav }) {
   return (
-    <div className="bg-[#1F274D] flex items-center justify-between px-7 py-3 shadow-md border-b-1 border-gray-200 w-full  ">
+    <div className="bg-[#1F274D] flex items-center justify-between px-7 py-3 shadow-md border-b-1 border-gray-200">
       {/* ✅ Click Button to Toggle Sidebar */}
       <button onClick={toggleNav}>
         <img src={HamburgerMenu} alt="Menu Icon" className="h-4 w-7 cursor-pointer" />
