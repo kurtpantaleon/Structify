@@ -16,10 +16,14 @@ function StartPage() {
 
         <div className="text-center text-white font-bold space-y-2 mt-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl">Learn to code</h1>
+
+
           <p className="text-sm sm:text-base lg:text-xl font-light px-4 sm:px-10 lg:px-0">
             Understand data structures and algorithms to code smarter and solve problems efficiently.
           </p>
-        </div>
+
+
+        </div>  
       </div>
 
       {/* Right side */}
