@@ -17,11 +17,11 @@ function Page1() {
       image: Bullet1
     },
     {
-      description: <>Common data structures include <span className="font-bold">arrays, linked lists, stacks, and queues</span>, each serving different purposes.</>,
+      description: <>Computers process <span className="font-bold">massive amounts of data every second</span>, so efficient organization is essential.</>,
       image: Bullet2
     },
     {
-      description: <>Choosing the right data structure can <span className="font-bold">optimize performance</span> and improve data retrieval and storage.</>,
+      description: <>Just like drawers organize clothes, <span className="font-bold">data structures help organize and manage information in a structured way</span>.</>,
       image: Bullet3
     }
   ];
