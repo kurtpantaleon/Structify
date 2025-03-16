@@ -1,8 +1,18 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function WeekButton({ status, icon, title, iconType }) {
+function WeekButton({ status, icon, title, iconType, path }) {
+  const navigate = useNavigate(); // Initialize navigation hook
+
+  const handleClick = () => {
+    navigate(path); // Navigate to provided path
+  };
+
   return (
-    <button className="flex items-center justify-between w-full px-4 py-4.5 bg-[#1F274D] rounded-lg border border-white/100 text-white cursor-pointer">
+    <button
+      onClick={handleClick}
+      className="flex items-center justify-between w-full px-4 py-4.5 bg-[#1F274D] rounded-lg border border-white/100 text-white cursor-pointer hover:bg-[#283058] transition-all duration-200"
+    >
       {/* Left: Icon + Title */}
       <div className="flex items-center space-x-3">
         <img src={iconType} alt={title} className="w-8 h-6" />
@@ -17,7 +27,7 @@ function WeekButton({ status, icon, title, iconType }) {
         <img src={icon} alt={status} className="w-5 h-5" />
       </div>
     </button>
-  )
+  );
 }
 
-export default WeekButton
+export default WeekButton;

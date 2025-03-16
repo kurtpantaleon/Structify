@@ -9,6 +9,8 @@ import UncheckIcon from '../assets/images/Uncheck Icon.png';
 import PracticeIcon from '../assets/images/Practice Icon.png';
 import StudyIcon from '../assets/images/Study Icon.png';
 import LearningPath from '../components/LearningPath';
+import Lesson1 from './week1pages/Lesson1';
+
 
 function MainPage() {
   const [isNavOpen, setIsNavOpen] = useState(false); // Sidebar toggle state
@@ -46,7 +48,7 @@ function MainPage() {
               <h2 className="text-xl font-bold mb-2">SECTION</h2>
               <div className="border-t border-white/100 w-full mb-5"></div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <CardSection title="Introduction to Data Structures" subtitle="Lesson 1" progress="1/8" />
                 <CardSection title="Computers and Data Structures" subtitle="Lesson 2" progress="0/8" />
                 <CardSection title="Types of Data Structures?" subtitle="Lesson 3" progress="0/8" />
@@ -61,14 +63,14 @@ function MainPage() {
 
               {/* Lessons */}
               <div className="space-y-4">
-                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} />
-                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} />
-                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} />
+                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/lesson1"  />
+                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/lesson2"/>
+                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/lesson3" />
               </div>
 
               {/* Activities */}
               <div className="mt-4 space-y-4">
-                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} />
+                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Activity1"/>
                 <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} />
                 <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} />
               </div>
