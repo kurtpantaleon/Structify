@@ -5,7 +5,8 @@ import MainPage from './pages/MainPage'
 import Lesson1 from './pages/Week 1 Pages/Lesson 1/Page1'
 import Lesson2 from './pages/Week 1 Pages/Lesson 1/Page2'
 import Lesson3 from './pages/Week 1 Pages/Lesson 1/Page3'
-import Activity1 from './pages/Week 1 Pages/Activity1'
+import Activity1 from './pages/Week 1 Pages/Activities Week 1/Activity1'
+import Activity2 from './pages/Week 1 Pages/Activities Week 1/Activity2'
 import Page2 from './pages/Week 1 Pages/Lesson 1/Page2'
 import Page3 from './pages/Week 1 Pages/Lesson 1/Page3'
 import Page4 from './pages/Week 1 Pages/Lesson 1/Page4'
@@ -28,8 +29,7 @@ function App() {
       <Route path="/lesson2" element={<Lesson2/>} />
       <Route path="/lesson3" element={<Lesson3/>} />
       <Route path="/activity1" element={<Activity1/>} />
-
-
+      <Route path="/activity2" element={<Activity2/>} />
 
       {/* Week 1 pages */}
       <Route path="/page2" element={<Page2/>} />
