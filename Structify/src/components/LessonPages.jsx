@@ -18,7 +18,7 @@ function LessonPages({ title, lessons, leftIcon, rightIcon }) {
   };
 
   return (
-    <div className="bg-[#1F274D] text-white p-8 rounded-lg flex flex-col items-center">
+    <div className="bg-[#1F274D] text-white p-8 rounded-lg flex flex-col items-center h-130">
       {/* Title */}
       <h2 className="text-4xl font-bold mb-4 text-center">{title}</h2>
 
@@ -42,7 +42,7 @@ function LessonPages({ title, lessons, leftIcon, rightIcon }) {
         <img 
           src={lessons[currentIndex].image} 
           alt="Lesson" 
-          className="h-80 w-auto"
+          className="h-80 w-150"
         />
 
         {/* Right Arrow */}
