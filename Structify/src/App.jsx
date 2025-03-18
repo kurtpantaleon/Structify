@@ -1,6 +1,9 @@
 import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import StartPage from './pages/Start'
+
+/*WEEK 1 */
+
 import MainPage from './pages/MainPage'
 import Lesson1 from './pages/Week 1 Pages/Lesson 1/Page1'
 import Lesson2 from './pages/Week 1 Pages/Lesson 1/Page2'
@@ -30,11 +33,18 @@ import L3Page6 from './pages/Week 1 Pages/Lesson 3/L3Page6'
 import L3Page7 from './pages/Week 1 Pages/Lesson 3/L3Page7'
 import L3Page8 from './pages/Week 1 Pages/Lesson 3/L3Page8'
 
+/*WEEK 2 */
+import Week2 from './pages/Week2Page'
 
+import Week2Activity1 from './pages/Week 2 Pages/Activities Week 2/Activity 1'
+
+import Week2Page1 from './pages/Week 2 Pages/Lesson 1/Page1'
+
+import Week2L2Page1 from './pages/Week 2 Pages/Lesson 2/L2Page1'
+
+import Week3L3Page1 from './pages/Week 2 Pages/Lesson 3/L3Page1'
 
 function App() {
- 
-
   return (
     <Routes>
 
@@ -72,10 +82,20 @@ function App() {
       <Route path="/l3page7" element={<L3Page7/>} />
       <Route path="/l3page8" element={<L3Page8/>} />
 
+      {/* Week 2*/}
+      <Route path="/week2Pages" element={<Week2/>} />
 
-     
+      {/* Week 2 lesson 1 pages */}
+      <Route path="/week2Page1" element={<Week2Page1/>} />
 
-      
+      {/* Week 2 lesson 2 pages */}
+      <Route path="/week2L2Page1" element={<Week2L2Page1/>} />
+
+      {/* Week 2 lesson 3 pages */}
+      <Route path="/week3L3Page1" element={<Week3L3Page1/>} />
+
+      {/* Week 2 activities */}
+      <Route path="/week2Activity1" element={<Week2Activity1/>} />
               
     </Routes> 
   )
