@@ -29,16 +29,19 @@ export default  function Page6() {
   const lessons = [
     {
       description: <>Arrays: Store multiple values in a fixed order.</>,
-      image: Bullet1
+      image: Bullet1,
+      resizeClass: 'h-40'
     },
     {
       description: <>Linked Lists: Use nodes to store elements dynamically.</>,
-      image: Bullet2
+      image: Bullet2,
+      resizeClass: 'h-40'
    
     },
     {
       description: <>Stacks & Queues: Follow specific rules for data insertion and removal.</>,
-      image: Bullet3
+      image: Bullet3,
+      resizeClass: 'h-60'
     }
   ];
 

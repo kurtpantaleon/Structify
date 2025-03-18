@@ -30,11 +30,13 @@ export default  function Page7() {
   const lessons = [
     {
       description: <>Fast access? → Use an Array.</>,
-      image: Bullet1
+      image: Bullet1,
+      resizeClass: 'h-40'
     },
     {
       description: <>Frequent additions/removals? → Use a Linked List.</>,
-      image: Bullet2
+      image: Bullet2,
+      resizeClass: 'h-40'
    
     },
     {

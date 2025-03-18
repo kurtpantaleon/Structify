@@ -30,6 +30,7 @@ export default  function Page2() {
     {
       description: <>Without data structures, storing and retrieving information would be <span className='font-bold'> slow and inefficient.</span></>,
       image: Bullet1
+      
     },
     {
       description: <>Imagine looking for a book in a <span className='font-bold'>messy pile vs. a well-organized bookshelf.</span> </>,
