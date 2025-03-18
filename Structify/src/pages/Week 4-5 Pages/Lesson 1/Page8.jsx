@@ -5,7 +5,7 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/images/Week3-1 Images/Lesson1/Page 8/Bullet 1.png';
+import Bullet1 from '../../../assets/images/Week4-1 Images/Lesson1/Page 8/Bullet 1.png';
 
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
@@ -27,14 +27,6 @@ export default function Page8() {
     {
       description: <></>,
       image: Bullet1
-    },
-    {
-      description: <></>,
-      image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
   ];
 

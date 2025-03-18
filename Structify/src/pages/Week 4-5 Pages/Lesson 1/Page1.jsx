@@ -5,9 +5,8 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/images/Week2-1 Images/Lesson1/Page 1/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week2-1 Images/Lesson1/Page 1/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week2-1 Images/Lesson1/Page 1/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week4-1 Images/Lesson1/Page 1/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week4-1 Images/Lesson1/Page 1/Bullet 2.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -32,10 +31,6 @@ export default function Page1() {
     {
       description: <></>,
       image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
   ];
 

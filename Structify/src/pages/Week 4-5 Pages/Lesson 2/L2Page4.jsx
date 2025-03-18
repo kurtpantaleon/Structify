@@ -4,9 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Week3-2 Images/Lesson2/Page 4/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week3-2 Images/Lesson2/Page 4/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week3-2 Images/Lesson2/Page 4/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week4-2 Images/Lesson2/Page 4/Bullet 1.png';
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
@@ -26,14 +24,6 @@ export default function L2Page4() {
     {
       description: <></>,
       image: Bullet1
-    },
-    {
-      description: <></>,
-      image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
   ];
 
