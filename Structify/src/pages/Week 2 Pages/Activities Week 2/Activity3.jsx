@@ -5,19 +5,19 @@ import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 
 const options = ["Algorithm", "Efficiency ", "Big-O Notation", "Input ", "Output"];
 const descriptions = [
-  "A step-by-step process to solve a problem.",
-  "Measures time complexity.",
-  "How fast an algorithm runs.",
-  "The data an algorithm receives.",
-  "The final result after processing."
+  "Accessing an element in an array.",
+  "Linear Search.",
+  "Binary Search.",
+  "Bubble Sort.",
+  "Merge Sort."
 ];
 
 const correctAnswers = {
-  "A step-by-step process to solve a problem": "Algorithm",
-  "How fast an algorithm runs.": "Efficiency",
-  "Measures time complexity": "Big-O Notation",
-  "The data an algorithm recieves": "Output",
-  "The final result after processing": "Output "
+  "Accessing an element in an array.": "Algorithm",
+  "Linear Search.": "Efficiency",
+  "Binary Search.": "Big-O Notation",
+  "Bubble Sort.": "Output",
+  "Merge Sort.": "Output "
 };
 
 function DraggableItem({ id, children }) {
