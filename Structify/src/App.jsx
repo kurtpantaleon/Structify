@@ -143,10 +143,10 @@ function App() {
 
       {/* Week activity 1 */}
       
-      <Route path="/activity1" element={<Week1Activity1/>} />
-      <Route path="/activity2" element={<Week1Activity2/>} />
-      <Route path="/activity3" element={<Week1Activity3/>} />
-      <Route path='/quizWeek1' element={<QuizWeek1/>} />
+      <Route path="/week1activity1" element={<Week1Activity1/>} />
+      <Route path="/week1activity2" element={<Week1Activity2/>} />
+      <Route path="/week1activity3" element={<Week1Activity3/>} />
+      <Route path='/week1quizWeek1' element={<QuizWeek1/>} />
 
       {/* Week 1 lesson 1 pages */}
       <Route path="/page1" element={<Page1/>} />
@@ -171,8 +171,7 @@ function App() {
       <Route path="/l3page7" element={<L3Page7/>} />
       <Route path="/l3page8" element={<L3Page8/>} />
       {/* Week activity 1 */}
-      <Route path="/activity1" element={<Activity1/>} />
-      <Route path="/activity2" element={<Activity2/>} />
+      
 
       {/* Week 2*/}
       <Route path="/week2Pages" element={<Week2/>} />
