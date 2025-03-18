@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Week3-3 Images/Lesson3/Page 1/Bullet 1.png';
 
+import Bullet1 from '../../../assets/images/Week3-1 Images/Lesson1/Page 7/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week3-1 Images/Lesson1/Page 7/Bullet 2.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -13,7 +14,7 @@ import LessonFooter from '../../../components/LessonFooter';
 
 
 
-export default function L3Page1() {
+export default function Page7() {
 
   const navigate = useNavigate();
 
@@ -24,10 +25,13 @@ export default function L3Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <>Uses ASCII (American Standard Code for Information Interchange) and Unicode.</>,
+      description: <>In Java, strings are immutable (cannot be changed after creation).</>,
       image: Bullet1
+    },
+    {
+      description: <>Any modification creates a new string object instead of modifying the original.</>,
+      image: Bullet2
     }
-    
   ];
 
   return (
@@ -35,7 +39,7 @@ export default function L3Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title="How Computers Store Text"
+        title="Mutable vs. Immutable Strings"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -43,7 +47,7 @@ export default function L3Page1() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path="/week3L3Page2"
+      path="/week3Page8"
       />
     </div>
   );

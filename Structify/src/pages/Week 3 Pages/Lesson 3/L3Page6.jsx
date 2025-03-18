@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Week3-3 Images/Lesson3/Page 1/Bullet 1.png';
+import Bullet1 from '../../../assets/images/Week3-3 Images/Lesson3/Page 6/Bullet 1.png';
 
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
@@ -13,7 +13,7 @@ import LessonFooter from '../../../components/LessonFooter';
 
 
 
-export default function L3Page1() {
+export default function L3Page6() {
 
   const navigate = useNavigate();
 
@@ -24,9 +24,9 @@ export default function L3Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <>Uses ASCII (American Standard Code for Information Interchange) and Unicode.</>,
+      description: <>Websites displaying "�" when a character is unsupported.</>,
       image: Bullet1
-    }
+    },
     
   ];
 
@@ -35,7 +35,7 @@ export default function L3Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title="How Computers Store Text"
+        title="Real-World Example"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -43,7 +43,7 @@ export default function L3Page1() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path="/week3L3Page2"
+      path="/week3L3Page7"
       />
     </div>
   );

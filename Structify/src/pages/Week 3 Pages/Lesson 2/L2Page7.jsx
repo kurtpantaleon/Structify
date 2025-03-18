@@ -4,16 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Week3-3 Images/Lesson3/Page 1/Bullet 1.png';
-
-
+import Bullet1 from '../../../assets/images/Week3-2 Images/Lesson2/Page 7/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week3-2 Images/Lesson2/Page 7/Bullet 2.png';
+import Bullet3 from '../../../assets/images/Week3-2 Images/Lesson2/Page 7/Bullet 3.png';
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
 
 
 
-export default function L3Page1() {
+export default function L2Page7() {
 
   const navigate = useNavigate();
 
@@ -24,10 +24,17 @@ export default function L3Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <>Uses ASCII (American Standard Code for Information Interchange) and Unicode.</>,
+      description: <>\n → New line.</>,
       image: Bullet1
+    },
+    {
+      description: <>\t → Tab space.</>,
+      image: Bullet2
+    },
+    {
+      description: <>\\ → Backslash.</>,
+      image: Bullet3
     }
-    
   ];
 
   return (
@@ -35,7 +42,7 @@ export default function L3Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title="How Computers Store Text"
+        title="Using Escape Characters"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -43,7 +50,7 @@ export default function L3Page1() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path="/week3L3Page2"
+      path="/week3L2Page8"
       />
     </div>
   );
