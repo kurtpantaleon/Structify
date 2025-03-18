@@ -81,7 +81,7 @@ export default function Activity1() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <h1 className="text-xl font-medium text-white">Activity 3 - Matching Type</h1>
+        <h1 className="text-xl font-medium text-white">Activity 1 - Matching Type</h1>
         <img src={hint} className="w-8 h-8"></img>
       </div>
 
