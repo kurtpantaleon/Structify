@@ -1,0 +1,162 @@
+{
+    "questions": [
+      {
+        "id": 1,
+        "week": 1,
+        "type": "multipleChoice",
+        "question": "What is Data Structures?",
+        "options": [
+          "A type of computer processor.",
+          "A file format used for saving data.",
+          "A programming language used in web development.",
+          "A way to organize and store data efficiently."
+        ],
+        "correctAnswer": "A way to organize and store data efficiently."
+      },
+      {
+        "id": 2,
+        "week": 1,
+        "type": "multipleChoice",
+        "question": "Why do we need data structures?",
+        "options": [
+          "To manage data efficiently and improve performance.",
+          "To make computers run slower.",
+          "To delete unnecessary files",
+          "To increase storage space on a hard drive."
+        ],
+        "correctAnswer": "To manage data efficiently and improve performance."
+      },
+      {
+        "id": 3,
+        "week": 1,
+        "type": "multipleChoice",
+        "question": "Which data structure follows LIFO (Last In, First Out)?",
+        "options": [
+          "Queue",
+          "Stack",
+          "Linked List",
+          "Tree"
+        ],
+        "correctAnswer": "Stack"},
+      {
+        "id": 4,
+        "week": 1,
+        "type": "completeSentence",
+        "question": "What data structure follows FIFO (First In, First Out)?",
+        "options": [
+          "Queue",
+          "Stack",
+          "Linked List",
+          "Tree"
+        ],
+        "correctAnswer": "Queue"
+        },
+      {
+        "id": 5,
+        "week": 1,
+        "type": "completeSentence",
+        "question": "A ______ organizes and stores data in a structured way.",
+        "correctAnswer": "Data Structure"
+        },
+      {
+      
+        "id": 6,
+        "week": 1,
+        "type": "completeSentence",
+        "question": "An ______ stores multiple elements in a fixed order.",
+        "correctAnswer": "Array"
+      },
+      {
+        "id": 7,
+        "week": 1,
+        "type": "completeSentence",
+        "question": "A ______ is used to map unique keys to specific values for quick retrieval.",
+        "correctAnswer": "Hash Table"
+        },
+      {
+        "id": 8,
+        "week": 1,
+        "type": "multipleChoice",
+        "question": "What happens if data is not organized properly in a program?",
+        "options": [
+          "Searching and processing data becomes slow and inefficient.",
+          "The computer ignores unorganized data.",
+          "The program automatically arranges the data.",
+          "Data structures will fix themselves over time."
+        ],
+        "correctAnswer": "Searching and processing data becomes slow and inefficient."
+      },
+
+     
+
+      {
+        "id": 9,
+        "week": 2,
+        "type": "multipleChoice",
+        "question": "What is an algorithm?",
+        "options": [
+          "A step-by-step process for solving a problem.",
+          "A type of software for designing UI.",
+          "A function used only for sorting data. ",
+          "A computer hardware component. "
+        ],
+        "correctAnswer": "A step-by-step process for solving a problem. "
+      },
+      {
+        "id": 10,
+        "week": 2,
+        "type": "multipleChoice",
+        "question": "Why do computers need algorithms?",
+        "options": [
+          "To perform tasks efficiently by following a logical sequence. ",
+          "To slow down processing speed for security reasons.",
+          "To store large amounts of data without organizing it. ",
+          "To make random decisions without human input."
+        ],
+        "correctAnswer": "To perform tasks efficiently by following a logical sequence. "
+      },
+      {
+        "id": 11,
+        "week": 2,
+        "type": "multipleChoice",
+        "question": "What does Big-O Notation measure?",
+        "options": [
+          "The weight of data stored in memory. ",
+          "The maximum file size an algorithm can process ",
+          "The number of variables used in a program.  ",
+          "The number of programming languages an algorithm supports. "
+        ],
+        "correctAnswer": "The time and space efficiency of an algorithm. ",
+        "hint": "Items of the same type"
+      },
+      {
+        "id": 12,
+        "week": 2,
+        "type": "multipleChoice",
+        "question": "A ______ is used to describe an algorithm’s efficiency.",
+        "correctAnswer": "Complexity"
+      },
+      {
+        "id": 13,
+        "week": 2,
+        "type": "completeSentence",
+        "question": "What happens when you reverse (DOG)?",
+        "correctAnswer": "GOD"
+      },
+      {
+        "id": 14,
+        "week": 2,
+        "type": "completeSentence",
+        "question": "Which sorting algorithm works by repeatedly swapping adjacent elements?", 
+        "correctAnswer": "Bubble Sort"
+      },
+      {
+        "id": 15,
+        "week": 2,
+        "type": "completeSentence",
+        "question": "Searching for an item in an organized list is ______ than searching randomly. ",
+        "correctAnswer": "Faster"
+      }
+    ]
+  }
+  

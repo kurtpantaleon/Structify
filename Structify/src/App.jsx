@@ -10,6 +10,7 @@ import Lesson2 from './pages/Week 1 Pages/Lesson 1/Page2'
 import Lesson3 from './pages/Week 1 Pages/Lesson 1/Page3'
 import Activity1 from './pages/Week 1 Pages/Activities Week 1/Activity1'
 import Activity2 from './pages/Week 1 Pages/Activities Week 1/Activity2'
+import QuizWeek1 from './pages/Week 1 Pages/Quiz Week 1/QuizWeek1'
 
 import Page1 from './pages/Week 1 Pages/Lesson 1/Page1'
 import Page2 from './pages/Week 1 Pages/Lesson 1/Page2'
@@ -37,6 +38,7 @@ import L3Page8 from './pages/Week 1 Pages/Lesson 3/L3Page8'
 import Week2 from './pages/Week2Page'
 
 import Week2Activity1 from './pages/Week 2 Pages/Activities Week 2/Activity1'
+import QuizWeek2 from './pages/Week 2 Pages/Quiz Week 2/quizWeek2'
 
 import Week2Page1 from './pages/Week 2 Pages/Lesson 1/Page1'
 import Week2Page2 from './pages/Week 2 Pages/Lesson 1/Page2'
@@ -78,6 +80,7 @@ function App() {
       
       <Route path="/activity1" element={<Activity1/>} />
       <Route path="/activity2" element={<Activity2/>} />
+      <Route path='/quizWeek1' element={<QuizWeek1/>} />
 
       {/* Week 1 lesson 1 pages */}
       <Route path="/page1" element={<Page1/>} />
@@ -107,6 +110,7 @@ function App() {
 
       {/* Week 2*/}
       <Route path="/week2Pages" element={<Week2/>} />
+      <Route path='/quizWeek2' element={<QuizWeek2/>} />
 
       {/* Week 2 lesson 1 pages */}
       <Route path="/week2Page1" element={<Week2Page1/>} />
