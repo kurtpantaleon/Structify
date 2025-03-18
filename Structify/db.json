@@ -242,7 +242,7 @@
 
           {
             "id": 24,
-            "week": 3,
+            "week": 4,
             "type": "multipleChoice",
             "question": "What is an array?",
             "options": [
@@ -256,7 +256,7 @@
           },
           {
             "id": 25,
-            "week": 3,
+            "week": 4,
             "type": "multipleChoice",
             "question": "How does a record differ from an array?",
             "options": [
@@ -270,28 +270,28 @@
           },
           {
             "id": 26,
-            "week": 3,
+            "week": 4,
             "type": "completeSentence",
             "question": "A ______ holds multiple elements of the same type.",
             "correctAnswer": "Array"
           },
           {
             "id": 27,
-            "week": 3,
+            "week": 4,
             "type": "completeSentence",
             "question": "A ______ stores a group of related data with different types.",
             "correctAnswer": "Record"
           },
           {
             "id": 28,
-            "week": 3,
+            "week": 4,
             "type": "completeSentence",
             "question": "A ______ points to a memory location.",
             "correctAnswer": "Pointer"
           },
           {
             "id": 29,
-            "week": 3,
+            "week": 4,
             "type": "multipleChoice",
             "question": "What is a pointer used for?",
             "options": [
@@ -305,14 +305,14 @@
           },
           {
             "id": 30,
-            "week": 3,
+            "week": 4,
             "type": "completeSentence",
             "question": "What does a pointer reference?",
             "correctAnswer": "A memory address"
           },
           {
             "id": 31,
-            "week": 3,
+            "week": 4,
             "type": "completeSentence",
             "question": "Which data type is used for storing multiple records of student names and grades?",
             "correctAnswer": "Record"
@@ -320,7 +320,7 @@
         
             {
               "id": 32,
-              "week": 3,
+              "week": 6,
               "type": "multipleChoice",
               "question": "How does a linked list store data?",
               "options": [
@@ -334,21 +334,21 @@
             },
             {
               "id": 33,
-              "week": 3,
+              "week": 6,
               "type": "completeSentence",
               "question": "A ______ is the basic unit of a linked list.",
               "correctAnswer": "Node"
             },
             {
               "id": 34,
-              "week": 3,
+              "week": 6,
               "type": "completeSentence",
               "question": "The ______ is the first node in a linked list.",
               "correctAnswer": "Head"
             },
             {
               "id": 35,
-              "week": 3,
+              "week": 6,
               "type": "multipleChoice",
               "question": "Why do programmers use linked lists?",
               "options": [
@@ -362,28 +362,28 @@
             },
             {
               "id": 36,
-              "week": 3,
+              "week": 6,
               "type": "completeSentence",
               "question": "What does the tail of a linked list point to?",
               "correctAnswer": "NULL"
             },
             {
               "id": 37,
-              "week": 3,
+              "week": 6,
               "type": "completeSentence",
               "question": "What is an advantage of linked lists over arrays?",
               "correctAnswer": "Dynamic memory allocation"
             },
             {
               "id": 38,
-              "week": 3,
+              "week": 6,
               "type": "completeSentence",
               "question": "Which data structure does NOT use fixed memory allocation?",
               "correctAnswer": "Linked List"
             },
             {
               "id": 39,
-              "week": 3,
+              "week": 6,
               "type": "completeSentence",
               "question": "How do nodes connect in a linked list?",
               "correctAnswer": "Using pointers or references"
@@ -391,7 +391,7 @@
             ,
             {
               "id": 40,
-              "week": 4,
+              "week": 7,
               "type": "multipleChoice",
               "question": "What is a stack?",
               "options": [
@@ -405,7 +405,7 @@
             },
             {
               "id": 41,
-              "week": 4,
+              "week": 7,
               "type": "multipleChoice",
               "question": "What is a queue?",
               "options": [
@@ -419,7 +419,7 @@
             },
             {
               "id": 42,
-              "week": 4,
+              "week": 7,
               "type": "multipleChoice",
               "question": "How does recursion work?",
               "options": [
@@ -433,28 +433,28 @@
             },
             {
               "id": 43,
-              "week": 4,
+              "week": 7,
               "type": "completeSentence",
               "question": "A ______ data structure is used in undo/redo functions.",
               "correctAnswer": "Stack"
             },
             {
               "id": 44,
-              "week": 4,
+              "week": 7,
               "type": "completeSentence",
               "question": "A queue follows the ______ principle.",
               "correctAnswer": "FIFO"
             },
             {
               "id": 45,
-              "week": 4,
+              "week": 7,
               "type": "completeSentence",
               "question": "Which data structure is used for waiting lines in banks?",
               "correctAnswer": "Queue"
             },
             {
               "id": 46,
-              "week": 4,
+              "week": 7,
               "type": "multipleChoice",
               "question": "Which of the following is a real-life example of recursion?",
               "options": [
@@ -468,7 +468,7 @@
             },
             {
               "id": 47,
-              "week": 4,
+              "week": 7,
               "type": "completeSentence",
               "question": "Recursion is commonly used in ______ algorithms.",
               "correctAnswer": "Tree and graph traversal"
@@ -476,7 +476,7 @@
             ,
               {
                 "id": 48,
-                "week": 5,
+                "week": 10,
                 "type": "multipleChoice",
                 "question": "What is a tree in computer science?",
                 "options": [
@@ -490,7 +490,7 @@
               },
               {
                 "id": 49,
-                "week": 5,
+                "week": 10,
                 "type": "multipleChoice",
                 "question": "What is the topmost node of a tree called?",
                 "options": [
@@ -504,7 +504,7 @@
               },
               {
                 "id": 50,
-                "week": 5,
+                "week": 10,
                 "type": "multipleChoice",
                 "question": "How does a Binary Search Tree (BST) organize elements?",
                 "options": [
@@ -518,7 +518,7 @@
               },
               {
                 "id": 51,
-                "week": 5,
+                "week": 10,
                 "type": "multipleChoice",
                 "question": "Which tree traversal method visits the root node first, then left and right subtrees?",
                 "options": [
@@ -532,21 +532,21 @@
               },
               {
                 "id": 52,
-                "week": 5,
+                "week": 10,
                 "type": "completeSentence",
                 "question": "A ______ node has no children.",
                 "correctAnswer": "Leaf"
               },
               {
                 "id": 53,
-                "week": 5,
+                "week": 10,
                 "type": "completeSentence",
                 "question": "The ______ is the starting point of a tree.",
                 "correctAnswer": "Root"
               },
               {
                 "id": 54,
-                "week": 5,
+                "week": 10,
                 "type": "multipleChoice",
                 "question": "Why are BSTs more efficient than arrays for searching?",
                 "options": [
@@ -560,7 +560,7 @@
               },
               {
                 "id": 55,
-                "week": 5,
+                "week": 10,
                 "type": "multipleChoice",
                 "question": "How do search engines use trees?",
                 "options": [
