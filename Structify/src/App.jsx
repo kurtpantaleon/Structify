@@ -36,7 +36,7 @@ import L3Page8 from './pages/Week 1 Pages/Lesson 3/L3Page8'
 /*WEEK 2 */
 import Week2 from './pages/Week2Page'
 
-import Week2Activity1 from './pages/Week 2 Pages/Activities Week 2/Activity 1'
+import Week2Activity1 from './pages/Week 2 Pages/Activities Week 2/Activity1'
 
 import Week2Page1 from './pages/Week 2 Pages/Lesson 1/Page1'
 
