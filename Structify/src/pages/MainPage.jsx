@@ -9,7 +9,8 @@ import UncheckIcon from '../assets/images/Uncheck Icon.png';
 import PracticeIcon from '../assets/images/Practice Icon.png';
 import StudyIcon from '../assets/images/Study Icon.png';
 import LearningPath from '../components/LearningPath';
-import Lesson1 from './Week 1 Pages/Lesson 1/Page1';
+
+
 
 function MainPage() {
   const [isNavOpen, setIsNavOpen] = useState(false); // Sidebar toggle state
@@ -62,9 +63,9 @@ function MainPage() {
 
               {/* Lessons */}
               <div className="space-y-4">
-                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/lesson1"  />
-                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/lesson2"/>
-                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/lesson3" />
+                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/page1"  />
+                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/l2page1"/>
+                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/l3page1" />
               </div>
 
               {/* Activities */}
