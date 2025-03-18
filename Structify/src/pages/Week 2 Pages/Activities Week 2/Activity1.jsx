@@ -2,7 +2,7 @@ import React from 'react'
 
 function Activity1() {
   return (
-    <div>Activity 1</div>
+    <div>Activity1</div>
   )
 }
 
