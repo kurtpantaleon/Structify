@@ -5,9 +5,9 @@ import StartPage from './pages/Start'
 /*WEEK 1 */
 import MainPage from './pages/MainPage'
 {/*Week 1 Activities */}
-import Activity1 from './pages/Week 1 Pages/Activities Week 1/Activity1'
-import Activity2 from './pages/Week 1 Pages/Activities Week 1/Activity2'
-import Activity3 from './pages/Week 1 Pages/Activities Week 1/Activity3'
+import Week1Activity1 from './pages/Week 1 Pages/Activities Week 1/Activity1'
+import Week1Activity2 from './pages/Week 1 Pages/Activities Week 1/Activity2'
+import Week1Activity3 from './pages/Week 1 Pages/Activities Week 1/Activity3'
 import QuizWeek1 from './pages/Week 1 Pages/Quiz Week 1/QuizWeek1'
 
 import Page1 from './pages/Week 1 Pages/Lesson 1/Page1'
@@ -36,8 +36,8 @@ import L3Page8 from './pages/Week 1 Pages/Lesson 3/L3Page8'
 import Week2 from './pages/Week2Page'
 {/*Week 2 Activities */}
 import Week2Activity1 from './pages/Week 2 Pages/Activities Week 2/Activity1'
-import Week2Activitiy2 from './pages/Week 2 Pages/Activities Week 2/Activity2'
-import Week2Activitiy3 from './pages/Week 2 Pages/Activities Week 2/Activity3'
+import Week2Activity2 from './pages/Week 2 Pages/Activities Week 2/Activity2'
+import Week2Activity3 from './pages/Week 2 Pages/Activities Week 2/Activity3'
 import QuizWeek2 from './pages/Week 2 Pages/Quiz Week 2/quizWeek2'
 
 import Week2Page1 from './pages/Week 2 Pages/Lesson 1/Page1'
@@ -143,9 +143,9 @@ function App() {
 
       {/* Week activity 1 */}
       
-      <Route path="/activity1" element={<Activity1/>} />
-      <Route path="/activity2" element={<Activity2/>} />
-      <Route path="/activity3" element={<Activity3/>} />
+      <Route path="/activity1" element={<Week1Activity1/>} />
+      <Route path="/activity2" element={<Week1Activity2/>} />
+      <Route path="/activity3" element={<Week1Activity3/>} />
       <Route path='/quizWeek1' element={<QuizWeek1/>} />
 
       {/* Week 1 lesson 1 pages */}
@@ -205,8 +205,8 @@ function App() {
       <Route path="/week2L3Page6" element={<Week2L3Page6/>} />
       {/* Week 2 activities */}
       <Route path="/week2Activity1" element={<Week2Activity1/>} />
-      <Route path="/week2Activity2" element={<Week2Activitiy2/>} />
-      <Route path="/week2Activity3" element={<Week2Activitiy3/>} />
+      <Route path="/week2Activity2" element={<Week2Activity2/>} />
+      <Route path="/week2Activity3" element={<Week2Activity3/>} />
       
       {/* Week 3 */}
       <Route path="/week3Pages" element={<Week3/>} />
