@@ -39,10 +39,33 @@ import Week2 from './pages/Week2Page'
 import Week2Activity1 from './pages/Week 2 Pages/Activities Week 2/Activity1'
 
 import Week2Page1 from './pages/Week 2 Pages/Lesson 1/Page1'
+import Week2Page2 from './pages/Week 2 Pages/Lesson 1/Page2'
+import Week2Page3 from './pages/Week 2 Pages/Lesson 1/Page3'
+import Week2Page4 from './pages/Week 2 Pages/Lesson 1/Page4'
+import Week2Page5 from './pages/Week 2 Pages/Lesson 1/Page5'
+import Week2Page6 from './pages/Week 2 Pages/Lesson 1/Page6'
+import Week2Page7 from './pages/Week 2 Pages/Lesson 1/Page7'
+import Week2Page8 from './pages/Week 2 Pages/Lesson 1/Page8'
+
+
+
 
 import Week2L2Page1 from './pages/Week 2 Pages/Lesson 2/L2Page1'
+import Week2L2Page2 from './pages/Week 2 Pages/Lesson 2/L2Page2'
+import Week2L2Page3 from './pages/Week 2 Pages/Lesson 2/L2Page3'
+import Week2L2Page4 from './pages/Week 2 Pages/Lesson 2/L2Page4'
+import Week2L2Page5 from './pages/Week 2 Pages/Lesson 2/L2Page5'
+import Week2L2Page6 from './pages/Week 2 Pages/Lesson 2/L2Page6'
+import Week2L2Page7 from './pages/Week 2 Pages/Lesson 2/L2Page7'
+import Week2L2Page8 from './pages/Week 2 Pages/Lesson 2/L2Page8'
 
-import Week3L3Page1 from './pages/Week 2 Pages/Lesson 3/L3Page1'
+
+import Week2L3Page1 from './pages/Week 2 Pages/Lesson 3/L3Page1'
+import Week2L3Page2 from './pages/Week 2 Pages/Lesson 3/L3Page2'
+import Week2L3Page3 from './pages/Week 2 Pages/Lesson 3/L3Page3'
+import Week2L3Page4 from './pages/Week 2 Pages/Lesson 3/L3Page4'
+import Week2L3Page5 from './pages/Week 2 Pages/Lesson 3/L3Page5'
+import Week2L3Page6 from './pages/Week 2 Pages/Lesson 3/L3Page6'
 
 function App() {
   return (
@@ -87,12 +110,34 @@ function App() {
 
       {/* Week 2 lesson 1 pages */}
       <Route path="/week2Page1" element={<Week2Page1/>} />
+      <Route path="/week2Page2" element={<Week2Page2/>} />
+      <Route path="/week2Page3" element={<Week2Page3/>} />
+      <Route path="/week2Page4" element={<Week2Page4/>} />
+      <Route path="/week2Page5" element={<Week2Page5/>} />
+      <Route path="/week2Page6" element={<Week2Page6/>} />
+      <Route path="/week2Page7" element={<Week2Page7/>} />
+      <Route path="/week2Page8" element={<Week2Page8/>} />
 
       {/* Week 2 lesson 2 pages */}
       <Route path="/week2L2Page1" element={<Week2L2Page1/>} />
+      <Route path="/week2L2Page2" element={<Week2L2Page2/>} />
+      <Route path="/week2L2Page3" element={<Week2L2Page3/>} />
+      <Route path="/week2L2Page4" element={<Week2L2Page4/>} />
+      <Route path="/week2L2Page5" element={<Week2L2Page5/>} />
+      <Route path="/week2L2Page6" element={<Week2L2Page6/>} />
+      <Route path="/week2L2Page7" element={<Week2L2Page7/>} />
+      <Route path="/week2L2Page8" element={<Week2L2Page8/>} />
+
+
 
       {/* Week 2 lesson 3 pages */}
-      <Route path="/week3L3Page1" element={<Week3L3Page1/>} />
+      <Route path="/week2L3Page1" element={<Week2L3Page1/>} />
+      <Route path="/week2L3Page2" element={<Week2L3Page2/>} />
+      <Route path="/week2L3Page3" element={<Week2L3Page3/>} />
+      <Route path="/week2L3Page4" element={<Week2L3Page4/>} />
+      <Route path="/week2L3Page5" element={<Week2L3Page5/>} />
+      <Route path="/week2L3Page6" element={<Week2L3Page6/>} />
+
 
       {/* Week 2 activities */}
       <Route path="/week2Activity1" element={<Week2Activity1/>} />

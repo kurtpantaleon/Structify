@@ -4,16 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Week2-2 Images/Lesson2/Page 1/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week2-2 Images/Lesson2/Page 1/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week2-2 Images/Lesson2/Page 1/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week2-3 Images/Lesson3/Page 5/Bullet 1.png';
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
 
 
 
-export default function L2Page1() {
+export default function L3Page5() {
 
   const navigate = useNavigate();
 
@@ -24,16 +22,8 @@ export default function L2Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <>Slow apps and websites frustrate users.</>,
+      description: <>Finding the smallest/largest value first.</>,
       image: Bullet1
-    },
-    {
-      description: <>Faster algorithms improve speed and performance.</>,
-      image: Bullet2
-    },
-    {
-      description: <>Example: A fast-loading website vs. a slow-loading website.</>,
-      image: Bullet3
     }
   ];
 
@@ -42,7 +32,7 @@ export default function L2Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title="Why Efficiency Matters"
+        title="Comparison-Based Sorting"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -50,7 +40,7 @@ export default function L2Page1() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path="/week2L2Page2"
+      path="/week2L3Page6"
       />
     </div>
   );

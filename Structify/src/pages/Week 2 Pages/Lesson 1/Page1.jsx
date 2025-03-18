@@ -24,15 +24,15 @@ export default function Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>An algorithm is a step-by-step process used to solve a problem.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>It is a set of instructions that tell a computer how to accomplish a task.</>,
       image: Bullet2
     },
     {
-      description: <></>,
+      description: <>Algorithms are used in search engines, games, banking systems, and more.</>,
       image: Bullet3
     }
   ];
@@ -42,7 +42,7 @@ export default function Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="What is an Algorithm?"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
