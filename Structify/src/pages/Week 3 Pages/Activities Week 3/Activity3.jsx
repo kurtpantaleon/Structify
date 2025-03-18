@@ -3,21 +3,22 @@ import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 
-const options = ["Algorithm", "Efficiency ", "Big-O Notation", "Input ", "Output"];
+const options = ["toUpperCase()", "toLowerCase()", "split()", "trim()", "length"];
+
 const descriptions = [
-  "Accessing an element in an array.",
-  "Linear Search.",
-  "Binary Search.",
-  "Bubble Sort.",
-  "Merge Sort."
+  '"hello".toUpperCase()',
+  '"HELLO".toLowerCase()',
+  '"apple,banana,orange".split(",")',
+  '" hello ".trim()',
+  '"Python".length'
 ];
 
 const correctAnswers = {
-  "Accessing an element in an array.": "Algorithm",
-  "Linear Search.": "Efficiency",
-  "Binary Search.": "Big-O Notation",
-  "Bubble Sort.": "Output",
-  "Merge Sort.": "Output "
+  '"hello".toUpperCase()': "HELLO",
+  '"HELLO".toLowerCase()': "hello",
+  '"apple,banana,orange".split(",")': '["apple", "banana", "orange"]',
+  '" hello ".trim()': "hello",
+  '"Python".length': "6"
 };
 
 function DraggableItem({ id, children }) {
@@ -83,7 +84,7 @@ export default function Activity1() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <h1 className="text-xl font-medium text-white">Activity 1 - Matching Type</h1>
+        <h1 className="text-xl font-medium text-white">Activity 3 - Drag and Drop</h1>
         <img src={hint} className="w-8 h-8"></img>
       </div>
 
