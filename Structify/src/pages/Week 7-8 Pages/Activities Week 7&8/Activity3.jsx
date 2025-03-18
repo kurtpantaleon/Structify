@@ -3,17 +3,21 @@ import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 
-const options = ["Root", "Leaf Node", "Binary Tree",];
+const options = ["Queue", "Stack", "Array", "Queue", "Hash Table"];
 const descriptions = [
-  "The top node.",
-  "A node with no children.",
-  "Each node has at most two children.",
+  "Train Line",
+  "Browser Back Button",
+  "Contacts List on Phone",
+  "People Standing in Line ",
+  "Student Record System "
 ];
 
 const correctAnswers = {
-   "The top node.": "Root",
-  "A node with no children.": "Leaf Node ",
-  "Each node has at most two children.": "Binary Tree",
+  "Train Line": "Queue",
+  "Browser Back Button": "Stack",
+  "Contacts List on Phone ": "Array",
+  "People Standing in Line": "Queue",
+  "Student Record System": "Hash Table"
 };
 
 function DraggableItem({ id, children }) {
@@ -79,7 +83,7 @@ export default function Activity1() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <h1 className="text-xl font-medium text-white">Activity 1 - Matching Type</h1>
+        <h1 className="text-xl font-medium text-white">Activity 3 - Matching Type</h1>
         <img src={hint} className="w-8 h-8"></img>
       </div>
 
