@@ -7,6 +7,7 @@ import MainPage from './pages/MainPage'
 {/*Week 1 Activities */}
 import Activity1 from './pages/Week 1 Pages/Activities Week 1/Activity1'
 import Activity2 from './pages/Week 1 Pages/Activities Week 1/Activity2'
+import Activity3 from './pages/Week 1 Pages/Activities Week 1/Activity3'
 import QuizWeek1 from './pages/Week 1 Pages/Quiz Week 1/QuizWeek1'
 
 import Page1 from './pages/Week 1 Pages/Lesson 1/Page1'
@@ -35,6 +36,8 @@ import L3Page8 from './pages/Week 1 Pages/Lesson 3/L3Page8'
 import Week2 from './pages/Week2Page'
 {/*Week 2 Activities */}
 import Week2Activity1 from './pages/Week 2 Pages/Activities Week 2/Activity1'
+import Week2Activitiy2 from './pages/Week 2 Pages/Activities Week 2/Activity2'
+import Week2Activitiy3 from './pages/Week 2 Pages/Activities Week 2/Activity3'
 import QuizWeek2 from './pages/Week 2 Pages/Quiz Week 2/quizWeek2'
 
 import Week2Page1 from './pages/Week 2 Pages/Lesson 1/Page1'
@@ -66,6 +69,9 @@ import Week2L3Page6 from './pages/Week 2 Pages/Lesson 3/L3Page6'
 import Week3 from './pages/Week3Page'
 {/*Week 2 Activities */}
 import Week3Activity1 from './pages/Week 3 Pages/Activities Week 3/Activity1'
+import Week3Activity2 from './pages/Week 3 Pages/Activities Week 3/Activity2'
+import Week3Activity3 from './pages/Week 3 Pages/Activities Week 3/Activity3'
+import QuizWeek3 from './pages/Week 3 Pages/Quiz Week 3/quizWeek3'
 {/*Week 2 Lesson 1 */}
 import Week3Page1 from './pages/Week 3 Pages/Lesson 1/Page1'
 import Week3Page2 from './pages/Week 3 Pages/Lesson 1/Page2'
@@ -99,6 +105,7 @@ import Week3L3Page8 from './pages/Week 3 Pages/Lesson 3/L3Page8'
 import Week4 from './pages/Week4Page'
 {/*Week 4 Activities */}
 import Week4Activity1 from './pages/Week 4-5 Pages/Activities Week 4&5/Activity1'
+import QuizWeek4 from './pages/Week 4-5 Pages/Quiz Week 4-5/quizWeek4-5'
 {/*Week 4 Lesson 1 */}
 import Week4Page1 from './pages/Week 4-5 Pages/Lesson 1/Page1'
 import Week4Page2 from './pages/Week 4-5 Pages/Lesson 1/Page2'
@@ -138,6 +145,7 @@ function App() {
       
       <Route path="/activity1" element={<Activity1/>} />
       <Route path="/activity2" element={<Activity2/>} />
+      <Route path="/activity3" element={<Activity3/>} />
       <Route path='/quizWeek1' element={<QuizWeek1/>} />
 
       {/* Week 1 lesson 1 pages */}
@@ -197,9 +205,12 @@ function App() {
       <Route path="/week2L3Page6" element={<Week2L3Page6/>} />
       {/* Week 2 activities */}
       <Route path="/week2Activity1" element={<Week2Activity1/>} />
+      <Route path="/week2Activity2" element={<Week2Activitiy2/>} />
+      <Route path="/week2Activity3" element={<Week2Activitiy3/>} />
       
       {/* Week 3 */}
       <Route path="/week3Pages" element={<Week3/>} />
+      <Route path='/quizWeek3' element={<QuizWeek3/>} />
       {/* Week 2 lesson 1 pages */}
       <Route path="/week3Page1" element={<Week3Page1/>} />
       <Route path="/week3Page2" element={<Week3Page2/>} />
@@ -229,9 +240,12 @@ function App() {
       <Route path="/week3L3Page8" element={<Week3L3Page8/>} />
       {/* Week 3 activities */}
       <Route path="/week3Activity1" element={<Week3Activity1/>} />
+      <Route path="/week3Activity2" element={<Week3Activity2/>} />
+      <Route path="/week3Activity3" element={<Week3Activity3/>} />
 
        {/* Week 4&5*/}
       <Route path="/week4Pages" element={<Week4/>} />
+      <Route path='/quizWeek4-5' element={<QuizWeek4/>} />
       {/* Week 4&5 lesson 1 pages */}
       <Route path="/week4Page1" element={<Week4Page1/>} />
       <Route path="/week4Page2" element={<Week4Page2/>} />
