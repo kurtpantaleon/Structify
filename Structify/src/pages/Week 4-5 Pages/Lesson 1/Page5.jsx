@@ -10,7 +10,7 @@ import Bullet1 from '../../../assets/images/Week4-1 Images/Lesson1/Page 5/Bullet
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
-import LessonFooter from '../../../components/LessonFooter';
+import LessonFooter from '../../../components/LessonFooter'; 
 
 
 
@@ -25,7 +25,7 @@ export default function Page5() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Code Example</>,
       image: Bullet1
     }
   ];
@@ -35,7 +35,7 @@ export default function Page5() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Declaring an Array in Java"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -43,7 +43,7 @@ export default function Page5() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4Page6"
       />
     </div>
   );

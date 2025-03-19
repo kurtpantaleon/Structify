@@ -25,11 +25,11 @@ export default function Page2() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Think of an array like a <span className="font-bold">row of lockers</span>  where each locker has a <span className="font-bold">unique number</span> (index).</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>The first locker is <span className="font-bold">index 0</span>, the second is <span className="font-bold">index 1</span>, and so on.</>,
       image: Bullet2
     }
   ];
@@ -39,7 +39,7 @@ export default function Page2() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Real-Life Analogy"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -47,7 +47,7 @@ export default function Page2() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4Page3"
       />
     </div>
   );

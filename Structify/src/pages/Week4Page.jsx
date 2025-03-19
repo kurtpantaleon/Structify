@@ -56,14 +56,14 @@ function Week3Page() {
 
             {/* ✅ Right: Week 1 Section (Shrunk to remove excess space) */}
             <div className="w-5/10 flex-shrink-0"> 
-              <h2 className="text-xl font-bold mb-2">WEEK 3</h2>
+              <h2 className="text-xl font-bold mb-2">WEEK 4 & 5</h2>
               <div className="border-t border-white/100 w-full mb-5"></div>
 
               {/* Lessons */}
               <div className="space-y-4">
-                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path=""  />
-                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path=""/>
-                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="" />
+                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/week4page1"  />
+                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week4L2Page1"/>
+                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week4L3Page1" />
               </div>
 
               {/* Activities */}
