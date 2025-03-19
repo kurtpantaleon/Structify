@@ -145,8 +145,8 @@ import Week4L3Page8 from './pages/Week 4-5 Pages/Lesson 3/L3Page8'
 import Week6 from './pages/Week6Page'
 {/*Week 6 Activities */}
 import Week6Activity1 from './pages/Week 6 Pages/Activities Week 6/Activity1'
-import Week6Activity2 from './pages/Week 6 Pages/Activities Week 6/Activitiy2'
-import Week6Activity3 from './pages/Week 6 Pages/Activities Week 6/Activitiy3'
+import Week6Activity2 from './pages/Week 6 Pages/Activities Week 6/Activity2'
+import Week6Activity3 from './pages/Week 6 Pages/Activities Week 6/Activity3'
 {/*Week 6 quiz */}
 import QuizWeek6 from './pages/Week 6 Pages/Quiz Week 6/quizWeek6'
 {/*Week 6 Lesson 1 */}
