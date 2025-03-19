@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Header';
 import { useNavigate } from 'react-router-dom';
+import Week3Page from '../../Week4Page';
 
 
 const QuizWeek1 = () => {
@@ -113,7 +114,7 @@ const QuizWeek1 = () => {
             </button>
             <button
               className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-lg font-medium"
-              onClick={L3Page6}
+              onClick={Week3Page}
             >
               Next
             </button>
