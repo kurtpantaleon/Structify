@@ -134,6 +134,8 @@ import Week4L3Page6 from './pages/Week 4-5 Pages/Lesson 3/L3Page6'
 import Week4L3Page7 from './pages/Week 4-5 Pages/Lesson 3/L3Page7'
 import Week4L3Page8 from './pages/Week 4-5 Pages/Lesson 3/L3Page8'
 
+import CodePlayground  from './pages/CodePlayground'
+
 function App() {
   return (
     <Routes>
@@ -274,6 +276,9 @@ function App() {
       <Route path="/week4L3Page8" element={<Week4L3Page8/>} />
       {/* Week 4&5 activities */}
       <Route path="/week4Activity1" element={<Week4Activity1/>} />
+
+      {/* Code Playground */}
+      <Route path="/codePlayground" element={<CodePlayground/>} />
     </Routes> 
   )
 }
