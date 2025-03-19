@@ -6,6 +6,7 @@ import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 import Bullet1 from '../../../assets/images/Week6-3 Images/Lesson3/Page 1/Bullet 1.png';
 
+
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
@@ -23,7 +24,7 @@ export default function L3Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Code Example</>,
       image: Bullet1
     }
   ];
@@ -33,7 +34,7 @@ export default function L3Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Adding a Node at the Beginning"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -41,7 +42,7 @@ export default function L3Page1() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path="/week2L3Page2"
+      path="/week6L3Page2"
       />
     </div>
   );

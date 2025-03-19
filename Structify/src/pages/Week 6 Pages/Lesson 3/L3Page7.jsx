@@ -24,11 +24,11 @@ export default function L3Page7() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Undo/Redo in text editors.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Music playlists (songs linked to each other).</>,
       image: Bullet2
     }
   ];
@@ -38,7 +38,7 @@ export default function L3Page7() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Real-Life Usage"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -46,7 +46,7 @@ export default function L3Page7() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week6L3Page8"
       />
     </div>
   );

@@ -24,11 +24,11 @@ export default function L3Page5() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>No need for a fixed size.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Insertion/Deletion is faster.</>,
       image: Bullet2
     }
   ];
@@ -38,7 +38,7 @@ export default function L3Page5() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Advantages Over Arrays"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -46,7 +46,7 @@ export default function L3Page5() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week6L3Page6"
       />
     </div>
   );
