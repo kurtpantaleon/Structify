@@ -22,7 +22,7 @@ export default function L2Page2() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>A contact list where each person has a name, phone number, and email.</>,
       image: Bullet1
     }
   ];
@@ -32,7 +32,7 @@ export default function L2Page2() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Real-Life Analogy"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -40,7 +40,7 @@ export default function L2Page2() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4L2Page3"
       />
     </div>
   );

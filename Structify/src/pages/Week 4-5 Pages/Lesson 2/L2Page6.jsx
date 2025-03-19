@@ -23,11 +23,11 @@ export default function L2Page6() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Arrays store multiple values of the same type.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Records store multiple related fields of different types.</>,
       image: Bullet2
     }
   ];
@@ -37,7 +37,7 @@ export default function L2Page6() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Records vs. Arrays"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -45,7 +45,7 @@ export default function L2Page6() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/wee4L2Page7"
       />
     </div>
   );

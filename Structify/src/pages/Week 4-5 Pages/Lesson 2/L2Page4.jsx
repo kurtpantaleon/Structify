@@ -22,7 +22,7 @@ export default function L2Page4() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Code Example</>,
       image: Bullet1
     }
   ];
@@ -32,7 +32,7 @@ export default function L2Page4() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Declaring a Record in Java (Using a Class)"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -40,7 +40,7 @@ export default function L2Page4() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4L2page5"
       />
     </div>
   );

@@ -23,7 +23,7 @@ export default function L2Page7() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Code Example</>,
       image: Bullet1
     }
   ];
@@ -33,7 +33,7 @@ export default function L2Page7() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Example of Using an Array of Records"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -41,7 +41,7 @@ export default function L2Page7() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="week4L2Page8"
       />
     </div>
   );

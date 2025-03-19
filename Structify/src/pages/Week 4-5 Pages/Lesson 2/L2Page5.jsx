@@ -23,11 +23,11 @@ export default function L2Page5() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Databases store user information as records.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Example: A student record system storing names, grades, and attendance.</>,
       image: Bullet2
     }
   ];
@@ -37,7 +37,7 @@ export default function L2Page5() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="How Databases Use Records"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -45,7 +45,7 @@ export default function L2Page5() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="week2L2Page6"
       />
     </div>
   );

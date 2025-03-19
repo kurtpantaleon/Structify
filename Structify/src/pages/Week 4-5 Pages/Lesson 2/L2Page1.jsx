@@ -25,11 +25,11 @@ export default function L2Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>A record is a collection of related data grouped together.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Unlike arrays, each field can have a different data type.</>,
       image: Bullet2
     }
   ];
@@ -39,7 +39,7 @@ export default function L2Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="What is a Record?"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -47,7 +47,7 @@ export default function L2Page1() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4L2Page2"
       />
     </div>
   );

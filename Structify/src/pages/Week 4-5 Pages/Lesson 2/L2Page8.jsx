@@ -23,7 +23,7 @@ export default function L2Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Records provide a structured way to store related but different types of data.</>,
       image: Bullet1
     }
   ];
@@ -33,7 +33,7 @@ export default function L2Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Conclusion"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -41,7 +41,7 @@ export default function L2Page1() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week2L3Page1"
       />
     </div>
   );

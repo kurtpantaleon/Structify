@@ -24,11 +24,11 @@ export default function L2Page3() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>They allow structured storage of different types of information.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Common in databases and applications that store user profiles.</>,
       image: Bullet2
     }
   ];
@@ -38,7 +38,7 @@ export default function L2Page3() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Why Use Records?"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -46,7 +46,7 @@ export default function L2Page3() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/weekL2Page4"
       />
     </div>
   );
