@@ -71,6 +71,10 @@ export default function Activity1() {
     setFeedback(isCorrect ? "Correct! Well done." : "Some answers are incorrect. Try again!");
   };
 
+  const goToNextActivity = () => {
+    window.location.href = "/week3activity2";
+  };
+  
   
 
   return (
@@ -130,6 +134,18 @@ export default function Activity1() {
         {feedback && (
           <p className="mt-4 text-white font-medium">{feedback}</p>
         )}
+      </div>
+      <div className="flex justify-between w-full px-6 pb-6">
+        
+        <button 
+          className="px-4 py-2 bg-blue-600 text-white rounded flex items-center"
+          onClick={goToNextActivity}
+        >
+          Next Activity
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+          </svg>
+        </button>
       </div>
     </div>
   );
