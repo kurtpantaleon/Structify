@@ -5,8 +5,7 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/images/Week3-1 Images/Lesson1/Page 8/Bullet 1.png';
-
+import Bullet1 from '../../../assets/images/Week7&8-1 Images/Lesson1/Page 8/Bullet 1.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -25,16 +24,8 @@ export default function Page8() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Stacks provide an efficient way to handle sequential operations where order matters.</>,
       image: Bullet1
-    },
-    {
-      description: <></>,
-      image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
   ];
 
@@ -43,7 +34,7 @@ export default function Page8() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Conclusion"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -51,7 +42,7 @@ export default function Page8() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/Week7Page"
       />
     </div>
   );

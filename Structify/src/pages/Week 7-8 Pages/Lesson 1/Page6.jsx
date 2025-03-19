@@ -5,9 +5,9 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/images/Week3-1 Images/Lesson1/Page 6/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week3-1 Images/Lesson1/Page 6/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week3-1 Images/Lesson1/Page 6/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week7&8-1 Images/Lesson1/Page 6/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week7&8-1 Images/Lesson1/Page 6/Bullet 2.png';
+import Bullet3 from '../../../assets/images/Week7&8-1 Images/Lesson1/Page 6/Bullet 3.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -26,15 +26,15 @@ export default function Page6() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Undo/Redo operations in text editors.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Backtracking (e.g., navigating browser history).</>,
       image: Bullet2
     },
     {
-      description: <></>,
+      description: <>Expression evaluation (e.g., converting infix to postfix).</>,
       image: Bullet3
     }
   ];
@@ -44,7 +44,7 @@ export default function Page6() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Basic Operations of a Stack"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -52,7 +52,7 @@ export default function Page6() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week7Page7"
       />
     </div>
   );

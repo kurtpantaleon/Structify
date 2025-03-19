@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Week3-2 Images/Lesson2/Page 5/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week3-2 Images/Lesson2/Page 5/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week3-2 Images/Lesson2/Page 5/Bullet 3.png';
+
+import Bullet1 from '../../../assets/images/Week7&8-2 Images/Lesson2/Page 5/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week7&8-2 Images/Lesson2/Page 5/Bullet 2.png';
+import Bullet3 from '../../../assets/images/Week7&8-2 Images/Lesson2/Page 5/Bullet 3.png';
+
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
-
-
 
 export default function L2Page5() {
 
@@ -24,15 +24,15 @@ export default function L2Page5() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Simple Queue: FIFO (First-In-First-Out).</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Circular Queue: The last position connects back to the first position.</>,
       image: Bullet2
     },
     {
-      description: <></>,
+      description: <>Priority Queue: Elements are dequeued based on priority instead of order.</>, 
       image: Bullet3
     }
   ];
@@ -42,7 +42,7 @@ export default function L2Page5() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Types of Queues"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -50,7 +50,7 @@ export default function L2Page5() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week7L2Page6"
       />
     </div>
   );
