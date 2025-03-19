@@ -9,7 +9,7 @@ import Week1Activity1 from './pages/Week 1 Pages/Activities Week 1/Activity1'
 import Week1Activity2 from './pages/Week 1 Pages/Activities Week 1/Activity2'
 import Week1Activity3 from './pages/Week 1 Pages/Activities Week 1/Activity3'
 {/*Week 1 quiz */}
-import QuizWeek1 from './pages/Week 1 Pages/Quiz Week 1/QuizWeek1'
+import QuizWeek1 from './pages/Week 1 Pages/Quiz Week 1/quizWeek1'
 {/*Week 1 Lesson 1 */}
 import Page1 from './pages/Week 1 Pages/Lesson 1/Page1'
 import Page2 from './pages/Week 1 Pages/Lesson 1/Page2'

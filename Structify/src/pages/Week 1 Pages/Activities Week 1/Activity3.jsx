@@ -71,7 +71,7 @@ export default function Activity1() {
   };
 
   const goToNextActivity = () => {
-    window.location.href = "/quizWeek1";
+    window.location.href = "/week1quizWeek1";
   };
   
   const goToPreviousActivity = () => {

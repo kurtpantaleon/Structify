@@ -83,8 +83,8 @@ const QuizWeek3 = () => {
     setShowResults(false);
   };
 
-  const L3Page8 = () => {
-    navigate('/'); // Navigate to the main page
+  const week4page = () => {
+    navigate('/week4Page'); // Navigate to the main page
   };
 
   if (isLoading) {
@@ -114,7 +114,7 @@ const QuizWeek3 = () => {
             </button>
             <button
               className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-lg font-medium"
-              onClick={Week3Page}
+              onClick={week4Page}
             >
               Next
             </button>

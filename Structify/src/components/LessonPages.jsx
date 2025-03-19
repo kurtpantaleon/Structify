@@ -18,7 +18,7 @@ function LessonPages({ title, lessons, leftIcon, rightIcon }) {
   };
 
   return (
-    <div className="bg-[#1F274D] text-white p-8 rounded-lg flex flex-col gap-4 items-center h-130">
+    <div className="bg-[#1F274D] text-white p-8 rounded-lg flex flex-col gap-4 items-center h-180">
       {/* Title */}
       <h2 className="text-4xl font-bold mb-4 text-center">{title}</h2>
 

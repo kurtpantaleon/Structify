@@ -47,9 +47,9 @@ function Week3Page() {
               <div className="border-t border-white/100 w-full mb-5"></div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <CardSection title="Introduction to Data Structures" subtitle="Lesson 1" progress="1/8" />
-                <CardSection title="Computers and Data Structures" subtitle="Lesson 2" progress="0/8" />
-                <CardSection title="Types of Data Structures?" subtitle="Lesson 3" progress="0/8" />
+                <CardSection title="Introduction to Data Structures" subtitle="Lesson 1" progress="1/8" path="/week6Page1" />
+                <CardSection title="Computers and Data Structures" subtitle="Lesson 2" progress="0/8" path="/week6L2Page1" />
+                <CardSection title="Types of Data Structures?" subtitle="Lesson 3" progress="0/8" path="/week6L3Page1" />
                 <CardSection title="Create a Mini Library" subtitle="Challenge" />
               </div>
             </div>
@@ -62,15 +62,15 @@ function Week3Page() {
               {/* Lessons */}
               <div className="space-y-4">
                 <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/week6Page1"  />
-                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="week6L2Page1"/>
-                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="week6L3Page1" />
+                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week6L2Page1"/>
+                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week6L3Page1" />
               </div>
 
               {/* Activities */}
               <div className="mt-4 space-y-4">
-                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Activity1"/>
-                <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Activity2"/>
-                <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} />
+                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/week6Activity1"/>
+                <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/week6Activity2"/>
+                <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/week6Activity3"/>
               </div>
             </div>
 

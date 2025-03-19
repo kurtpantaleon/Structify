@@ -83,8 +83,8 @@ const QuizWeek1 = () => {
     setShowResults(false);
   };
 
-  const L3Page6 = () => {
-    navigate('/'); // Navigate to the main page
+  const week3Page = () => {
+    navigate('/week3Page'); // Navigate to the main page
   };
 
   if (isLoading) {

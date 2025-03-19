@@ -47,9 +47,9 @@ function Week3Page() {
               <div className="border-t border-white/100 w-full mb-5"></div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <CardSection title="Introduction to Data Structures" subtitle="Lesson 1" progress="1/8" />
-                <CardSection title="Computers and Data Structures" subtitle="Lesson 2" progress="0/8" />
-                <CardSection title="Types of Data Structures?" subtitle="Lesson 3" progress="0/8" />
+                <CardSection title="Introduction to Data Structures" subtitle="Lesson 1" progress="1/8"path="/week10Page1" />
+                <CardSection title="Computers and Data Structures" subtitle="Lesson 2" progress="0/8" path="/week10L2Page1"/>
+                <CardSection title="Types of Data Structures?" subtitle="Lesson 3" progress="0/8" path="/week10L3Page1" />
                 <CardSection title="Create a Mini Library" subtitle="Challenge" />
               </div>
             </div>
