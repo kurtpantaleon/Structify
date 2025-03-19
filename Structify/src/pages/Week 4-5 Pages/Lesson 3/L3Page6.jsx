@@ -23,7 +23,7 @@ export default function L3Page6() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Code Example</>,
       image: Bullet1
     }
   ];
@@ -33,7 +33,7 @@ export default function L3Page6() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Example of Using Pointers with Objects"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -41,7 +41,7 @@ export default function L3Page6() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4L3Page7"
       />
     </div>
   );

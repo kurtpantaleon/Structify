@@ -24,11 +24,11 @@ export default function L3Page5() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Dynamic Memory Allocation: Allocates memory only when needed.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Efficient Data Structures: Used in linked lists and trees.</>,
       image: Bullet2
     }
   ];
@@ -38,7 +38,7 @@ export default function L3Page5() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="How Pointers Help in Memory Management"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -46,7 +46,7 @@ export default function L3Page5() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4L3Page6"
       />
     </div>
   );

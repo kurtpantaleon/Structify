@@ -24,11 +24,11 @@ export default function L3Page3() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Instead of copying data, pointers reference existing data.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>They make programs more efficient by reducing memory usage.</>,
       image: Bullet2
     }
   ];
@@ -38,7 +38,7 @@ export default function L3Page3() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Why Do Computers Use Pointers?"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -46,7 +46,7 @@ export default function L3Page3() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4L3Page4"
       />
     </div>
   );

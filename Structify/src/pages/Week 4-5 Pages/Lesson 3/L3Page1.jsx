@@ -24,11 +24,11 @@ export default function L3Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>A pointer is a variable that stores the memory address of another variable.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Instead of storing a value, it "points" to where the value is stored in memory.</>,
       image: Bullet2
     }
   ];
@@ -38,7 +38,7 @@ export default function L3Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="What are Pointers?"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -46,7 +46,7 @@ export default function L3Page1() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path="/week2L3Page2"
+      path="/week4L3Page2"
       />
     </div>
   );

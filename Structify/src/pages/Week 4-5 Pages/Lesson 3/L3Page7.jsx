@@ -24,11 +24,11 @@ export default function L3Page7() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Regular variables store values directly.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Pointers store memory addresses of those values.</>,
       image: Bullet2
     }
   ];
@@ -38,7 +38,7 @@ export default function L3Page7() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Pointers vs. Regular Variables"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -46,7 +46,7 @@ export default function L3Page7() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4L3Page8"
       />
     </div>
   );

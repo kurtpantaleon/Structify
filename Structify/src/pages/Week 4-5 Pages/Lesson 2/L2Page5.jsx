@@ -45,7 +45,7 @@ export default function L2Page5() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path="week2L2Page6"
+      path="/week4L2Page6"
       />
     </div>
   );
