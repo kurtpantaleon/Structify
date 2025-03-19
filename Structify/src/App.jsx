@@ -134,6 +134,39 @@ import Week4L3Page6 from './pages/Week 4-5 Pages/Lesson 3/L3Page6'
 import Week4L3Page7 from './pages/Week 4-5 Pages/Lesson 3/L3Page7'
 import Week4L3Page8 from './pages/Week 4-5 Pages/Lesson 3/L3Page8'
 
+
+/*WEEK 6 */
+import Week6 from './pages/Week6Page'
+{/*Week 6 Activities */}
+import Week6Activity1 from './pages/Week 6 Pages/Activities Week 6/Activity1'
+import QuizWeek6 from './pages/Week 6 Pages/Quiz Week 6/quizWeek6'
+{/*Week 6 Lesson 1 */}
+import Week6Page1 from './pages/Week 6 Pages/Lesson 1/Page1'
+import Week6Page2 from './pages/Week 6 Pages/Lesson 1/Page2'
+import Week6Page3 from './pages/Week 6 Pages/Lesson 1/Page3'
+import Week6Page4 from './pages/Week 6 Pages/Lesson 1/Page4'
+import Week6Page5 from './pages/Week 6 Pages/Lesson 1/Page5'
+import Week6Page6 from './pages/Week 6 Pages/Lesson 1/Page6'
+import Week6Page7 from './pages/Week 6 Pages/Lesson 1/Page7'
+{/*Week 6 Lesson 2 */}
+import Week6L2Page1 from './pages/Week 6 Pages/Lesson 2/L2Page1'
+import Week6L2Page2 from './pages/Week 6 Pages/Lesson 2/L2Page2'
+import Week6L2Page3 from './pages/Week 6 Pages/Lesson 2/L2Page3'
+import Week6L2Page4 from './pages/Week 6 Pages/Lesson 2/L2Page4'
+import Week6L2Page5 from './pages/Week 6 Pages/Lesson 2/L2Page5'
+import Week6L2Page6 from './pages/Week 6 Pages/Lesson 2/L2Page6'
+import Week6L2Page7 from './pages/Week 6 Pages/Lesson 2/L2Page7'
+import Week6L2Page8 from './pages/Week 6 Pages/Lesson 2/L2Page8'
+{/*Week 6 Lesson 3 */}
+import Week6L3Page1 from './pages/Week 6 Pages/Lesson 3/L3Page1'
+import Week6L3Page2 from './pages/Week 6 Pages/Lesson 3/L3Page2'
+import Week6L3Page3 from './pages/Week 6 Pages/Lesson 3/L3Page3'
+import Week6L3Page4 from './pages/Week 6 Pages/Lesson 3/L3Page4'
+import Week6L3Page5 from './pages/Week 6 Pages/Lesson 3/L3Page5'
+import Week6L3Page6 from './pages/Week 6 Pages/Lesson 3/L3Page6'
+import Week6L3Page7 from './pages/Week 6 Pages/Lesson 3/L3Page7'
+import Week6L3Page8 from './pages/Week 6 Pages/Lesson 3/L3Page8'
+
 function App() {
   return (
     <Routes>
@@ -274,6 +307,37 @@ function App() {
       <Route path="/week4L3Page8" element={<Week4L3Page8/>} />
       {/* Week 4&5 activities */}
       <Route path="/week4Activity1" element={<Week4Activity1/>} />
+
+      {/* Week 6*/}
+      <Route path="/week6Page" element={<Week6/>} />
+      <Route path='/quizWeek6' element={<QuizWeek6/>} />
+      {/* Week 6 lesson 1 pages */}
+      <Route path="/week6Page1" element={<Week6Page1/>} />
+      <Route path="/week6Page2" element={<Week6Page2/>} />
+      <Route path="/week6Page3" element={<Week6Page3/>} />
+      <Route path="/week6Page4" element={<Week6Page4/>} />
+      <Route path="/week6Page5" element={<Week6Page5/>} />
+      <Route path="/week6Page6" element={<Week6Page6/>} />
+      <Route path="/week6Page7" element={<Week6Page7/>} />
+      {/* Week 6 lesson 2 pages */}
+      <Route path="/week6L2Page1" element={<Week6L2Page1/>} />
+      <Route path="/week6L2Page2" element={<Week6L2Page2/>} />
+      <Route path="/week6L2Page3" element={<Week6L2Page3/>} />
+      <Route path="/week6L2Page4" element={<Week6L2Page4/>} />
+      <Route path="/week6L2Page5" element={<Week6L2Page5/>} />
+      <Route path="/week6L2Page6" element={<Week6L2Page6/>} />
+      <Route path="/week6L2Page7" element={<Week6L2Page7/>} />
+      <Route path="/week6L2Page8" element={<Week6L2Page8/>} />
+      {/* Week 6 lesson 3 pages */}
+      <Route path="/week6L3Page1" element={<Week6L3Page1/>} />
+      <Route path="/week6L3Page2" element={<Week6L3Page2/>} />
+      <Route path="/week6L3Page3" element={<Week6L3Page3/>} />
+      <Route path="/week6L3Page4" element={<Week6L3Page4/>} />
+      <Route path="/week6L3Page5" element={<Week6L3Page5/>} />
+      <Route path="/week6L3Page6" element={<Week6L3Page6/>} />
+      <Route path="/week6L3Page7" element={<Week6L3Page7/>} />
+      <Route path="/week6L3Page8" element={<Week6L3Page8/>} />
+      {/* Week 6 activities */}
     </Routes> 
   )
 }

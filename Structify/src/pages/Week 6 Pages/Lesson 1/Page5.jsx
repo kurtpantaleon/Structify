@@ -5,9 +5,8 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/images/Week3-1 Images/Lesson1/Page 5/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week3-1 Images/Lesson1/Page 5/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week3-1 Images/Lesson1/Page 5/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week6-1 Images/Lesson1/Page 5/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week6-1 Images/Lesson1/Page 5/Bullet 2.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -26,16 +25,12 @@ export default function Page5() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Slower Access: Must traverse the list to find an element.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>More Memory Usage: Requires extra storage for pointers.</>,
       image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
   ];
 
@@ -44,7 +39,7 @@ export default function Page5() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Disadvantages of Linked Lists"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -52,7 +47,7 @@ export default function Page5() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week6Page6"
       />
     </div>
   );

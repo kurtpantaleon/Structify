@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Week3-2 Images/Lesson2/Page 5/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week3-2 Images/Lesson2/Page 5/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week3-2 Images/Lesson2/Page 5/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week6-2 Images/Lesson2/Page 5/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week6-2 Images/Lesson2/Page 5/Bullet 2.png';
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
@@ -24,16 +23,12 @@ export default function L2Page5() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Efficient Insertions: No need to shift elements like in an array.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Memory Usage: Can allocate dynamically.</>,
       image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
   ];
 
@@ -42,7 +37,7 @@ export default function L2Page5() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Advantages of Nodes"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
