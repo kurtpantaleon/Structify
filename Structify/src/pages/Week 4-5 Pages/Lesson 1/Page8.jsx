@@ -25,8 +25,9 @@ export default function Page8() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
-      image: Bullet1
+      description: <>Arrays <span className="font-bold">store, access, and modify</span> multiple values efficiently.</>,
+      image: Bullet1,
+      resizeClass: 'h-40'
     }
   ];
 
@@ -35,7 +36,7 @@ export default function Page8() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Conclusion"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -43,7 +44,7 @@ export default function Page8() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4Page"
       />
     </div>
   );

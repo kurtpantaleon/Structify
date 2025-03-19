@@ -7,6 +7,7 @@ import LessonPages from '../../../components/LessonPages';
 
 import Bullet1 from '../../../assets/images/Week4-1 Images/Lesson1/Page 4/Bullet 1.png';
 import Bullet2 from '../../../assets/images/Week4-1 Images/Lesson1/Page 4/Bullet 2.png';
+import Bullet3 from '../../../assets/images/Week4-1 Images/Lesson1/Page 4/Bullet 3.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -25,12 +26,16 @@ export default function Page4() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>A list of your favorite video games.</>,
       image: Bullet1
-    },
+    }, 
     {
-      description: <></>,
+      description: <>A shopping cart in an e-commerce app.</>,
       image: Bullet2
+    }, 
+    {
+      description: <>A leaderboard in a game tracking high scores.</>,
+      image: Bullet3
     }
   ];
 
@@ -39,7 +44,7 @@ export default function Page4() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Examples of Arrays"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -47,7 +52,7 @@ export default function Page4() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4Page5"
       />
     </div>
   );

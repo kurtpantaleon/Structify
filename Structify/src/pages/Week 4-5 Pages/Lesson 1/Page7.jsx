@@ -25,7 +25,7 @@ export default function Page7() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Code Example</>,
       image: Bullet1
     }
   ];
@@ -35,7 +35,7 @@ export default function Page7() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Accessing an Array"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -43,7 +43,7 @@ export default function Page7() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4Page8"
       />
     </div>
   );

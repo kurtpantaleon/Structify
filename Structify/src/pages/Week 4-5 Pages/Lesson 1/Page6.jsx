@@ -25,11 +25,11 @@ export default function Page6() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Arrays use <span className="font-bold">indexing</span> to retrieve data.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>games[0] retrieves the <span className="font-bold">first element</span> ("Minecraft").</>,
       image: Bullet2
     }
   ];
@@ -39,7 +39,7 @@ export default function Page6() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Accessing Elements in an Array"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -47,7 +47,7 @@ export default function Page6() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4Page7"
       />
     </div>
   );

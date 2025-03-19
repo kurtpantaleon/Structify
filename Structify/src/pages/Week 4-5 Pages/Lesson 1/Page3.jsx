@@ -25,11 +25,11 @@ export default function Page3() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Arrays allow <span className="font-bold">efficient storage and retrieval</span> of multiple values.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Instead of creating separate variables, you can store <span className="font-bold">all related values in one structure.</span></>,
       image: Bullet2
     }
   ];
@@ -39,7 +39,7 @@ export default function Page3() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Why Use Arrays?"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -47,7 +47,7 @@ export default function Page3() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4Page4"
       />
     </div>
   );

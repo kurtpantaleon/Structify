@@ -32,7 +32,7 @@ export default function Page1() {
     {
       description: <>Strings can include letters, numbers, spaces, and symbols.</>,
       image: Bullet2
-    },
+    }, 
     {
       description: <>Strings are enclosed in double quotes ("Hello") or single quotes ('Hello') in most programming languages.</>,
       image: Bullet3

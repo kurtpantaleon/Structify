@@ -25,11 +25,12 @@ export default function Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
-      image: Bullet1
+      description: <>An <span className="font-bold">array</span> is a <span className="font-bold">collection of elements</span> stored in a fixed order.</>,
+      image: Bullet1,
+      resizeClass: 'h-40'
     },
     {
-      description: <></>,
+      description: <>It holds <span className="font-bold">multiple values</span> of the <span className="font-bold">same data type.</span></>,
       image: Bullet2
     }
   ];
@@ -39,7 +40,7 @@ export default function Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="What is an Array?"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -47,7 +48,7 @@ export default function Page1() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week4Page2"
       />
     </div>
   );
