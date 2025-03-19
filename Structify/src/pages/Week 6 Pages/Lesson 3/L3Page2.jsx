@@ -24,7 +24,7 @@ export default function L3Page2() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Code Example : Time Complexity</>,
       image: Bullet1
     }
   ];
@@ -34,7 +34,7 @@ export default function L3Page2() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Adding a Node at the Beginning"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -42,7 +42,7 @@ export default function L3Page2() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week6L3Page3"
       />
     </div>
   );

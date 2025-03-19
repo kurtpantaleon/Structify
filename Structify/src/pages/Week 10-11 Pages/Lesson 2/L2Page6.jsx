@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Week3-2 Images/Lesson2/Page 6/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week3-2 Images/Lesson2/Page 6/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week3-2 Images/Lesson2/Page 6/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week10&11-2 Images/Lesson2/Page 6/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week10&11-2 Images/Lesson2/Page 6/Bullet 2.png';
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
@@ -24,16 +23,12 @@ export default function L2Page6() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Searching is faster, compared to lists.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Sorting is easier since elements are already ordered.</>,
       image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
   ];
 
@@ -42,7 +37,7 @@ export default function L2Page6() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Advantages of BSTs Over Lists"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}

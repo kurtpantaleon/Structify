@@ -5,9 +5,8 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/images/Week2-1 Images/Lesson1/Page 1/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week2-1 Images/Lesson1/Page 1/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week2-1 Images/Lesson1/Page 1/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week10&11-1 Images/Lesson1/Page 1/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week10&11-1 Images/Lesson1/Page 1/Bullet 2.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -26,16 +25,12 @@ export default function Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>A tree is a non-linear data structure that organizes elements hierarchically.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Unlike arrays and linked lists, trees do not store data sequentially.</>,
       image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
   ];
 
@@ -44,7 +39,7 @@ export default function Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="What is a Trees?"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}

@@ -24,7 +24,7 @@ export default function L3Page6() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Slower access time compared to arrays.</>,
       image: Bullet1
     }
   ];
@@ -34,7 +34,7 @@ export default function L3Page6() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Disadvantages Over Arrays"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -42,7 +42,7 @@ export default function L3Page6() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week6L3Page7"
       />
     </div>
   );

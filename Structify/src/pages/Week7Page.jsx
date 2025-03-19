@@ -56,7 +56,7 @@ function Week3Page() {
 
             {/* ✅ Right: Week 1 Section (Shrunk to remove excess space) */}
             <div className="w-5/10 flex-shrink-0"> 
-              <h2 className="text-xl font-bold mb-2">WEEK 7-8</h2>
+              <h2 className="text-xl font-bold mb-2">WEEK 3</h2>
               <div className="border-t border-white/100 w-full mb-5"></div>
 
               {/* Lessons */}

@@ -5,9 +5,8 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/images/Week3-1 Images/Lesson1/Page 2/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week3-1 Images/Lesson1/Page 2/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week3-1 Images/Lesson1/Page 2/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week10&11-1 Images/Lesson1/Page 2/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week10&11-1 Images/Lesson1/Page 2/Bullet 2.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -26,17 +25,14 @@ export default function Page2() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>A family tree: Each person (node) is connected to their parents and children.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>A file system on a computer: Folders can contain subfolders and files.</>,
       image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
+  
   ];
 
   return (
@@ -44,7 +40,7 @@ export default function Page2() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Real-Life Example of Tree"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}

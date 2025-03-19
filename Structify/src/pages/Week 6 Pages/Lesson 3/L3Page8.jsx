@@ -24,7 +24,7 @@ export default function L3Page8() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Linked lists are great for dynamic data storage and memory-efficient operations.</>,
       image: Bullet1
     }
   ];
@@ -34,7 +34,7 @@ export default function L3Page8() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Conclusion"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -42,7 +42,7 @@ export default function L3Page8() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week6Page"
       />
     </div>
   );

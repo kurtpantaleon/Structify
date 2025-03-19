@@ -8,8 +8,9 @@ import MainPage from './pages/MainPage'
 import Week1Activity1 from './pages/Week 1 Pages/Activities Week 1/Activity1'
 import Week1Activity2 from './pages/Week 1 Pages/Activities Week 1/Activity2'
 import Week1Activity3 from './pages/Week 1 Pages/Activities Week 1/Activity3'
+{/*Week 1 quiz */}
 import QuizWeek1 from './pages/Week 1 Pages/Quiz Week 1/QuizWeek1'
-
+{/*Week 1 Lesson 1 */}
 import Page1 from './pages/Week 1 Pages/Lesson 1/Page1'
 import Page2 from './pages/Week 1 Pages/Lesson 1/Page2'
 import Page3 from './pages/Week 1 Pages/Lesson 1/Page3'
@@ -38,8 +39,9 @@ import Week2 from './pages/Week2Page'
 import Week2Activity1 from './pages/Week 2 Pages/Activities Week 2/Activity1'
 import Week2Activity2 from './pages/Week 2 Pages/Activities Week 2/Activity2'
 import Week2Activity3 from './pages/Week 2 Pages/Activities Week 2/Activity3'
+{/*Week 2 quiz */}
 import QuizWeek2 from './pages/Week 2 Pages/Quiz Week 2/quizWeek2'
-
+{/*Week 2 Lesson 1 */}
 import Week2Page1 from './pages/Week 2 Pages/Lesson 1/Page1'
 import Week2Page2 from './pages/Week 2 Pages/Lesson 1/Page2'
 import Week2Page3 from './pages/Week 2 Pages/Lesson 1/Page3'
@@ -65,14 +67,15 @@ import Week2L3Page4 from './pages/Week 2 Pages/Lesson 3/L3Page4'
 import Week2L3Page5 from './pages/Week 2 Pages/Lesson 3/L3Page5'
 import Week2L3Page6 from './pages/Week 2 Pages/Lesson 3/L3Page6'
 
-
+{/*WEEK 3 */}
 import Week3 from './pages/Week3Page'
-{/*Week 2 Activities */}
+{/*Week 3 Activities */}
 import Week3Activity1 from './pages/Week 3 Pages/Activities Week 3/Activity1'
 import Week3Activity2 from './pages/Week 3 Pages/Activities Week 3/Activity2'
 import Week3Activity3 from './pages/Week 3 Pages/Activities Week 3/Activity3'
+{/*Week 3 quiz */}
 import QuizWeek3 from './pages/Week 3 Pages/Quiz Week 3/quizWeek3'
-{/*Week 2 Lesson 1 */}
+{/*Week 3 Lesson 1 */}
 import Week3Page1 from './pages/Week 3 Pages/Lesson 1/Page1'
 import Week3Page2 from './pages/Week 3 Pages/Lesson 1/Page2'
 import Week3Page3 from './pages/Week 3 Pages/Lesson 1/Page3'
@@ -105,6 +108,9 @@ import Week3L3Page8 from './pages/Week 3 Pages/Lesson 3/L3Page8'
 import Week4 from './pages/Week4Page'
 {/*Week 4 Activities */}
 import Week4Activity1 from './pages/Week 4-5 Pages/Activities Week 4&5/Activity1'
+import Week4Activity2 from './pages/Week 4-5 Pages/Activities Week 4&5/Activity2'
+import Week4Activity3 from './pages/Week 4-5 Pages/Activities Week 4&5/Activity3'
+{/*Week 4 quiz */}
 import QuizWeek4 from './pages/Week 4-5 Pages/Quiz Week 4-5/quizWeek4-5'
 {/*Week 4 Lesson 1 */}
 import Week4Page1 from './pages/Week 4-5 Pages/Lesson 1/Page1'
@@ -139,6 +145,9 @@ import Week4L3Page8 from './pages/Week 4-5 Pages/Lesson 3/L3Page8'
 import Week6 from './pages/Week6Page'
 {/*Week 6 Activities */}
 import Week6Activity1 from './pages/Week 6 Pages/Activities Week 6/Activity1'
+import Week6Activity2 from './pages/Week 6 Pages/Activities Week 6/Activity2'
+import Week6Activity3 from './pages/Week 6 Pages/Activities Week 6/Activity3'
+{/*Week 6 quiz */}
 import QuizWeek6 from './pages/Week 6 Pages/Quiz Week 6/quizWeek6'
 {/*Week 6 Lesson 1 */}
 import Week6Page1 from './pages/Week 6 Pages/Lesson 1/Page1'
@@ -167,38 +176,6 @@ import Week6L3Page6 from './pages/Week 6 Pages/Lesson 3/L3Page6'
 import Week6L3Page7 from './pages/Week 6 Pages/Lesson 3/L3Page7'
 import Week6L3Page8 from './pages/Week 6 Pages/Lesson 3/L3Page8'
 
-/*Week 7 */
-import Week7 from './pages/Week7Page'
-
-{/*Week 7 Lesson 1 */}
-import Week7Page1 from './pages/Week 7-8 Pages/Lesson 1/Page1'
-import Week7Page2 from './pages/Week 7-8 Pages/Lesson 1/Page2'
-import Week7Page3 from './pages/Week 7-8 Pages/Lesson 1/Page3'
-import Week7Page4 from './pages/Week 7-8 Pages/Lesson 1/Page4'
-import Week7Page5 from './pages/Week 7-8 Pages/Lesson 1/Page5'
-import Week7Page6 from './pages/Week 7-8 Pages/Lesson 1/Page6'
-import Week7Page7 from './pages/Week 7-8 Pages/Lesson 1/Page7'
-import Week7Page8 from './pages/Week 7-8 Pages/Lesson 1/Page8'
-{/*Week 7 Lesson 2 */}
-import Week7L2Page1 from './pages/Week 7-8 Pages/Lesson 2/L2Page1'
-import Week7L2Page2 from './pages/Week 7-8 Pages/Lesson 2/L2Page2'
-import Week7L2Page3 from './pages/Week 7-8 Pages/Lesson 2/L2Page3'
-import Week7L2Page4 from './pages/Week 7-8 Pages/Lesson 2/L2Page4'
-import Week7L2Page5 from './pages/Week 7-8 Pages/Lesson 2/L2Page5'
-import Week7L2Page6 from './pages/Week 7-8 Pages/Lesson 2/L2Page6'
-import Week7L2Page7 from './pages/Week 7-8 Pages/Lesson 2/L2Page7'
-import Week7L2Page8 from './pages/Week 7-8 Pages/Lesson 2/L2Page8'
-{/*Week 7 Lesson 3 */}
-import Week7L3Page1 from './pages/Week 7-8 Pages/Lesson 3/L3Page1'
-import Week7L3Page2 from './pages/Week 7-8 Pages/Lesson 3/L3Page2'
-import Week7L3Page3 from './pages/Week 7-8 Pages/Lesson 3/L3Page3'
-import Week7L3Page4 from './pages/Week 7-8 Pages/Lesson 3/L3Page4'
-import Week7L3Page5 from './pages/Week 7-8 Pages/Lesson 3/L3Page5'
-import Week7L3Page6 from './pages/Week 7-8 Pages/Lesson 3/L3Page6'
-import Week7L3Page7 from './pages/Week 7-8 Pages/Lesson 3/L3Page7'
-import Week7L3Page8 from './pages/Week 7-8 Pages/Lesson 3/L3Page8'
-
-
 import CodePlayground  from './pages/CodePlayground'
 
 function App() {
@@ -207,14 +184,6 @@ function App() {
 
       <Route path="/" element={<StartPage/>} />
       <Route path="/mainPage" element={<MainPage/>} />
-
-      {/* Week activity 1 */}
-      
-      <Route path="/week1activity1" element={<Week1Activity1/>} />
-      <Route path="/week1activity2" element={<Week1Activity2/>} />
-      <Route path="/week1activity3" element={<Week1Activity3/>} />
-      <Route path='/week1quizWeek1' element={<QuizWeek1/>} />
-
       {/* Week 1 lesson 1 pages */}
       <Route path="/page1" element={<Page1/>} />
       <Route path="/page2" element={<Page2/>} />
@@ -237,7 +206,13 @@ function App() {
       <Route path="/l3page6" element={<L3Page6/>} />
       <Route path="/l3page7" element={<L3Page7/>} />
       <Route path="/l3page8" element={<L3Page8/>} />
-      {/* Week activity 1 */}
+      {/* Week activity 1 */} 
+      <Route path="/week1activity1" element={<Week1Activity1/>} />
+      <Route path="/week1activity2" element={<Week1Activity2/>} />
+      <Route path="/week1activity3" element={<Week1Activity3/>} />
+      {/* Week 1 quiz */}
+      <Route path='/week1quizWeek1' element={<QuizWeek1/>} />
+
       
 
       {/* Week 2*/}
@@ -341,6 +316,8 @@ function App() {
       <Route path="/week4L3Page8" element={<Week4L3Page8/>} />
       {/* Week 4&5 activities */}
       <Route path="/week4Activity1" element={<Week4Activity1/>} />
+      <Route path="/week4Activity2" element={<Week4Activity2/>} />
+      <Route path="/week4Activity3" element={<Week4Activity3/>} />
 
       {/* Week 6*/}
       <Route path="/week6Page" element={<Week6/>} />
@@ -372,36 +349,6 @@ function App() {
       <Route path="/week6L3Page7" element={<Week6L3Page7/>} />
       <Route path="/week6L3Page8" element={<Week6L3Page8/>} />
       {/* Week 6 activities */}
-
-      {/* Week 7*/}
-      <Route path="/week7Page" element={<Week7/>} />
-      {/* Week 7 lesson 1 pages */}
-      <Route path="/week7Page1" element={<Week7Page1/>} />
-      <Route path="/week7Page2" element={<Week7Page2/>} />
-      <Route path="/week7Page3" element={<Week7Page3/>} />
-      <Route path="/week7Page4" element={<Week7Page4/>} />
-      <Route path="/week7Page5" element={<Week7Page5/>} />
-      <Route path="/week7Page6" element={<Week7Page6/>} />
-      <Route path="/week7Page7" element={<Week7Page7/>} />
-      <Route path="/week7Page8" element={<Week7Page8/>} />
-      {/* Week 7 lesson 2 pages */}
-      <Route path="/week7L2Page1" element={<Week7L2Page1/>} />
-      <Route path="/week7L2Page2" element={<Week7L2Page2/>} />
-      <Route path="/week7L2Page3" element={<Week7L2Page3/>} />
-      <Route path="/week7L2Page4" element={<Week7L2Page4/>} />
-      <Route path="/week7L2Page5" element={<Week7L2Page5/>} />
-      <Route path="/week7L2Page6" element={<Week7L2Page6/>} />
-      <Route path="/week7L2Page7" element={<Week7L2Page7/>} />
-      <Route path="/week7L2Page8" element={<Week7L2Page8/>} />
-      {/* Week 7 lesson 3 pages */}
-      <Route path="/week7L3Page1" element={<Week7L3Page1/>} />
-      <Route path="/week7L3Page2" element={<Week7L3Page2/>} />
-      <Route path="/week7L3Page3" element={<Week7L3Page3/>} />
-      <Route path="/week7L3Page4" element={<Week7L3Page4/>} />
-      <Route path="/week7L3Page5" element={<Week7L3Page5/>} />
-      <Route path="/week7L3Page6" element={<Week7L3Page6/>} />
-      <Route path="/week7L3Page7" element={<Week7L3Page7/>} />
-      <Route path="/week7L3Page8" element={<Week7L3Page8/>} />
 
       {/* Code Playground */}
       <Route path="/codePlayground" element={<CodePlayground/>} />

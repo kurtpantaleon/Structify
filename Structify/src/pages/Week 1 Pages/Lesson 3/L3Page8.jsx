@@ -46,7 +46,7 @@ export default function L3Page8() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path="/week2Pages" //dapat lalagay dito activity
+      path="/mainPage" //dapat lalagay dito activity
       />
     </div>
   );
