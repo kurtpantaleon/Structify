@@ -41,7 +41,7 @@ export default function L3Page8() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week10Activity1"
       />
     </div>
   );

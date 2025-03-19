@@ -43,7 +43,7 @@ export default function Page6() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week10Page7"
       />
     </div>
   );

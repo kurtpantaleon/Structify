@@ -145,8 +145,8 @@ import Week4L3Page8 from './pages/Week 4-5 Pages/Lesson 3/L3Page8'
 import Week6 from './pages/Week6Page'
 {/*Week 6 Activities */}
 import Week6Activity1 from './pages/Week 6 Pages/Activities Week 6/Activity1'
-import Week6Activity2 from './pages/Week 6 Pages/Activities Week 6/Activity2'
-import Week6Activity3 from './pages/Week 6 Pages/Activities Week 6/Activity3'
+import Week6Activity2 from './pages/Week 6 Pages/Activities Week 6/Activitiy2'
+import Week6Activity3 from './pages/Week 6 Pages/Activities Week 6/Activitiy3'
 {/*Week 6 quiz */}
 import QuizWeek6 from './pages/Week 6 Pages/Quiz Week 6/quizWeek6'
 {/*Week 6 Lesson 1 */}
@@ -180,7 +180,6 @@ import Week6L3Page8 from './pages/Week 6 Pages/Lesson 3/L3Page8'
 /*WEEK 10 */
 import Week10 from './pages/Week10Page'
 {/*Week 4 Activities */}
-import Week10Activity1 from './pages/Week 10-11 Pages/Activities Week 10&11/Activity1'
 import QuizWeek10 from './pages/Week 10-11 Pages/Quiz Week 10-11/quizWeek10-11'
 {/*Week 4 Lesson 1 */}
 import Week10Page1 from './pages/Week 10-11 Pages/Lesson 1/Page1'
@@ -209,6 +208,11 @@ import Week10L3Page5 from './pages/Week 10-11 Pages/Lesson 3/L3Page5'
 import Week10L3Page6 from './pages/Week 10-11 Pages/Lesson 3/L3Page6'
 import Week10L3Page7 from './pages/Week 10-11 Pages/Lesson 3/L3Page7'
 import Week10L3Page8 from './pages/Week 10-11 Pages/Lesson 3/L3Page8'
+{/*Week 4 Activities */}
+import Week10Activity1 from './pages/Week 10-11 Pages/Activities Week 10&11/Activity1'
+import Week10Activity2 from './pages/Week 10-11 Pages/Activities Week 10&11/Activity2'
+import Week10Activity3 from './pages/Week 10-11 Pages/Activities Week 10&11/Activity3'
+
 
 
 import CodePlayground  from './pages/CodePlayground'
@@ -356,6 +360,7 @@ function App() {
 
       {/* Week 6*/}
       <Route path="/week6Page" element={<Week6/>} />
+      {/* Week 6 quiz */}
       <Route path='/quizWeek6' element={<QuizWeek6/>} />
       {/* Week 6 lesson 1 pages */}
       <Route path="/week6Page1" element={<Week6Page1/>} />
@@ -389,8 +394,11 @@ function App() {
       <Route path="/week6Activity3" element={<Week6Activity3/>} />
 
 
+ 
+
       {/* Week 10&11*/}
-      <Route path="/week4Page" element={<Week10/>} />
+      <Route path="/week10Page" element={<Week10/>} />
+      {/* Week 10&11 quiz */}
       <Route path='/quizWeek10-11' element={<QuizWeek10/>} />
       {/* Week 10&11 lesson 1 pages */}
       <Route path="/week10Page1" element={<Week10Page1/>} />
@@ -419,6 +427,11 @@ function App() {
       <Route path="/week10L3Page6" element={<Week10L3Page6/>} />
       <Route path="/week10L3Page7" element={<Week10L3Page7/>} />
       <Route path="/week10L3Page8" element={<Week10L3Page8/>} />
+      {/* Week 10&11 activities */}
+      <Route path="/week10Activity1" element={<Week10Activity1/>} />
+      <Route path="/week10Activity2" element={<Week10Activity2/>} />
+      <Route path="/week10Activity3" element={<Week10Activity3/>} />
+
 
       {/* Code Playground */}
       <Route path="/codePlayground" element={<CodePlayground/>} />
