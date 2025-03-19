@@ -67,7 +67,7 @@ function MainPage() {
                 <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/l2page1"/>
                 <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/l3page1" />
               </div>
-
+ 
               {/* Activities */}
               <div className="mt-4 space-y-4">
                 <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week1Activity1"/>

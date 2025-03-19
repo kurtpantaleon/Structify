@@ -167,6 +167,8 @@ import Week6L3Page6 from './pages/Week 6 Pages/Lesson 3/L3Page6'
 import Week6L3Page7 from './pages/Week 6 Pages/Lesson 3/L3Page7'
 import Week6L3Page8 from './pages/Week 6 Pages/Lesson 3/L3Page8'
 
+import CodePlayground  from './pages/CodePlayground'
+
 function App() {
   return (
     <Routes>
@@ -338,6 +340,9 @@ function App() {
       <Route path="/week6L3Page7" element={<Week6L3Page7/>} />
       <Route path="/week6L3Page8" element={<Week6L3Page8/>} />
       {/* Week 6 activities */}
+
+      {/* Code Playground */}
+      <Route path="/codePlayground" element={<CodePlayground/>} />
     </Routes> 
   )
 }
