@@ -5,9 +5,9 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/images/Week3-1 Images/Lesson1/Page 7/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week3-1 Images/Lesson1/Page 7/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week3-1 Images/Lesson1/Page 7/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week10&11-1 Images/Lesson1/Page 7/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week10&11-1 Images/Lesson1/Page 7/Bullet 2.png';
+import Bullet3 from '../../../assets/images/Week10&11-1 Images/Lesson1/Page 7/Bullet 3.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -26,15 +26,15 @@ export default function Page7() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Used in search engines to organize web pages.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Used in artificial intelligence (AI) for decision-making.</>,
       image: Bullet2
     },
     {
-      description: <></>,
+      description: <>Used in databases to organize records efficiently.</>,
       image: Bullet3
     }
   ];
@@ -44,7 +44,7 @@ export default function Page7() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Applications of Trees"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}

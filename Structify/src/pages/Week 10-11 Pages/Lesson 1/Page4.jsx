@@ -5,9 +5,9 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/images/Week3-1 Images/Lesson1/Page 4/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week3-1 Images/Lesson1/Page 4/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week3-1 Images/Lesson1/Page 4/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week10&11-1 Images/Lesson1/Page 4/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week10&11-1 Images/Lesson1/Page 4/Bullet 2.png';
+
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -26,17 +26,14 @@ export default function Page4() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Trees do not contain cycles (unlike graphs).</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Every child node has only one parent.</>,
       image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
+   
   ];
 
   return (
@@ -44,7 +41,7 @@ export default function Page4() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Properties of Trees"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}

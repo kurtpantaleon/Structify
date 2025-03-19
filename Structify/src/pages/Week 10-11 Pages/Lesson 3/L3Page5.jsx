@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Week3-3 Images/Lesson3/Page 5/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week3-3 Images/Lesson3/Page 5/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week3-3 Images/Lesson3/Page 5/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week10&11-3 Images/Lesson3/Page 5/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week10&11-3 Images/Lesson3/Page 5/Bullet 2.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -25,16 +24,12 @@ export default function L3Page5() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>Used in AI for decision trees.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>Used in compilers to parse expressions.</>,
       image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
   ];
 
@@ -43,7 +38,7 @@ export default function L3Page5() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="Applications of Tree Traversal"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
