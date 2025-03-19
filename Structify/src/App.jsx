@@ -167,6 +167,38 @@ import Week6L3Page6 from './pages/Week 6 Pages/Lesson 3/L3Page6'
 import Week6L3Page7 from './pages/Week 6 Pages/Lesson 3/L3Page7'
 import Week6L3Page8 from './pages/Week 6 Pages/Lesson 3/L3Page8'
 
+/*Week 7 */
+import Week7 from './pages/Week7Page'
+
+{/*Week 7 Lesson 1 */}
+import Week7Page1 from './pages/Week 7-8 Pages/Lesson 1/Page1'
+import Week7Page2 from './pages/Week 7-8 Pages/Lesson 1/Page2'
+import Week7Page3 from './pages/Week 7-8 Pages/Lesson 1/Page3'
+import Week7Page4 from './pages/Week 7-8 Pages/Lesson 1/Page4'
+import Week7Page5 from './pages/Week 7-8 Pages/Lesson 1/Page5'
+import Week7Page6 from './pages/Week 7-8 Pages/Lesson 1/Page6'
+import Week7Page7 from './pages/Week 7-8 Pages/Lesson 1/Page7'
+import Week7Page8 from './pages/Week 7-8 Pages/Lesson 1/Page8'
+{/*Week 7 Lesson 2 */}
+import Week7L2Page1 from './pages/Week 7-8 Pages/Lesson 2/L2Page1'
+import Week7L2Page2 from './pages/Week 7-8 Pages/Lesson 2/L2Page2'
+import Week7L2Page3 from './pages/Week 7-8 Pages/Lesson 2/L2Page3'
+import Week7L2Page4 from './pages/Week 7-8 Pages/Lesson 2/L2Page4'
+import Week7L2Page5 from './pages/Week 7-8 Pages/Lesson 2/L2Page5'
+import Week7L2Page6 from './pages/Week 7-8 Pages/Lesson 2/L2Page6'
+import Week7L2Page7 from './pages/Week 7-8 Pages/Lesson 2/L2Page7'
+import Week7L2Page8 from './pages/Week 7-8 Pages/Lesson 2/L2Page8'
+{/*Week 7 Lesson 3 */}
+import Week7L3Page1 from './pages/Week 7-8 Pages/Lesson 3/L3Page1'
+import Week7L3Page2 from './pages/Week 7-8 Pages/Lesson 3/L3Page2'
+import Week7L3Page3 from './pages/Week 7-8 Pages/Lesson 3/L3Page3'
+import Week7L3Page4 from './pages/Week 7-8 Pages/Lesson 3/L3Page4'
+import Week7L3Page5 from './pages/Week 7-8 Pages/Lesson 3/L3Page5'
+import Week7L3Page6 from './pages/Week 7-8 Pages/Lesson 3/L3Page6'
+import Week7L3Page7 from './pages/Week 7-8 Pages/Lesson 3/L3Page7'
+import Week7L3Page8 from './pages/Week 7-8 Pages/Lesson 3/L3Page8'
+
+
 import CodePlayground  from './pages/CodePlayground'
 
 function App() {
@@ -340,6 +372,36 @@ function App() {
       <Route path="/week6L3Page7" element={<Week6L3Page7/>} />
       <Route path="/week6L3Page8" element={<Week6L3Page8/>} />
       {/* Week 6 activities */}
+
+      {/* Week 7*/}
+      <Route path="/week7Page" element={<Week7/>} />
+      {/* Week 7 lesson 1 pages */}
+      <Route path="/week7Page1" element={<Week7Page1/>} />
+      <Route path="/week7Page2" element={<Week7Page2/>} />
+      <Route path="/week7Page3" element={<Week7Page3/>} />
+      <Route path="/week7Page4" element={<Week7Page4/>} />
+      <Route path="/week7Page5" element={<Week7Page5/>} />
+      <Route path="/week7Page6" element={<Week7Page6/>} />
+      <Route path="/week7Page7" element={<Week7Page7/>} />
+      <Route path="/week7Page8" element={<Week7Page8/>} />
+      {/* Week 7 lesson 2 pages */}
+      <Route path="/week7L2Page1" element={<Week7L2Page1/>} />
+      <Route path="/week7L2Page2" element={<Week7L2Page2/>} />
+      <Route path="/week7L2Page3" element={<Week7L2Page3/>} />
+      <Route path="/week7L2Page4" element={<Week7L2Page4/>} />
+      <Route path="/week7L2Page5" element={<Week7L2Page5/>} />
+      <Route path="/week7L2Page6" element={<Week7L2Page6/>} />
+      <Route path="/week7L2Page7" element={<Week7L2Page7/>} />
+      <Route path="/week7L2Page8" element={<Week7L2Page8/>} />
+      {/* Week 7 lesson 3 pages */}
+      <Route path="/week7L3Page1" element={<Week7L3Page1/>} />
+      <Route path="/week7L3Page2" element={<Week7L3Page2/>} />
+      <Route path="/week7L3Page3" element={<Week7L3Page3/>} />
+      <Route path="/week7L3Page4" element={<Week7L3Page4/>} />
+      <Route path="/week7L3Page5" element={<Week7L3Page5/>} />
+      <Route path="/week7L3Page6" element={<Week7L3Page6/>} />
+      <Route path="/week7L3Page7" element={<Week7L3Page7/>} />
+      <Route path="/week7L3Page8" element={<Week7L3Page8/>} />
 
       {/* Code Playground */}
       <Route path="/codePlayground" element={<CodePlayground/>} />

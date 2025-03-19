@@ -3,18 +3,17 @@ import { useNavigate } from 'react-router-dom';
 
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
+
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Week2-2 Images/Lesson2/Page 1/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Week2-2 Images/Lesson2/Page 1/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Week2-2 Images/Lesson2/Page 1/Bullet 3.png';
+import Bullet1 from '../../../assets/images/Week7&8-2 Images/Lesson2/Page 1/Bullet 1.png';
+import Bullet2 from '../../../assets/images/Week7&8-2 Images/Lesson2/Page 1/Bullet 2.png';
+
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
 
-
-
 export default function L2Page1() {
-
+ 
   const navigate = useNavigate();
 
   const handleClick = (path) => {
@@ -24,16 +23,12 @@ export default function L2Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <></>,
+      description: <>A queue is a linear data structure that follows the FIFO (First In, First Out) principle.</>,
       image: Bullet1
     },
     {
-      description: <></>,
+      description: <>The first item added is the first one to be removed.</>,
       image: Bullet2
-    },
-    {
-      description: <></>,
-      image: Bullet3
     }
   ];
 
@@ -42,7 +37,7 @@ export default function L2Page1() {
       <Header />
       <SubHeading2 />
       <LessonPages 
-        title=""
+        title="What is a Queue?"
         lessons={lessons}  // Pass lessons array
         leftIcon={BigLeftNextIcon}
         rightIcon={BigRightNextIcon}
@@ -50,7 +45,7 @@ export default function L2Page1() {
       <LessonFooter 
       buttonText="Continue"
       onClick={handleClick} 
-      path=""
+      path="/week7L2Page2"
       />
     </div>
   );
