@@ -56,21 +56,21 @@ function Week3Page() {
 
             {/* ✅ Right: Week 1 Section (Shrunk to remove excess space) */}
             <div className="w-5/10 flex-shrink-0"> 
-              <h2 className="text-xl font-bold mb-2">WEEK 3</h2>
+              <h2 className="text-xl font-bold mb-2">WEEK 7&8</h2>
               <div className="border-t border-white/100 w-full mb-5"></div>
 
               {/* Lessons */}
               <div className="space-y-4">
-                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path=""  />
-                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path=""/>
-                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="" />
+                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/week7Page1"  />
+                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week7L2Page1"/>
+                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week7L3Page1" />
               </div>
 
               {/* Activities */}
               <div className="mt-4 space-y-4">
-                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Activity1"/>
-                <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Activity2"/>
-                <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} />
+                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/week7Activity1"/>
+                <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/week7Activity2"/>
+                <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon}  path="/week7Activity3"/>
               </div>
             </div>
 

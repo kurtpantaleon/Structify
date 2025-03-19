@@ -145,8 +145,8 @@ import Week4L3Page8 from './pages/Week 4-5 Pages/Lesson 3/L3Page8'
 import Week6 from './pages/Week6Page'
 {/*Week 6 Activities */}
 import Week6Activity1 from './pages/Week 6 Pages/Activities Week 6/Activity1'
-import Week6Activity2 from './pages/Week 6 Pages/Activities Week 6/Activitiy2'
-import Week6Activity3 from './pages/Week 6 Pages/Activities Week 6/Activitiy3'
+import Week6Activity2 from './pages/Week 6 Pages/Activities Week 6/Activity2'
+import Week6Activity3 from './pages/Week 6 Pages/Activities Week 6/Activity3'
 {/*Week 6 quiz */}
 import QuizWeek6 from './pages/Week 6 Pages/Quiz Week 6/quizWeek6'
 {/*Week 6 Lesson 1 */}
@@ -176,10 +176,48 @@ import Week6L3Page6 from './pages/Week 6 Pages/Lesson 3/L3Page6'
 import Week6L3Page7 from './pages/Week 6 Pages/Lesson 3/L3Page7'
 import Week6L3Page8 from './pages/Week 6 Pages/Lesson 3/L3Page8'
 
+/*WEEK 7 */
+import Week7 from './pages/Week7Page'
+{/*Week 7 Activities */}
+import Week7Activity1 from './pages/Week 7-8 Pages/Activities Week 7&8/Activity1'
+import Week7Activity2 from './pages/Week 7-8 Pages/Activities Week 7&8/Activity2'
+import Week7Activity3 from './pages/Week 7-8 Pages/Activities Week 7&8/Activity3'
+{/*Week 7 quiz */}
+import QuizWeek7 from './pages/Week 7-8 Pages/Quiz Week 7-8/quizWeek7-8'
+{/*Week 7 Lesson 1 */}
+import Week7Page1 from './pages/Week 7-8 Pages/Lesson 1/Page1'
+import Week7Page2 from './pages/Week 7-8 Pages/Lesson 1/Page2'
+import Week7Page3 from './pages/Week 7-8 Pages/Lesson 1/Page3'
+import Week7Page4 from './pages/Week 7-8 Pages/Lesson 1/Page4'
+import Week7Page5 from './pages/Week 7-8 Pages/Lesson 1/Page5'
+import Week7Page6 from './pages/Week 7-8 Pages/Lesson 1/Page6'
+import Week7Page7 from './pages/Week 7-8 Pages/Lesson 1/Page7'
+import Week7Page8 from './pages/Week 7-8 Pages/Lesson 1/Page8'
+
+{/*Week 7 Lesson 2 */}
+import Week7L2Page1 from './pages/Week 7-8 Pages/Lesson 2/L2Page1'
+import Week7L2Page2 from './pages/Week 7-8 Pages/Lesson 2/L2Page2'
+import Week7L2Page3 from './pages/Week 7-8 Pages/Lesson 2/L2Page3'
+import Week7L2Page4 from './pages/Week 7-8 Pages/Lesson 2/L2Page4'
+import Week7L2Page5 from './pages/Week 7-8 Pages/Lesson 2/L2Page5'
+import Week7L2Page6 from './pages/Week 7-8 Pages/Lesson 2/L2Page6'
+import Week7L2Page7 from './pages/Week 7-8 Pages/Lesson 2/L2Page7'
+import Week7L2Page8 from './pages/Week 7-8 Pages/Lesson 2/L2Page8'
+{/*Week 7 Lesson 3 */}
+import Week7L3Page1 from './pages/Week 7-8 Pages/Lesson 3/L3Page1'
+import Week7L3Page2 from './pages/Week 7-8 Pages/Lesson 3/L3Page2'
+import Week7L3Page3 from './pages/Week 7-8 Pages/Lesson 3/L3Page3'
+import Week7L3Page4 from './pages/Week 7-8 Pages/Lesson 3/L3Page4'
+import Week7L3Page5 from './pages/Week 7-8 Pages/Lesson 3/L3Page5'
+import Week7L3Page6 from './pages/Week 7-8 Pages/Lesson 3/L3Page6'
+import Week7L3Page7 from './pages/Week 7-8 Pages/Lesson 3/L3Page7'
+import Week7L3Page8 from './pages/Week 7-8 Pages/Lesson 3/L3Page8'
+
+{/*week 10*/}
 import Week10 from './pages/Week10Page'
-{/*Week 4 Activities */}
+{/*Week 10 Activities */}
 import QuizWeek10 from './pages/Week 10-11 Pages/Quiz Week 10-11/quizWeek10-11'
-{/*Week 4 Lesson 1 */}
+{/*Week 10 Lesson 1 */}
 import Week10Page1 from './pages/Week 10-11 Pages/Lesson 1/Page1'
 import Week10Page2 from './pages/Week 10-11 Pages/Lesson 1/Page2'
 import Week10Page3 from './pages/Week 10-11 Pages/Lesson 1/Page3'
@@ -188,7 +226,7 @@ import Week10Page5 from './pages/Week 10-11 Pages/Lesson 1/Page5'
 import Week10Page6 from './pages/Week 10-11 Pages/Lesson 1/Page6'
 import Week10Page7 from './pages/Week 10-11 Pages/Lesson 1/Page7'
 import Week10Page8 from './pages/Week 10-11 Pages/Lesson 1/Page8'
-{/*Week 4 Lesson 2 */}
+{/*Week 10 Lesson 2 */}
 import Week10L2Page1 from './pages/Week 10-11 Pages/Lesson 2/L2Page1'
 import Week10L2Page2 from './pages/Week 10-11 Pages/Lesson 2/L2Page2'
 import Week10L2Page3 from './pages/Week 10-11 Pages/Lesson 2/L2Page3'
@@ -197,7 +235,7 @@ import Week10L2Page5 from './pages/Week 10-11 Pages/Lesson 2/L2Page5'
 import Week10L2Page6 from './pages/Week 10-11 Pages/Lesson 2/L2Page6'
 import Week10L2Page7 from './pages/Week 10-11 Pages/Lesson 2/L2Page7'
 import Week10L2Page8 from './pages/Week 10-11 Pages/Lesson 2/L2Page8'
-{/*Week 4 Lesson 3 */}
+{/*Week 10 Lesson 3 */}
 import Week10L3Page1 from './pages/Week 10-11 Pages/Lesson 3/L3Page1'
 import Week10L3Page2 from './pages/Week 10-11 Pages/Lesson 3/L3Page2'
 import Week10L3Page3 from './pages/Week 10-11 Pages/Lesson 3/L3Page3'
@@ -206,7 +244,7 @@ import Week10L3Page5 from './pages/Week 10-11 Pages/Lesson 3/L3Page5'
 import Week10L3Page6 from './pages/Week 10-11 Pages/Lesson 3/L3Page6'
 import Week10L3Page7 from './pages/Week 10-11 Pages/Lesson 3/L3Page7'
 import Week10L3Page8 from './pages/Week 10-11 Pages/Lesson 3/L3Page8'
-{/*Week 4 Activities */}
+{/*Week 10 Activities */}
 import Week10Activity1 from './pages/Week 10-11 Pages/Activities Week 10&11/Activity1'
 import Week10Activity2 from './pages/Week 10-11 Pages/Activities Week 10&11/Activity2'
 import Week10Activity3 from './pages/Week 10-11 Pages/Activities Week 10&11/Activity3'
@@ -392,6 +430,46 @@ function App() {
       <Route path="/week6Activity2" element={<Week6Activity2/>} />
       <Route path="/week6Activity3" element={<Week6Activity3/>} />
 
+
+      
+     {/* Week 7*/}
+     <Route path="/week7Page" element={<Week7/>} />
+      {/* Week7 quiz */}
+      <Route path='/quizWeek7' element={<QuizWeek7/>} />
+      {/* Week 7 lesson 1 pages */}
+      <Route path="/week7Page1" element={<Week7Page1/>} />
+      <Route path="/week7Page2" element={<Week7Page2/>} />
+      <Route path="/week7Page3" element={<Week7Page3/>} />
+      <Route path="/week7Page4" element={<Week7Page4/>} />
+      <Route path="/week7Page5" element={<Week7Page5/>} />
+      <Route path="/week7Page6" element={<Week7Page6/>} />
+      <Route path="/week7Page7" element={<Week7Page7/>} />
+      <Route path="/week7Page8" element={<Week7Page8/>} />
+
+      {/* Week 7 lesson 2 pages */}
+      <Route path="/week7L2Page1" element={<Week7L2Page1/>} />
+      <Route path="/week7L2Page2" element={<Week7L2Page2/>} />
+      <Route path="/week7L2Page3" element={<Week7L2Page3/>} />
+      <Route path="/week7L2Page4" element={<Week7L2Page4/>} />
+      <Route path="/week7L2Page5" element={<Week7L2Page5/>} />
+      <Route path="/week7L2Page6" element={<Week7L2Page6/>} />
+      <Route path="/week7L2Page7" element={<Week7L2Page7/>} />
+      <Route path="/week7L2Page8" element={<Week7L2Page8/>} />
+      {/* Week 7 lesson 3 pages */}
+      <Route path="/week7L3Page1" element={<Week7L3Page1/>} />
+      <Route path="/week7L3Page2" element={<Week7L3Page2/>} />
+      <Route path="/week7L3Page3" element={<Week7L3Page3/>} />
+      <Route path="/week7L3Page4" element={<Week7L3Page4/>} />
+      <Route path="/week7L3Page5" element={<Week7L3Page5/>} />
+      <Route path="/week7L3Page6" element={<Week7L3Page6/>} />
+      <Route path="/week7L3Page7" element={<Week7L3Page7/>} />
+      <Route path="/week7L3Page8" element={<Week7L3Page8/>} />
+      {/* Week 7 activities */}
+
+
+      <Route path="/week7Activity1" element={<Week7Activity1/>} />
+      <Route path="/week7Activity2" element={<Week7Activity2/>} />
+      <Route path="/week7Activity3" element={<Week7Activity3/>} />
 
  
 
