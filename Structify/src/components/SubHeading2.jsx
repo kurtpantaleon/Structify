@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // Icon assets
 import XIcon from '../assets/images/X Icon.png';
 import InfoIcon from '../assets/images/Information Icon.png';
-import LeftNextIcon from '../assets/images/Left Next Icon.png';
-import RightNextIcon from '../assets/images/Right Next Icon.png';
+
 
 function SubHeading2({ progress = 1, totalSteps = 8, onNext, onPrev }) {
   const navigate = useNavigate();
