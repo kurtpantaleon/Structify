@@ -29,7 +29,7 @@ function DraggableItem({ id, children }) {
       style={style} 
       {...listeners} 
       {...attributes} 
-      className="p-4 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-50"
+      className="p-2 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-xl"
     >
       {children}
     </div>
@@ -71,7 +71,7 @@ export default function Activity1() {
   };
 
   const goToNextActivity = () => {
-    window.location.href = "/week1quizWeek1";
+    window.location.href = "/quizWeek1";
   };
   
   const goToPreviousActivity = () => {
@@ -116,7 +116,7 @@ export default function Activity1() {
           </div>
 
           {/* Answer options */}
-          <div className="flex flex-wrap gap-4 mt-8 justify-center">
+          <div className="flex w-5xl gap-4 mt-3 justify-center">
             {options.map((opt) => (
               !Object.values(answers).includes(opt) && (
                 <DraggableItem key={opt} id={opt}>{opt}</DraggableItem>
@@ -124,40 +124,43 @@ export default function Activity1() {
             ))}
           </div>
         </DndContext>            
-        {/* Submit button */}
-        <button 
-          className="mt-8 px-6 py-2 bg-blue-600 text-white rounded" 
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
-
+        
         {feedback && (
           <p className="mt-4 text-white font-medium">{feedback}</p>
         )}
       </div>
 
          {/* Navigation buttons */}
-      <div className="flex justify-between w-full px-6 pb-6">
-        <button 
-          className="px-4 py-2 bg-gray-600 text-white rounded flex items-center"
-          onClick={goToPreviousActivity}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-          </svg>
-          Previous Activity
-        </button>
-        <button 
-          className="px-4 py-2 bg-blue-600 text-white rounded flex items-center"
-          onClick={goToNextActivity}
-        >
-          Next Activity
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-          </svg>
-        </button>
-      </div>
+         <div className="mt-3 flex justify-between align-center items-center w-full px-6 pb-6">
+              <button 
+                className="px-4 h-10 bg-blue-600 text-white rounded flex items-center"
+                onClick={goToPreviousActivity}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                Previous Activity
+              </button>
+
+               {/* Submit button */}
+                <button 
+                  className=" px-20 py-4 bg-blue-600 text-white rounded" 
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </button>
+
+              <button 
+                className="px-4 h-10 bg-blue-600 text-white rounded flex items-center"
+                onClick={goToNextActivity}
+              >
+                Go to Quiz
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+              </button>
+        </div>
+        
     </div>
   );
 }

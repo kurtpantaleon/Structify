@@ -48,7 +48,7 @@ function MainPage() {
                 <CardSection title="Introduction to Data Structures" subtitle="Lesson 1" progress={12.5} path="/page1"  mediaSrc={Data} mediaType="video"/>
                 <CardSection title="Computers and Data Structures" subtitle="Lesson 2" progress={0} path="/l2page1" mediaSrc={Computer} mediaType="video"/>
                 <CardSection title="Types of Data Structures?" subtitle="Lesson 3" progress={0} path="/l3page1" mediaSrc={Type} mediaType="video" />
-                <CardSection title="Create a Mini Library" subtitle="Challenge" progress={0} path="/week1quizWeek1" mediaSrc={Challenges} mediaType="video"/>
+                <CardSection title="Create a Mini Library" subtitle="Challenge" progress={0} path="/quizWeek1" mediaSrc={Challenges} mediaType="video"/>
               </div>
             </div>
 

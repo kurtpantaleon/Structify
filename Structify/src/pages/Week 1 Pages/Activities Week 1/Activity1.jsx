@@ -29,7 +29,7 @@ function DraggableItem({ id, children }) {
       style={style} 
       {...listeners} 
       {...attributes} 
-      className="p-4 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-50"
+      className="p-2 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-xl"
     >
       {children}
     </div>
@@ -113,7 +113,7 @@ export default function Activity1() {
           </div>
 
           {/* Answer options */}
-          <div className="flex flex-wrap gap-4 mt-8 justify-center">
+          <div className="flex w-5xl gap-4 mt-3 justify-center">
             {options.map((opt) => (
               !Object.values(answers).includes(opt) && (
                 <DraggableItem key={opt} id={opt}>{opt}</DraggableItem>
@@ -121,22 +121,25 @@ export default function Activity1() {
             ))}
           </div>
         </DndContext>            
-        {/* Submit button */}
-        <button 
-          className="mt-8 p-5 w-50 bg-blue-600 text-white rounded" 
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
+        
 
         {feedback && (
           <p className="mt-4 text-white font-medium">{feedback}</p>
         )}
-      </div>
-      <div className="flex justify-between w-full px-6 pb-6">
-        
+
+      <div className="flex justify-between align-center items-center w-full px-6 pb-6 mt-3">
+        <button className="px-4 h-10 bg-gray-600 text-white rounded flex items-center"
+          >Previous Activity
+         </button>
+        {/* Submit button */}
         <button 
-          className="px-4 py-2 bg-blue-600 text-white rounded flex items-center"
+          className=" px-20 py-4 bg-blue-600 text-white rounded" 
+          onClick={handleSubmit}
+        >
+          Submit
+        </button>
+        <button 
+          className="px-4 h-10 bg-blue-600 text-white rounded flex items-center"
           onClick={goToNextActivity}
         >
           Next Activity
@@ -145,6 +148,8 @@ export default function Activity1() {
           </svg>
         </button>
       </div>
+      </div>
+     
     </div>
   );
 }

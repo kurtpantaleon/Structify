@@ -30,7 +30,7 @@ function DraggableItem({ id, children }) {
       style={style} 
       {...listeners} 
       {...attributes} 
-      className="p-4 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-50"
+      className="p-2 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-xl"
     >
       {children}
     </div>
@@ -95,7 +95,8 @@ export default function Activity2() {
 
   return (
     <div className="bg-[#1c2452] min-h-screen flex flex-col">
-      <> <Header /> 
+    <> 
+      <Header /> 
       <div className="flex justify-between items-center p-4 bg-[#1c2452] border-b border-[#2a3366]">
       <button onClick={() => (window.location.href = "/mainPage")} className="text-white">          
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" >
@@ -109,14 +110,14 @@ export default function Activity2() {
       {/* Main content */}
       <div className="flex-1 p-6 flex flex-col items-center ">
         <DndContext onDragEnd={handleDrop}>
-          <div className="max-w-3xl w-full">
+          <div className="max-w-3xl w-full flex flex-col  items-center mb-10">
             {/* Questions with blanks */}
             <div className=" h-100 w-200 p-5 bg-[#141a35] rounded-lg border border-white/100">
               {questions.map((question, index) => renderQuestion(question, index))}
             </div>
 
             {/* Options */}
-            <div className="flex flex-wrap gap-4 justify-center mt-8">
+            <div className="flex  gap-4 justify-center w-5xl mt-8">
               {options.map((opt) => (
                 !Object.values(answers).includes(opt) && (
                   <DraggableItem key={opt} id={opt}>{opt}</DraggableItem>
@@ -132,9 +133,9 @@ export default function Activity2() {
           <p className="mt-4 text-white font-medium">{feedback}</p>
         )}
 
-          <div className="mt-4 flex justify-between align-center items-center w-full px-6 pb-6">
+        <div className="mt-4 flex justify-between align-center items-center w-full px-6 pb-6">
               <button 
-                className="px-4 h-10 bg-gray-600 text-white rounded flex items-center"
+                className="px-4 h-10 bg-blue-600 text-white rounded flex items-center"
                 onClick={goToPreviousActivity}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -162,9 +163,8 @@ export default function Activity2() {
               </button>
         </div>
         
-        </div>
-
-        </>
+     </div>
+    </>
             
     </div>
   );
