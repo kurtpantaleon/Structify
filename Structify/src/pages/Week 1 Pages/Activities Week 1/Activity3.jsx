@@ -16,7 +16,7 @@ const correctAnswers = {
   "Train Line": "Queue",
   "Browser Back Button": "Stack",
   "Contacts List on Phone ": "Array",
-  "People Standing in Line": "Queue",
+  "People Standing in Line": "Mali",
   "Student Record System": "Hash Table"
 };
 
@@ -29,7 +29,7 @@ function DraggableItem({ id, children }) {
       style={style} 
       {...listeners} 
       {...attributes} 
-      className="px-4 py-2 bg-transparent border border-white text-white rounded text-center uppercase text-sm cursor-pointer w-32"
+      className="p-4 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-50"
     >
       {children}
     </div>
@@ -41,7 +41,7 @@ function DroppableArea({ id, answer }) {
   return (
     <div 
       ref={setNodeRef} 
-      className="w-full h-8 bg-transparent border border-white rounded flex items-center justify-center text-white text-sm"
+      className="w-100 h-15 bg-gradient-to-r from-blue-900 to-blue-1000 rounded-lg border border-white/100  font-bold rounded flex items-center justify-center text-white text-xl"
     >
       {answer || ""}
     </div>
@@ -98,7 +98,7 @@ export default function Activity1() {
         <DndContext onDragEnd={handleDrop}>
           <div className="flex gap-8 justify-center max-w-4xl">
             {/* Left column with numbers and drop areas */}
-            <div className="border border-white rounded p-6 w-64">
+            <div className="flex flex-col item-center justify-center gap-2 border-r border-white/20 rounded-xl p-6 w-100 bg-[#141a35]">
               {[1, 2, 3, 4, 5].map((num, index) => (
                 <div key={num} className="flex items-center gap-4 mb-4">
                   <span className="text-white font-medium w-6">{num}.</span>
@@ -108,7 +108,7 @@ export default function Activity1() {
             </div>
 
             {/* Right column with descriptions */}
-            <div className="border border-white rounded p-6 w-64">
+            <div className="rounded p-6 w-100 flex flex-col item-center justify-center gap-13 rounded-xl  bg-[#141a35] ">
               {descriptions.map((desc, index) => (
                 <p key={index} className="text-white text-sm mb-4">{desc}</p>
               ))}
