@@ -285,7 +285,7 @@ function App() {
       <Route path="/week1activity2" element={<Week1Activity2/>} />
       <Route path="/week1activity3" element={<Week1Activity3/>} />
       {/* Week 1 quiz */}
-      <Route path='/week1quizWeek1' element={<QuizWeek1/>} />
+      <Route path='/quizWeek1' element={<QuizWeek1/>} />
 
       
 
