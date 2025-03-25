@@ -4,9 +4,11 @@ import SubHeading2 from '../../../components/SubHeading2';
 
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Lesson1 Images/Week1/Page 6/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Lesson1 Images/Week1/Page 6/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Lesson1 Images/Week1/Page 6/Bullet 3.png';
+
+import Bullet1 from '../../../assets/clip/clip1.mp4';
+import Bullet2 from '../../../assets/clip/clip2.mp4';
+import Bullet3 from '../../../assets/clip/clip2.mp4';
+
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 
@@ -25,20 +27,37 @@ export default  function Page6() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <>Arrays: Store multiple values in a fixed order.</>,
-      image: Bullet1,
-      resizeClass: 'h-40'
-    },
-    {
-      description: <>Linked Lists: Use nodes to store elements dynamically.</>,
-      image: Bullet2,
-      resizeClass: 'h-40'
-   
-    },
-    {
-      description: <>Stacks & Queues: Follow specific rules for data insertion and removal.</>,
-      image: Bullet3,
-      resizeClass: 'h-60'
+       description: (
+             <>
+               <span className="font-extrabold text-yellow-400 animate-pulse">
+               Arrays:
+               </span>{' '}
+               Store multiple values in a fixed order.
+             </>
+           ),
+           video: Bullet1, // MP4 video source
+         },
+         {
+           description: (
+             <>
+               <span className="font-extrabold text-green-400 animate-pulse">
+               Linked Lists: 
+               </span>{' '}
+               Use nodes to store elements dynamically.
+             </>
+           ),
+           video: Bullet2,
+         },
+         {
+           description: (
+             <>
+               <span className="font-extrabold text-blue-400 animate-pulse">
+               Stacks & Queues: 
+               </span>{' '}
+               Follow specific rules for data insertion and removal.
+             </>
+           ),
+           video: Bullet3,
     }
   ];
 
@@ -74,7 +93,7 @@ return (
       <LessonPages
         title={
           <span className="text-3xl font-black text-center text-teal-400 drop-shadow-md">
-            How They Improve Efficiency
+           Common Data Structures
           </span>
         }
         lessons={lessons}

@@ -40,7 +40,7 @@ export default function Page1() {
           Computers process{' '}
           <span className="font-extrabold text-green-400 animate-pulse">
             massive amounts of data every second
-          </span>
+          </span>{' '}
           , so efficient organization is essential.
         </>
       ),
@@ -52,7 +52,7 @@ export default function Page1() {
           Just like drawers organize clothes,{' '}
           <span className="font-extrabold text-blue-400 animate-pulse">
             data structures help organize and manage information in a structured way
-          </span>
+          </span>{' '}
           .
         </>
       ),

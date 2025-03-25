@@ -4,8 +4,8 @@ import SubHeading2 from '../../../components/SubHeading2';
 
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Lesson1 Images/Week1/Page 5/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Lesson1 Images/Week1/Page 5/Bullet 2.png';
+import Bullet1 from '../../../assets/clip/clip1.mp4';
+import Bullet2 from '../../../assets/clip/clip2.mp4';
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 
@@ -25,12 +25,28 @@ export default  function Page5() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <>Without structure: Searching through scattered data is slow.</>,
-      image: Bullet1
-    },
-    {
-      description: <>With structure: Searching through an indexed list is fast and efficient.</>,
-      image: Bullet2
+     description: (
+            <>
+              
+              <span className="font-extrabold text-yellow-400 animate-pulse">
+              Without structure:
+              </span>{' '}
+              Searching through scattered data is slow.
+            </>
+          ),
+          video: Bullet1, // MP4 video source
+        },
+        {
+          description: (
+            <>
+             
+              <span className="font-extrabold text-green-400 animate-pulse">
+              With structure:
+              </span>
+              {' '} Searching through an indexed list is fast and efficient.
+            </>
+          ),
+          video: Bullet2,
    
     }
   ];
@@ -67,7 +83,7 @@ export default  function Page5() {
         <LessonPages
           title={
             <span className="text-3xl font-black text-center text-teal-400 drop-shadow-md">
-              How They Improve Efficiency
+              Comparison: Messy vs. Well-Organized Data
             </span>
           }
           lessons={lessons}

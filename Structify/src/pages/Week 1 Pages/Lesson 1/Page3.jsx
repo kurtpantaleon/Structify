@@ -2,8 +2,10 @@
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Lesson1 Images/Week1/Page 3/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Lesson1 Images/Week1/Page 3/Bullet 2.png';
+
+import Bullet1 from '../../../assets/clip/clip1.mp4';
+import Bullet2 from '../../../assets/clip/clip2.mp4';
+
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
@@ -31,7 +33,7 @@ export default function Page3() {
           
         </>
       ),
-      image: Bullet1,
+      video: Bullet1, // MP4 video source
     },
     {
       description: (
@@ -43,7 +45,7 @@ export default function Page3() {
           
         </>
       ),
-      image: Bullet2,
+      video: Bullet2, // MP4 video source
     }
   ];
 

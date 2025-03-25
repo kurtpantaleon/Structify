@@ -3,9 +3,9 @@ import SubHeading2 from '../../../components/SubHeading2';
 
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Lesson1 Images/Week1/Page 4/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Lesson1 Images/Week1/Page 4/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Lesson1 Images/Week1/Page 4/Bullet 3.png';
+import Bullet1 from '../../../assets/clip/clip1.mp4';
+import Bullet2 from '../../../assets/clip/clip2.mp4';
+import Bullet3 from '../../../assets/clip/clip2.mp4';
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 
@@ -23,17 +23,35 @@ export default  function Page4() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <>Phone Contact List: Stores names and numbers alphabetically for easy lookup.</>,
-      image: Bullet1
+      description: <>
+      <span className="font-extrabold text-yellow-400 animate-pulse">
+        Phone Contact List:
+      </span>{' '} Stores names and numbers{' '}<span className="font-extrabold text-yellow-400 animate-pulse">
+         alphabetically
+      </span>{' '} for easy lookup.</>,
+      video: Bullet1, // MP4 video source
     },
     {
-      description: <>Bookshelf Organization: Arranges books by genre or author for fast access. </>,
-      image: Bullet2
-   
+       description: (
+              <>
+                <span className="font-extrabold text-green-400 animate-pulse">
+                Bookshelf Organization:
+                </span>{' '}
+                 so efficient organization is essential.
+              </>
+            ),
+            video: Bullet2,
     },
     {
-      description: <>To-Do List: Prioritizes tasks in a structured way. </>,
-      image: Bullet3
+      description: (
+              <>
+              
+                <span className="font-extrabold text-blue-400 animate-pulse">
+                To-Do List:  </span>{' '} Prioritizes tasks in a structured way.
+                .
+              </>
+            ),
+            video: Bullet3,
     }
   ];
 
@@ -73,8 +91,7 @@ export default  function Page4() {
         <LessonPages
           title={
             <span className="text-3xl font-black text-center text-teal-400 drop-shadow-md">
-              How They Improve Efficiency
-            </span>
+          Real-Life Examples of Data Structures </span>
           }
           lessons={lessons}
           currentIndex={currentIndex}

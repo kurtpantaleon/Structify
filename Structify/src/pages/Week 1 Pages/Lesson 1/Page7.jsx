@@ -3,10 +3,12 @@ import SubHeading2 from '../../../components/SubHeading2';
 
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Lesson1 Images/Week1/Page 7/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Lesson1 Images/Week1/Page 7/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Lesson1 Images/Week1/Page 7/Bullet 3.png';
-import Bullet4 from '../../../assets/images/Lesson1 Images/Week1/Page 7/Bullet 4.png';
+
+import Bullet1 from '../../../assets/clip/clip1.mp4';
+import Bullet2 from '../../../assets/clip/clip2.mp4';
+import Bullet3 from '../../../assets/clip/clip2.mp4';
+import Bullet4 from '../../../assets/clip/clip2.mp4';
+
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 
@@ -25,24 +27,53 @@ export default  function Page7() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <>Fast access? → Use an Array.</>,
-      image: Bullet1,
-      resizeClass: 'h-40'
-    },
-    {
-      description: <>Frequent additions/removals? → Use a Linked List.</>,
-      image: Bullet2,
-      resizeClass: 'h-40'
-   
-    },
-    {
-      description: <>Undo functionality? → Use a Stack (LIFO).</>,
-      image: Bullet3
-    },
-    {
-      description: <>Processing requests? → Use a Queue (FIFO).</>,
-      image: Bullet4
-    }
+      description: (
+              <>
+                
+                <span className="font-extrabold text-yellow-400 animate-pulse">
+                Fast access? → 
+                </span>{' '}
+               Use an Array.
+              </>
+            ),
+            video: Bullet1, // MP4 video source
+          },
+          {
+            description: (
+              <>
+               
+                <span className="font-extrabold text-green-400 animate-pulse">
+                Frequent additions/removals? →
+                </span>{' '}
+                Use a Linked List.
+              </>
+            ),
+            video: Bullet2,
+          },
+          {
+            description: (
+              <>
+                
+                <span className="font-extrabold text-blue-400 animate-pulse">
+                Undo functionality? →
+                </span>{' '}
+                Use a Stack (LIFO)..
+              </>
+            ),
+            video: Bullet3,
+          },
+          {
+            description: (
+              <>
+
+                <span className="font-extrabold text-blue-400 animate-pulse">
+                Processing requests? →
+                </span>{' '}
+                Use a Queue (FIFO).
+              </>
+            ),
+            video: Bullet4,
+          }
   ];
 
 
@@ -78,7 +109,7 @@ return (
       <LessonPages
         title={
           <span className="text-3xl font-black text-center text-teal-400 drop-shadow-md">
-            How They Improve Efficiency
+            When to Use Different Data Structures
           </span>
         }
         lessons={lessons}

@@ -3,7 +3,8 @@ import SubHeading2 from '../../../components/SubHeading2';
 
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Lesson1 Images/Week1/Page 8/Bullet 1.png';
+
+import Bullet1 from '../../../assets/clip/clip1.mp4';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -23,9 +24,17 @@ export default  function Page8() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <>Data structures are essential for building efficient and scalable applications.</>,
-      image: Bullet1
-    }
+      description: (
+            <>   
+              Data structures are {' '}
+              <span className="font-extrabold text-yellow-400 animate-pulse">
+               essential for building efficient and scalable 
+              </span>{' '}applications.
+             
+             </>
+          ),
+          video: Bullet1, // MP4 video source
+     }
   ];
 
 
