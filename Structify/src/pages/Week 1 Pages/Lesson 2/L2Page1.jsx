@@ -5,9 +5,9 @@ import LessonFooter from '../../../components/LessonFooter';
 
 
 
-import Bullet1 from '../../../assets/images/Lesson2 Images/Week1/Page 1/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Lesson2 Images/Week1/Page 1/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Lesson2 Images/Week1/Page 1/Bullet 3.png';
+import Bullet1 from '../../../assets/clip/clip1.mp4';
+import Bullet2 from '../../../assets/clip/clip2.mp4';
+import Bullet3 from '../../../assets/clip/clip2.mp4';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -25,19 +25,43 @@ export default  function L2Page1() {
 
   // Lesson content stored in an array
   const lessons = [
-    {
-      description: <>Arrays are a list of items stored in a specific order.</>,
-      image: Bullet1
-    },
-    {
-      description: <>In Array each element has an index (position).</>,
-      image: Bullet2,
-      resizeClass: 'h-40'
-    },
-    {
-      description: <>Code Example: Storing the top 5 student scores.</>,
-      image: Bullet3
-    }
+      {
+      description: (
+             <>
+              Arrays are a{' '}
+               <span className="font-extrabold text-yellow-400 animate-pulse">
+               list of items stored in a specific order.
+               </span>{' '}
+               
+             </>
+           ),
+           video: Bullet1, // MP4 video source
+         },
+         {
+           description: (
+             <>
+               In Array each element has an  {' '}
+               <span className="font-extrabold text-green-400 animate-pulse">
+               index
+               </span>{' '}
+               (position).
+             </>
+           ),
+           video: Bullet2,
+         },
+         {
+           description: (
+             <>
+              
+               <span className="font-extrabold text-blue-400 animate-pulse">
+               Code Example: 
+               </span>{' '}
+               Storing the top 5 student scores.
+               .
+             </>
+           ),
+           video: Bullet3,
+         }
   ];
 
 
@@ -72,7 +96,7 @@ return (
       <LessonPages
         title={
           <span className="text-3xl font-black text-center text-teal-400 drop-shadow-md">
-            How They Improve Efficiency
+            Types of Basic Data Structures
           </span>
         }
         lessons={lessons}
@@ -84,12 +108,14 @@ return (
       />
     </div>
 
-    {/* Footer button to move to next route */}
-    <LessonFooter
-      buttonText="Continue"
-      onClick={() => navigate('/l2page2')}
-      className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
-    />
+   {/* Conditionally render the footer button when at last lesson */}
+   {currentIndex === lessons.length - 1 && (
+        <LessonFooter
+          buttonText="Continue"
+          onClick={() => navigate('/l2page2')}
+          className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
+        />
+      )}
   </div>
 );
 }

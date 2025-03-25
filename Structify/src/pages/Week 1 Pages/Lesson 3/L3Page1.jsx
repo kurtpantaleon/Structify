@@ -6,9 +6,10 @@ import LessonFooter from '../../../components/LessonFooter';
 
 
 
-import Bullet1 from '../../../assets/images/Lesson3 Image/Week1/Page 1/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Lesson3 Image/Week1/Page 1/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Lesson3 Image/Week1/Page 1/Bullet 3.png';
+import Bullet1 from '../../../assets/clip/clip1.mp4';
+import Bullet2 from '../../../assets/clip/clip2.mp4';
+import Bullet3 from '../../../assets/clip/clip2.mp4';
+
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -28,17 +29,48 @@ export default  function L3Page1() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <>Computers organize data for quick retrieval and processing.</>,
-      image: Bullet1
-    },
-    {
-      description: <>Structures like arrays, stacks, and trees improve efficiency.</>,
-      image: Bullet2
-    },
-    {
-      description: <>Used in search engines, databases, and AI systems.</>,
-      image: Bullet3
-    }
+         description: (
+           <>
+             Computers organize data for {' '}
+             <span className="font-extrabold text-yellow-400 animate-pulse">
+               squick retrieval
+             </span>{' '}and {' '}
+             <span className="font-extrabold text-yellow-400 animate-pulse">
+             processing.
+             </span>{' '}
+             
+           </>
+         ),
+         video: Bullet1, // MP4 video source
+       },
+       {
+         description: (
+           <>
+             Structures like  improve {' '}
+             <span className="font-extrabold text-green-400 animate-pulse">
+             arrays, stacks
+             </span>{' '}  and <span className="font-extrabold text-green-400 animate-pulse">
+              trees
+             </span>
+             {' '}  efficiency.
+           </>
+         ),
+         video: Bullet2,
+       },
+       {
+         description: (
+           <>
+             Used in search {' '}
+             <span className="font-extrabold text-blue-400 animate-pulse">
+             engines, databases, 
+             </span> and {' '}<span className="font-extrabold text-blue-400 animate-pulse">
+              AI systems.
+             </span>{' '}
+             .
+           </>
+         ),
+         video: Bullet3,
+       }
   ];
 
 
@@ -73,7 +105,7 @@ return (
       <LessonPages
         title={
           <span className="text-3xl font-black text-center text-teal-400 drop-shadow-md">
-            How They Improve Efficiency
+           Computers & Data Structures
           </span>
         }
         lessons={lessons}
@@ -85,12 +117,14 @@ return (
       />
     </div>
 
-    {/* Footer button to move to next route */}
-    <LessonFooter
-      buttonText="Continue"
-      onClick={() => navigate('/l3page2')}
-      className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
-    />
+       {/* Conditionally render the footer button when at last lesson */}
+       {currentIndex === lessons.length - 1 && (
+        <LessonFooter
+          buttonText="Continue"
+          onClick={() => navigate('/l3page2')}
+          className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
+        />
+      )}
   </div>
 );
 }

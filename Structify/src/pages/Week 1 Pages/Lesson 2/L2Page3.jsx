@@ -5,9 +5,10 @@ import LessonFooter from '../../../components/LessonFooter';
 
 
 
-import Bullet1 from '../../../assets/images/Lesson2 Images/Week1/Page 3/Bullet 1.png';
-import Bullet2 from '../../../assets/images/Lesson2 Images/Week1/Page 3/Bullet 2.png';
-import Bullet3 from '../../../assets/images/Lesson2 Images/Week1/Page 3/Bullet 3.png';
+import Bullet1 from '../../../assets/clip/clip1.mp4';
+import Bullet2 from '../../../assets/clip/clip2.mp4';
+import Bullet3 from '../../../assets/clip/clip2.mp4';
+
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -26,17 +27,40 @@ export default  function L2Page3() {
   // Lesson content stored in an array
   const lessons = [
     {
-      description: <>Works like a line of people waiting at a bank.</>,
-      image: Bullet1
-    },
-    {
-      description: <>(FIFO - First In, First Out) The first person in line is served first.</>,
-      image: Bullet2
-    },
-    {
-      description: <>Code Example: Browser back button history.</>,
-      image: Bullet3
-    }
+          description: (
+            <>
+              Works like a{' '}
+              <span className="font-extrabold text-yellow-400 animate-pulse">
+              line of people
+              </span>{' '}
+              waiting at a bank.
+            </>
+          ),
+          video: Bullet1, // MP4 video source
+        },
+        {
+          description: (
+            <>
+              <span className="font-extrabold text-green-400 animate-pulse">
+              (FIFO - First In, First Out)
+              </span>{' '}
+              The first person in line is served first.
+            </>
+          ),
+          video: Bullet2,
+        },
+        {
+          description: (
+            <>
+              
+              <span className="font-extrabold text-blue-400 animate-pulse">
+              Code Example: 
+              </span>{' '}
+              Browser back button history.
+            </>
+          ),
+          video: Bullet3,
+        }
   ];
 
 
@@ -71,7 +95,7 @@ return (
       <LessonPages
         title={
           <span className="text-3xl font-black text-center text-teal-400 drop-shadow-md">
-            How They Improve Efficiency
+            Types of Basic Data Structures
           </span>
         }
         lessons={lessons}
@@ -83,12 +107,14 @@ return (
       />
     </div>
 
-    {/* Footer button to move to next route */}
-    <LessonFooter
-      buttonText="Continue"
-      onClick={() => navigate('/l3page1')}
-      className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
-    />
+   {/* Conditionally render the footer button when at last lesson */}
+   {currentIndex === lessons.length - 1 && (
+        <LessonFooter
+          buttonText="Continue"
+          onClick={() => navigate('/l3page1')}
+          className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
+        />
+      )}
   </div>
 );
 }
