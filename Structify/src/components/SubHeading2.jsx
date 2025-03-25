@@ -1,42 +1,48 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+// Icon assets
 import XIcon from '../assets/images/X Icon.png';
 import InfoIcon from '../assets/images/Information Icon.png';
 import LeftNextIcon from '../assets/images/Left Next Icon.png';
 import RightNextIcon from '../assets/images/Right Next Icon.png';
 
-function SubHeading2({ progress = 1, totalSteps = 8 }) {
+function SubHeading2({ progress = 1, totalSteps = 8, onNext, onPrev }) {
+  const navigate = useNavigate();
+
   return (
-    <div className="bg-[#1F274D] flex items-center justify-between px-7 py-3 shadow-md border-b-1 border-gray-200">
-        {/* ✅ Click Button to Toggle Sidebar */}
-        <button>
-        <img src={XIcon} alt="Menu Icon" className="h-5 w-5 cursor-pointer" />
-        </button> 
+    <div className="bg-[#1F274D] flex items-center justify-between px-4 sm:px-7 py-3 shadow-md border-b border-white/10">
+      {/* Exit or menu button */}
+      <button onClick={() => navigate('/mainPage')} className="transition-transform transform hover:scale-110">
+        <img src={XIcon} alt="Menu Icon" className="h-6 w-6 sm:h-5 sm:w-5 cursor-pointer" />
+      </button>
 
-        {/* Center: Progress Bar Navigation */}
-        <div className="flex items-center space-x-10">
-            <img src={RightNextIcon} alt="Left Next Icon" className="h-5 w-3 cursor-pointer" />
+      {/* Progress section with arrows and progress bar */}
+      <div className="flex items-center space-x-4 sm:space-x-10">
+      
+       
 
-            {/* Progress Bar */}
-            <div className="flex items-center space-x-2">
-            {Array.from({ length: totalSteps }).map((_, index) => (
-                <div
-                key={index}
-                className={`h-1.5 w-14 rounded-full ${
-                    index < progress ? "bg-green-600" : "bg-gray-500"
-                }`}
-                ></div>
-            ))}
-            </div>
-
-            <img src={LeftNextIcon} alt="Right Next Icon" className="h-5 w-3 cursor-pointer" />
+        {/* Visual progress indicators */}
+        <div className="flex items-center space-x-1 sm:space-x-2">
+          {Array.from({ length: totalSteps }).map((_, index) => (
+            <div
+              key={index}
+              className={`h-1.5 w-6 sm:w-14 rounded-full transition-all duration-300 ${
+                index < progress ? 'bg-green-400' : 'bg-gray-600'
+              }`}
+            ></div>
+          ))}
         </div>
 
-        {/* Right: Mene Icon */}
-        <button>
-        <img src={InfoIcon} alt="Swap Icon" className="h-10 w-10 cursor-pointer" />
-        </button>
+       
+      </div>
+
+      {/* Info button */}
+      <button onClick={() => navigate('/info')} className="hover:scale-110 transition-transform">
+        <img src={InfoIcon} alt="Info Icon" className="h-10 w-10 cursor-pointer" />
+      </button>
     </div>
-  )
+  );
 }
 
-export default SubHeading2
+export default SubHeading2;

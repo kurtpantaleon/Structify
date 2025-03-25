@@ -1,45 +1,70 @@
-import React from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom'; // Use Link for navigation
 
-function LearningPath() {
-const weeks = [
-    { week: "Week 1", topic: "Introduction to Data Structures" },
-    { week: "Week 2", topic: "Algorithms & Complexity" },
-    { week: "Week 3", topic: "String Processing" },
-    { week: "Week 4 & 5", topic: "Array, Records, and Pointers" },
-    { week: "Week 6", topic: "Linked Lists" },
-    { week: "Week 7 & 8", topic: "Stacks, Queues, and Recursion" },
-    { week: "Week 10 & 11", topic: "Trees" },
-    { week: "Week 12 & 13", topic: "Graph Algorithms" },
-    { week: "Week 14 to 16", topic: "Sorting and Searching" },
-    { week: "Week 17", topic: "Hashing" },
-    ];
+function LearningPath({ isOpen, toggleLearningPath }) {
+  // Weeks data without actual progress, just placeholders
+  const weeks = [
+    { week: "Week 1", topic: "Introduction to Data Structures", path: "/lesson1" },
+    { week: "Week 2", topic: "Algorithms & Complexity", path: "/lesson2" },
+    { week: "Week 3", topic: "String Processing", path: "/lesson3" },
+    { week: "Week 4 & 5", topic: "Array, Records, and Pointers", path: "/lesson4" },
+    { week: "Week 6", topic: "Linked Lists", path: "/lesson5" },
+    { week: "Week 7 & 8", topic: "Stacks, Queues, and Recursion", path: "/lesson6" },
+    { week: "Week 10 & 11", topic: "Trees", path: "/lesson7" },
+    { week: "Week 12 & 13", topic: "Graph Algorithms", path: "/lesson8" },
+    { week: "Week 14 to 16", topic: "Sorting and Searching", path: "/lesson9" },
+    { week: "Week 17", topic: "Hashing", path: "/lesson10" },
+  ];
+
   return (
-    <div className="w-100 bg-[#1F274D] text-white border-l border-white/100 p-4">
-    {/* Header */}
-    <div className="flex items-center justify-between mb-2">
-      <h2 className="font-bold text-lg">Learning Path</h2>
-      <p className="right-0 text-xs">0/17</p>
-    </div>
+    <div
+      className={`fixed top-0 right-0 h-full w-[450px] bg-[#1F274D] text-white border-l border-white/20 p-5 z-50 shadow-lg
+        transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : 'translate-x-full'}
+      `}>
+      {/* Close Button */}
+      <button
+        onClick={toggleLearningPath}
+        className="absolute top-1 left-1 text-white  p-1"
+      >
+        <span className="text-4xl">&times;</span> {/* Close Icon */}
+      </button>
 
-    {/* Progress Bar */}
-    <div className="w-full bg-gray-700 h-2 rounded-full relative mb-4">
-      <div className="bg-white h-2 rounded-full w-1/5"></div>
-    </div>
+      <div className="ml-5 flex items-center justify-between  mb-2">
+        <h2 className="font-bold text-lg">Learning Path</h2>
+        <p className="text-xs">0/17</p>
+      </div>
 
-    {/* List of Weeks */}
-    <div className="space-y-3">
-      {weeks.map((item, index) => (
-        <button
-          key={index}
-          className="w-full px-3 py-3 bg-[#020B4A] rounded-lg border border-white/40 text-center cursor-pointer"
-        >
-          <span className="font-bold text-md">{item.week}</span>
-          <p className="text-s">{item.topic}</p>
-        </button>
-      ))}
+      <div className="w-full bg-gray-700 h-2 rounded-full relative mb-4">
+        <div className="bg-white h-2 rounded-full w-1/5"></div>
+      </div>
+
+      {/* List of Weeks - Scrollable content */}
+      <div className=" overflow-y-auto  max-h-[calc(100vh-80px)]">
+        {weeks.map((item, index) => (
+          <Link key={index} to={item.path}>
+            <div
+              className="w-full px-3 py-3 bg-[#020B4A] rounded-lg border border-white/40 text-center cursor-pointer mb-2"
+            >
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-md">{item.week}</span>
+                <span className="text-xs text-gray-400">--</span> {/* Placeholder for progress */}
+              </div>
+              <p className="text-sm">{item.topic}</p>
+
+              {/* Placeholder for Progress */}
+              <div className="w-full bg-gray-500 h-1 mt-2 rounded-full">
+                <div
+                  className="bg-gray-700 h-1 rounded-full"
+                  style={{ width: `100%` }} // Placeholder width, will be handled by backend
+                ></div>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
-  </div>
-  )
+  );
 }
 
-export default LearningPath
+export default LearningPath;
