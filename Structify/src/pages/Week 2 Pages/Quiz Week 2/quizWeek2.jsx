@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Header';
 import { useNavigate } from 'react-router-dom';
-import Week3Page from '../../Week4Page';
 
 
-const QuizWeek1 = () => {
+const QuizWeek2 = () => {
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questions, setQuestions] = useState([]);
@@ -27,7 +26,7 @@ const QuizWeek1 = () => {
   useEffect(() => {
     setIsLoading(true);
   
-    fetch("http://localhost:3001/questions?week=2")
+    fetch("http://localhost:3001/questions?week=1")
       .then(response => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -83,7 +82,7 @@ const QuizWeek1 = () => {
     setShowResults(false);
   };
 
-  const week3Page = () => {
+  const week3page = () => {
     navigate('/week3Page'); // Navigate to the main page
   };
 
@@ -114,7 +113,7 @@ const QuizWeek1 = () => {
             </button>
             <button
               className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-lg font-medium"
-              onClick={week3Page}
+              onClick={week3page}
             >
               Next
             </button>
@@ -127,65 +126,64 @@ const QuizWeek1 = () => {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="bg-[#1F274D] min-h-screen text-white">
+    <div className="bg-[#1F274D] min-h-screen text-white ">
       <Header />
 
       <div className="p-4 flex items-center">
-        <button className="text-white text-2xl mr-4">×</button>
+     
         <div className="flex-1 bg-amber-50 h-2 rounded-full">
           <div 
             className="bg-green-500 h-2 rounded-full" 
             style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
           ></div>
         </div>
-        <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-black ml-4">?</div>
+       
       </div>
-      <div className='flex flex-col items-center h-110 mt-10 '>
-
+     <div className='flex flex-col items-center h-110 mt-10 '>
          {/* Quiz Content */}
-      <div className="px-10 flex flex-col items-center justify-center  w-4xl h-110 bg-[#141a35] rounded-xl border">
-        <h1 className="text-2xl font-bold mb-6">Week 2 - Quiz</h1>
-        
-        <p className="text-xl mb-8 text-center">
-          {currentQuestionIndex + 1}. {currentQuestion && currentQuestion.question}
-        </p>
+          <div className="px-10 flex flex-col items-center justify-center  w-4xl h-110 bg-[#141a35] rounded-xl border">
+            <h1 className="text-2xl font-bold mb-6">Week 1 - Quiz</h1>
+            
+            <p className="text-xl mb-8 text-center">
+              {currentQuestionIndex + 1}. {currentQuestion && currentQuestion.question}
+            </p>
 
-        {/* Answer Options */}
-        {currentQuestion && currentQuestion.type === 'multipleChoice' ? (
-          <div className="w-full max-w-md space-y-4">
-            {currentQuestion.options.map((option, index) => (
-              <button
-                key={index}
-                className={`w-full p-3 text-center rounded ${
-                  selectedAnswer === option ? 'bg-blue-600' : 'bg-indigo-900'
-                }`}
-                onClick={() => handleAnswerSelect(option)}
-              >
-                {option}
-              </button>
-            ))}
+            {/* Answer Options */}
+            {currentQuestion && currentQuestion.type === 'multipleChoice' ? (
+              <div className="w-full max-w-md space-y-4">
+                {currentQuestion.options.map((option, index) => (
+                  <button
+                    key={index}
+                    className={`w-full p-3 text-center rounded ${
+                      selectedAnswer === option ? 'bg-blue-600' : 'bg-indigo-900'
+                    }`}
+                    onClick={() => handleAnswerSelect(option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="w-full max-w-md">
+                <div className="flex items-center justify-center text-xl">
+                  <p className="mr-2">{currentQuestion && currentQuestion.preText}</p>
+                  <input
+                    type="text"
+                    value={textAnswer}
+                    onChange={handleTextChange}
+                    className="bg-[#1F274D] border-b-2 border-white px-2 py-1 w-32 text-center focus:outline-none"
+                    placeholder="________"
+                  />
+                  <p className="ml-2">{currentQuestion && currentQuestion.postText}</p>
+                </div>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="w-full max-w-md">
-            <div className="flex items-center justify-center text-xl">
-              <p className="mr-2">{currentQuestion && currentQuestion.preText}</p>
-              <input
-                type="text"
-                value={textAnswer}
-                onChange={handleTextChange}
-                className="bg-[#1F274D] border-b-2 border-white px-2 py-1 w-32 text-center focus:outline-none"
-                placeholder="________"
-              />
-              <p className="ml-2">{currentQuestion && currentQuestion.postText}</p>
-            </div>
-          </div>
-        )}
-      </div>
-      </div>
-     
+     </div>
+      
 
       {/* Next Button */}
-      <div className="fixed bottom-8 w-full flex justify-center">
+      <div className="fixed mt-20 w-full flex justify-center">
         <button
           className={`px-12 py-2 rounded w-60 h-15 ${
             (currentQuestion && currentQuestion.type === 'multipleChoice' && selectedAnswer) || 
@@ -204,4 +202,4 @@ const QuizWeek1 = () => {
   );
 };
 
-export default QuizWeek1;
+export default QuizWeek2;

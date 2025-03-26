@@ -139,7 +139,7 @@ const QuizWeek1 = () => {
         </div>
        
       </div>
-    <div className='flex flex-col items-center h-110 mt-10 '>
+     <div className='flex flex-col items-center h-110 mt-10 '>
          {/* Quiz Content */}
           <div className="px-10 flex flex-col items-center justify-center  w-4xl h-110 bg-[#141a35] rounded-xl border">
             <h1 className="text-2xl font-bold mb-6">Week 1 - Quiz</h1>
@@ -179,7 +179,7 @@ const QuizWeek1 = () => {
               </div>
             )}
           </div>
-    </div>
+     </div>
       
 
       {/* Next Button */}
