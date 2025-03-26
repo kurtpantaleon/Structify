@@ -83,7 +83,9 @@ export default function Page1() {
       {/* Top bar with navigation arrows + progress bar */}
       <SubHeading2
         progress={currentIndex + 1} // 1-based progress index
-        totalSteps={lessons.length}
+        totalSteps={lessons.length}   
+        exitPath="/week2Page"
+
         onNext={nextLesson}
         onPrev={prevLesson}
       />

@@ -9,13 +9,15 @@ import UncheckIcon from '../assets/images/Uncheck Icon.png';
 import PracticeIcon from '../assets/images/Practice Icon.png';
 import StudyIcon from '../assets/images/Study Icon.png';
 import LearningPath from '../components/LearningPath';
-import Data from "../assets/clip/data.mp4"
-import Computer from "../assets/clip/Computer.mp4"
-import Type from "../assets/clip/types.mp4"
+
+import card1 from "../assets/clip/Algorithm.mp4"
+import card2 from "../assets/clip/time.mp4"
+import card3 from "../assets/clip/simple.mp4"
+
 import Challenges from "../assets/clip/challenge.mp4"
 
 
-function MainPage() {
+export default function Week2Page() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isLearningPathOpen, setIsLearningPathOpen] = useState(false);
 
@@ -45,10 +47,10 @@ function MainPage() {
               <h2 className="text-2xl font-extrabold tracking-wide mb-2">SECTION</h2>
               <div className="border-t border-white/50 w-full mb-5"></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <CardSection title="Introduction to Data Structures" subtitle="Lesson 1" progress={12.5} path="/page1"  mediaSrc={Data} mediaType="video"/>
-                <CardSection title="Computers and Data Structures" subtitle="Lesson 2" progress={0} path="/l2page1" mediaSrc={Computer} mediaType="video"/>
-                <CardSection title="Types of Data Structures?" subtitle="Lesson 3" progress={0} path="/l3page1" mediaSrc={Type} mediaType="video" />
-                <CardSection title="Create a Mini Library" subtitle="Challenge" progress={0} path="/week1Page" mediaSrc={Challenges} mediaType="video"/>
+                <CardSection title="What is an Algorithm?" subtitle="Lesson 1" progress={12.5} path="/week2Page1"  mediaSrc={card1} mediaType="video"/>
+                <CardSection title="Time & Space Complexity (Efficiency)" subtitle="Lesson 2" progress={0} path="/week2L2Page1" mediaSrc={card2} mediaType="video"/>
+                <CardSection title="Writing a Simple Algorithm" subtitle="Lesson 3" progress={0} path="/week2L3Page1" mediaSrc={card3} mediaType="video" />
+                <CardSection title="Create Your Own Sorting Algorithm" subtitle="Challenge" progress={0} path="/quizWeek2" mediaSrc={Challenges} mediaType="video"/>
               </div>
             </div>
 
@@ -80,4 +82,4 @@ function MainPage() {
   );
 }
 
-export default MainPage;
+

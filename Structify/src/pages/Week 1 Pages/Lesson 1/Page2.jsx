@@ -82,6 +82,8 @@ export default function Page2() {
       <SubHeading2
         progress={currentIndex + 1} // 1-based progress index
         totalSteps={lessons.length}
+        exitPath="/mainPage"
+
         onNext={nextLesson}
         onPrev={prevLesson}
       />

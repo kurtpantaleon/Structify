@@ -4,16 +4,16 @@ import { Link } from 'react-router-dom'; // Use Link for navigation
 function LearningPath({ isOpen, toggleLearningPath }) {
   // Weeks data without actual progress, just placeholders
   const weeks = [
-    { week: "Week 1", topic: "Introduction to Data Structures", path: "/lesson1" },
-    { week: "Week 2", topic: "Algorithms & Complexity", path: "/lesson2" },
-    { week: "Week 3", topic: "String Processing", path: "/lesson3" },
-    { week: "Week 4 & 5", topic: "Array, Records, and Pointers", path: "/lesson4" },
-    { week: "Week 6", topic: "Linked Lists", path: "/lesson5" },
-    { week: "Week 7 & 8", topic: "Stacks, Queues, and Recursion", path: "/lesson6" },
-    { week: "Week 10 & 11", topic: "Trees", path: "/lesson7" },
-    { week: "Week 12 & 13", topic: "Graph Algorithms", path: "/lesson8" },
-    { week: "Week 14 to 16", topic: "Sorting and Searching", path: "/lesson9" },
-    { week: "Week 17", topic: "Hashing", path: "/lesson10" },
+    { week: "", topic: "Introduction to Data Structures", path: "/mainPage" },
+    { week: "", topic: "Algorithms & Complexity", path: "/week2Page" },
+    { week: "", topic: "String Processing", path: "/week3Page" },
+    { week: "", topic: "Array, Records, and Pointers", path: "/week4Page" },
+    { week: "", topic: "Linked Lists", path: "/week5Page" },
+    { week: "", topic: "Stacks, Queues, and Recursion", path: "/week6Page" },
+    { week: "", topic: "Trees", path: "/week7Page" },
+    { week: "", topic: "Graph Algorithms", path: "/week8Page" },
+    { week: "", topic: "Sorting and Searching", path: "/week9Page" },
+    { week: "", topic: "Hashing", path: "/week10Page" },
   ];
 
   return (
