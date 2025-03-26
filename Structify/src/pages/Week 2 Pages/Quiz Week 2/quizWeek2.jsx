@@ -140,10 +140,11 @@ const QuizWeek1 = () => {
         </div>
         <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-black ml-4">?</div>
       </div>
+      <div className='flex flex-col items-center h-110 mt-10 '>
 
-      {/* Quiz Content */}
-      <div className="flex flex-col items-center justify-center px-4 pt-8 pb-16">
-        <h1 className="text-2xl font-bold mb-6">Week 1 - Quiz</h1>
+         {/* Quiz Content */}
+      <div className="px-10 flex flex-col items-center justify-center  w-4xl h-110 bg-[#141a35] rounded-xl border">
+        <h1 className="text-2xl font-bold mb-6">Week 2 - Quiz</h1>
         
         <p className="text-xl mb-8 text-center">
           {currentQuestionIndex + 1}. {currentQuestion && currentQuestion.question}
@@ -180,11 +181,13 @@ const QuizWeek1 = () => {
           </div>
         )}
       </div>
+      </div>
+     
 
       {/* Next Button */}
       <div className="fixed bottom-8 w-full flex justify-center">
         <button
-          className={`px-12 py-2 rounded ${
+          className={`px-12 py-2 rounded w-60 h-15 ${
             (currentQuestion && currentQuestion.type === 'multipleChoice' && selectedAnswer) || 
             (currentQuestion && currentQuestion.type === 'completeSentence' && textAnswer.trim() !== '')
               ? 'bg-blue-600 hover:bg-blue-700'
