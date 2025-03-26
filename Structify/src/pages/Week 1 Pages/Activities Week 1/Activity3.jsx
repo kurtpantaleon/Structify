@@ -35,7 +35,7 @@ function DraggableItem({ id, label }) {
       style={style}
       {...listeners}
       {...attributes}
-      className="p-2 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-xl"
+      className="p-2 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-47"
     >
       {label}
     </div>
