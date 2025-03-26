@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Header';
 import { useNavigate } from 'react-router-dom';
-import Week3Page from '../../Week4Page';
+
 
 
 const QuizWeek3 = () => {
@@ -114,7 +114,7 @@ const QuizWeek3 = () => {
             </button>
             <button
               className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-lg font-medium"
-              onClick={week4Page}
+              onClick={week4page}
             >
               Next
             </button>
@@ -141,50 +141,54 @@ const QuizWeek3 = () => {
         <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-black ml-4">?</div>
       </div>
 
-      {/* Quiz Content */}
-      <div className="flex flex-col items-center justify-center px-4 pt-8 pb-16">
-        <h1 className="text-2xl font-bold mb-6">Week 1 - Quiz</h1>
-        
-        <p className="text-xl mb-8 text-center">
-          {currentQuestionIndex + 1}. {currentQuestion && currentQuestion.question}
-        </p>
+      <div className='flex flex-col items-center h-110 mt-10 '>
 
-        {/* Answer Options */}
-        {currentQuestion && currentQuestion.type === 'multipleChoice' ? (
-          <div className="w-full max-w-md space-y-4">
-            {currentQuestion.options.map((option, index) => (
-              <button
-                key={index}
-                className={`w-full p-3 text-center rounded ${
-                  selectedAnswer === option ? 'bg-blue-600' : 'bg-indigo-900'
-                }`}
-                onClick={() => handleAnswerSelect(option)}
-              >
-                {option}
-              </button>
-            ))}
+            {/* Quiz Content */}
+          <div className="px-10 flex flex-col items-center justify-center  w-4xl h-110 bg-[#141a35] rounded-xl border">
+            <h1 className="text-2xl font-bold mb-6">Week 3 - Quiz</h1>
+            
+            <p className="text-xl mb-8 text-center">
+              {currentQuestionIndex + 1}. {currentQuestion && currentQuestion.question}
+            </p>
+
+            {/* Answer Options */}
+            {currentQuestion && currentQuestion.type === 'multipleChoice' ? (
+              <div className="w-full max-w-md space-y-4">
+                {currentQuestion.options.map((option, index) => (
+                  <button
+                    key={index}
+                    className={`w-full p-3 text-center rounded ${
+                      selectedAnswer === option ? 'bg-blue-600' : 'bg-indigo-900'
+                    }`}
+                    onClick={() => handleAnswerSelect(option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="w-full max-w-md">
+                <div className="flex items-center justify-center text-xl">
+                  <p className="mr-2">{currentQuestion && currentQuestion.preText}</p>
+                  <input
+                    type="text"
+                    value={textAnswer}
+                    onChange={handleTextChange}
+                    className="bg-[#1F274D] border-b-2 border-white px-2 py-1 w-32 text-center focus:outline-none"
+                    placeholder="________"
+                  />
+                  <p className="ml-2">{currentQuestion && currentQuestion.postText}</p>
+                </div>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="w-full max-w-md">
-            <div className="flex items-center justify-center text-xl">
-              <p className="mr-2">{currentQuestion && currentQuestion.preText}</p>
-              <input
-                type="text"
-                value={textAnswer}
-                onChange={handleTextChange}
-                className="bg-[#1F274D] border-b-2 border-white px-2 py-1 w-32 text-center focus:outline-none"
-                placeholder="________"
-              />
-              <p className="ml-2">{currentQuestion && currentQuestion.postText}</p>
-            </div>
-          </div>
-        )}
       </div>
+      
 
       {/* Next Button */}
       <div className="fixed bottom-8 w-full flex justify-center">
         <button
-          className={`px-12 py-2 rounded ${
+          className={`px-12 py-2 rounded w-60 h-15 ${
             (currentQuestion && currentQuestion.type === 'multipleChoice' && selectedAnswer) || 
             (currentQuestion && currentQuestion.type === 'completeSentence' && textAnswer.trim() !== '')
               ? 'bg-blue-600 hover:bg-blue-700'
