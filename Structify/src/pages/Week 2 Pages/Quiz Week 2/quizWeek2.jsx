@@ -114,7 +114,7 @@ const QuizWeek1 = () => {
             </button>
             <button
               className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-lg font-medium"
-              onClick={Week3Page}
+              onClick={week3Page}
             >
               Next
             </button>
