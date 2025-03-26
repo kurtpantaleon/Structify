@@ -134,7 +134,13 @@
         "week": 2,
         "type": "multipleChoice",
         "question": "A ______ is used to describe an algorithm’s efficiency.",
-        "correctAnswer": "Complexity"
+        "options": [
+          "It takes more time and resources to complete a task.",
+          "The weight of data stored in memory.",
+          "The maximum file size an algorithm can process.",
+          "The number of variables used in a program."
+        ],
+        "correctAnswer": "It takes more time and resources to complete a task."
       },
       {
         "id": 13,
