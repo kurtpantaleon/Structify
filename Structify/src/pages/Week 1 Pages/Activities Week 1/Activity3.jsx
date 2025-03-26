@@ -3,7 +3,13 @@ import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 
-const options = ["Queue", "Stack", "Array", "Queue", "Hash Table"];
+const options = [
+  { id: "Queue-1", label: "Queue" },
+  { id: "Stack", label: "Stack" },
+  { id: "Array", label: "Array" },
+  { id: "Queue-2", label: "Queue" },
+  { id: "Hash Table", label: "Hash Table" }
+];
 const descriptions = [
   "Train Line",
   "Browser Back Button",
@@ -16,35 +22,38 @@ const correctAnswers = {
   "Train Line": "Queue",
   "Browser Back Button": "Stack",
   "Contacts List on Phone ": "Array",
-  "People Standing in Line": "Mali",
+  "People Standing in Line": "Queue",
   "Student Record System": "Hash Table"
 };
 
-function DraggableItem({ id, children }) {
+function DraggableItem({ id, label }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
   const style = transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : {};
   return (
-    <div 
-      ref={setNodeRef} 
-      style={style} 
-      {...listeners} 
-      {...attributes} 
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
       className="p-2 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-xl"
     >
-      {children}
+      {label}
     </div>
   );
 }
 
 function DroppableArea({ id, answer }) {
   const { setNodeRef } = useDroppable({ id });
+
+  const answerLabel = options.find((option) => option.id === answer)?.label || "";
+
   return (
     <div 
       ref={setNodeRef} 
       className="w-100 h-15 bg-gradient-to-r from-blue-900 to-blue-1000 rounded-lg border border-white/100  font-bold rounded flex items-center justify-center text-white text-xl"
     >
-      {answer || ""}
-    </div>
+       {answerLabel}
+       </div>
   );
 }
 
@@ -117,9 +126,9 @@ export default function Activity1() {
 
           {/* Answer options */}
           <div className="flex w-5xl gap-4 mt-3 justify-center">
-            {options.map((opt) => (
-              !Object.values(answers).includes(opt) && (
-                <DraggableItem key={opt} id={opt}>{opt}</DraggableItem>
+          {options.map((opt) => (
+              !Object.values(answers).includes(opt.id) && (
+                <DraggableItem key={opt.id} id={opt.id} label={opt.label} />
               )
             ))}
           </div>
