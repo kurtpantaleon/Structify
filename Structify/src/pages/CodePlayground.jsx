@@ -2,6 +2,21 @@ import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Importing useNavigate
 import Editor from "@monaco-editor/react";
 
+// Keyframe for animated gradient border
+const gradientAnimation = `
+@keyframes gradientBorder {
+  0% {
+    border-image-source: linear-gradient(45deg, #0000ff, #0099cc);
+  }
+  50% {
+    border-image-source: linear-gradient(45deg, #0099cc, #0000ff);
+  }
+  100% {
+    border-image-source: linear-gradient(45deg, #0000ff, #0099cc);
+  }
+}
+`;
+
 function CodePlayground() {
   const editorRef = useRef(null);
   const [consoleOutput, setConsoleOutput] = useState([]);
@@ -55,8 +70,10 @@ function CodePlayground() {
 
       <h2 className="text-3xl font-bold mb-6 text-center text-cyan-400 animate-pulse">Structify Code Playground</h2>
 
-      {/* Code Editor */}
-      <div className="w-4/5 h-[300px] border border-blue-700 rounded-lg overflow-hidden shadow-lg">
+      {/* Code Editor with Animated Gradient Border */}
+      <style>{gradientAnimation}</style>
+      <div className="w-4/5 h-[300px] border-8 border-solid border-transparent rounded-lg overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-3xl"
+           style={{ animation: 'gradientBorder 3s infinite' }}>
         <Editor
           height="300px"
           theme="vs-dark"
@@ -74,9 +91,9 @@ function CodePlayground() {
         Run Code
       </button>
 
-      {/* Console Output */}
-      <h3 className="text-lg font-semibold mt-6">Console Output:</h3>
-      <div className="w-4/5 h-[150px] mt-3 p-3 bg-[#1A2A4B] text-green-400 font-mono overflow-y-auto border border-blue-800 rounded-lg shadow-xl">
+      {/* Console Output with Animated Gradient Border */}
+      <div className="w-4/5 h-[150px] mt-3 p-3 bg-[#1A2A4B] text-green-400 font-mono overflow-y-auto border-8 border-solid border-transparent rounded-lg shadow-xl"
+           style={{ animation: 'gradientBorder 3s infinite' }}>
         {consoleOutput.map((line, index) => (
           <div key={index} className="text-sm">
             {line}
