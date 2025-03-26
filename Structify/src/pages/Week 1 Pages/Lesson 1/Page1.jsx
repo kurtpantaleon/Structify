@@ -8,7 +8,7 @@ import LessonPages from '../../../components/LessonPages';
 
 import Bullet1 from '../../../assets/clip/clip1.mp4';
 import Bullet2 from '../../../assets/clip/clip2.mp4';
-import Bullet3 from '../../../assets/clip/clip2.mp4';
+import Bullet3 from '../../../assets/clip/clip3.mp4';
 
 
 

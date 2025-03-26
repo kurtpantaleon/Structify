@@ -31,7 +31,8 @@ export default function Page2() {
           
         </>
       ),
-      video: Bullet1, // MP4 video source
+      video: Bullet1, 
+      
     },
     {
       description: (
