@@ -72,8 +72,12 @@ function CodePlayground() {
 
       {/* Code Editor with Animated Gradient Border */}
       <style>{gradientAnimation}</style>
-      <div className="w-4/5 h-[300px] border-8 border-solid border-transparent rounded-lg overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-3xl"
-           style={{ animation: 'gradientBorder 3s infinite' }}>
+      <div className="w-4/5 h-[300px] border-8 border-solid border-transparent overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-3xl"
+           style={{
+             borderImageSource: 'linear-gradient(45deg, #0000ff, #0099cc)',
+             borderImageSlice: 1,
+             animation: 'gradientBorder 3s infinite'
+           }}>
         <Editor
           height="300px"
           theme="vs-dark"
@@ -93,7 +97,11 @@ function CodePlayground() {
 
       {/* Console Output with Animated Gradient Border */}
       <div className="w-4/5 h-[150px] mt-3 p-3 bg-[#1A2A4B] text-green-400 font-mono overflow-y-auto border-8 border-solid border-transparent rounded-lg shadow-xl"
-           style={{ animation: 'gradientBorder 3s infinite' }}>
+           style={{
+             borderImageSource: 'linear-gradient(45deg, #0000ff, #0099cc)',
+             borderImageSlice: 1,
+             animation: 'gradientBorder 3s infinite'
+           }}>
         {consoleOutput.map((line, index) => (
           <div key={index} className="text-sm">
             {line}
