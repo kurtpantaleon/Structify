@@ -44,13 +44,16 @@ function DraggableItem({ id, label }) {
 
 function DroppableArea({ id, answer }) {
   const { setNodeRef } = useDroppable({ id });
+
+  const answerLabel = options.find((option) => option.id === answer)?.label || "";
+
   return (
     <div 
       ref={setNodeRef} 
       className="w-100 h-15 bg-gradient-to-r from-blue-900 to-blue-1000 rounded-lg border border-white/100  font-bold rounded flex items-center justify-center text-white text-xl"
     >
-      {answer || ""}
-    </div>
+       {answerLabel}
+       </div>
   );
 }
 
