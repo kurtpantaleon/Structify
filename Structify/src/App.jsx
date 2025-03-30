@@ -2,6 +2,8 @@ import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import StartPage from './pages/Start'
 
+import Login from './pages/Login'
+
 /*WEEK 1 */
 import MainPage from './pages/MainPage'
 {/*Week 1 Activities */}
@@ -255,7 +257,7 @@ import CodePlayground  from './pages/CodePlayground'
 function App() {
   return (
     <Routes>
-
+      <Route path="/login" element={<Login/>} />
       <Route path="/" element={<StartPage/>} />
       <Route path="/mainPage" element={<MainPage/>} />
       {/* Week 1 lesson 1 pages */}

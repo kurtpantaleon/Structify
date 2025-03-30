@@ -23,7 +23,7 @@ function MainPage() {
     setIsLearningPathOpen(!isLearningPathOpen);
   };
   return (
-    <div className=" min-h-screen bg-gradient-to-tr from-[#1F274D] via-[#2e3a6c] to-[#1F274D] text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-tr from-[#1F274D] via-[#2e3a6c] to-[#1F274D] text-white flex flex-col">
       <Header />
 
       <SubHeading 
