@@ -1,20 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom"; // Importing useNavigate
-import CodeIcon from "../assets/images/Code Icon.png";
-import LeaderboardIcon from "../assets/images/Leaderboard Icon.png";
-import ProfileIcon from "../assets/images/sample profile.png";
-import LearnIcon from "../assets/images/Learn Icon.png";
-import PvPIcon from "../assets/images/PvP Icon.png"; 
+import HomeIcon from "../assets/images/Home Icon.png"; 
+import InstructorIcon from "../assets/images/Instructor Icon.png"; 
+import StudentIcon from "../assets/images/Student Icon.png"; 
 
-const NavigationBar = () => {
+const AdminNavigationBar = () => {
   return (
     <div className="fixed bg-[#1F274D] h-screen w-20 flex flex-col items-center py-8 space-y-8 px-1 border-r-1 border-gray-200">
       {/* Navigation Icons */}
       <nav className="flex flex-col space-y-8">
-        <NavItem to="/mainPage" icon={LearnIcon} label="Learn" />
-        <NavItem to="/codePlayground" icon={CodeIcon} label="Code" />
-        <NavItem to="/pvp" icon={PvPIcon} label="PvP" />
-        <NavItem to="/ranks" icon={LeaderboardIcon} label="Ranks" />
+        <NavItem to="/" icon={HomeIcon} label="Home" />
+        <NavItem to="/" icon={InstructorIcon} label="Instructor" />
+        <NavItem to="/" icon={StudentIcon} label="Student" /> 
         {/* Optionally, you can add more NavItems as needed */}
       </nav>
     </div>
@@ -34,7 +31,7 @@ const NavItem = ({ to, icon, label }) => {
       <img src={icon} alt={label} className="h-8 w-9 group-hover:opacity-75 transition-opacity" />
       <span className="text-white text-xs mt-1">{label}</span>
     </div>
-  ); 
+  );
 };
 
-export default NavigationBar;
+export default AdminNavigationBar;

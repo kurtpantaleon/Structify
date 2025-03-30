@@ -105,7 +105,6 @@ import Week3L3Page6 from './pages/Week 3 Pages/Lesson 3/L3Page6'
 import Week3L3Page7 from './pages/Week 3 Pages/Lesson 3/L3Page7'
 import Week3L3Page8 from './pages/Week 3 Pages/Lesson 3/L3Page8'
 
-
 /*WEEK 4 */
 import Week4 from './pages/Week4Page'
 {/*Week 4 Activities */}
@@ -141,7 +140,6 @@ import Week4L3Page5 from './pages/Week 4-5 Pages/Lesson 3/L3Page5'
 import Week4L3Page6 from './pages/Week 4-5 Pages/Lesson 3/L3Page6'
 import Week4L3Page7 from './pages/Week 4-5 Pages/Lesson 3/L3Page7'
 import Week4L3Page8 from './pages/Week 4-5 Pages/Lesson 3/L3Page8'
-
 
 /*WEEK 6 */
 import Week6 from './pages/Week6Page'
@@ -251,8 +249,9 @@ import Week10Activity1 from './pages/Week 10-11 Pages/Activities Week 10&11/Acti
 import Week10Activity2 from './pages/Week 10-11 Pages/Activities Week 10&11/Activity2'
 import Week10Activity3 from './pages/Week 10-11 Pages/Activities Week 10&11/Activity3'
 
-
 import CodePlayground  from './pages/CodePlayground'
+
+import AdminPage from './pages/admin/adminPage'
 
 function App() {
   return (
@@ -501,6 +500,8 @@ function App() {
 
       {/* Code Playground */}
       <Route path="/codePlayground" element={<CodePlayground/>} />
+
+      <Route path="/adminPage" element={<AdminPage/>} />
     </Routes> 
   )
 }
