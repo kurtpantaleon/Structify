@@ -287,12 +287,9 @@ function App() {
       {/* Week 1 quiz */}
       <Route path='/quizWeek1' element={<QuizWeek1/>} />
 
-      
-
       {/* Week 2*/}
       <Route path="/week2Page" element={<Week2/>} />
       <Route path='/quizWeek2' element={<QuizWeek2/>} />
-
       {/* Week 2 lesson 1 pages */}
       <Route path="/week2Page1" element={<Week2Page1/>} />
       <Route path="/week2Page2" element={<Week2Page2/>} />
@@ -358,7 +355,7 @@ function App() {
       <Route path="/week3Activity2" element={<Week3Activity2/>} />
       <Route path="/week3Activity3" element={<Week3Activity3/>} />
 
-       {/* Week 4&5*/}
+      {/* Week 4&5*/}
       <Route path="/week4Page" element={<Week4/>} />
       <Route path='/quizWeek4-5' element={<QuizWeek4/>} />
       {/* Week 4&5 lesson 1 pages */}
@@ -424,16 +421,12 @@ function App() {
       <Route path="/week6L3Page7" element={<Week6L3Page7/>} />
       <Route path="/week6L3Page8" element={<Week6L3Page8/>} />
       {/* Week 6 activities */}
-
-
       <Route path="/week6Activity1" element={<Week6Activity1/>} />
       <Route path="/week6Activity2" element={<Week6Activity2/>} />
       <Route path="/week6Activity3" element={<Week6Activity3/>} />
 
-
-      
-     {/* Week 7*/}
-     <Route path="/week7Page" element={<Week7/>} />
+      {/* Week 7*/}
+      <Route path="/week7Page" element={<Week7/>} />
       {/* Week7 quiz */}
       <Route path='/quizWeek7' element={<QuizWeek7/>} />
       {/* Week 7 lesson 1 pages */}
@@ -445,7 +438,6 @@ function App() {
       <Route path="/week7Page6" element={<Week7Page6/>} />
       <Route path="/week7Page7" element={<Week7Page7/>} />
       <Route path="/week7Page8" element={<Week7Page8/>} />
-
       {/* Week 7 lesson 2 pages */}
       <Route path="/week7L2Page1" element={<Week7L2Page1/>} />
       <Route path="/week7L2Page2" element={<Week7L2Page2/>} />
@@ -465,13 +457,9 @@ function App() {
       <Route path="/week7L3Page7" element={<Week7L3Page7/>} />
       <Route path="/week7L3Page8" element={<Week7L3Page8/>} />
       {/* Week 7 activities */}
-
-
       <Route path="/week7Activity1" element={<Week7Activity1/>} />
       <Route path="/week7Activity2" element={<Week7Activity2/>} />
       <Route path="/week7Activity3" element={<Week7Activity3/>} />
-
- 
 
       {/* Week 10&11*/}
       <Route path="/week10Page" element={<Week10/>} />
@@ -508,7 +496,6 @@ function App() {
       <Route path="/week10Activity1" element={<Week10Activity1/>} />
       <Route path="/week10Activity2" element={<Week10Activity2/>} />
       <Route path="/week10Activity3" element={<Week10Activity3/>} />
-
 
       {/* Code Playground */}
       <Route path="/codePlayground" element={<CodePlayground/>} />
