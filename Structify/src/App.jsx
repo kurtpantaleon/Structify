@@ -501,7 +501,7 @@ function App() {
       {/* Code Playground */}
       <Route path="/codePlayground" element={<CodePlayground/>} />
 
-      <Route path="/adminPage" element={<AdminPage/>} />
+      <Route path="/AdminPage" element={<AdminPage/>} />
     </Routes> 
   )
 }

@@ -4,7 +4,7 @@ import Header from '../../components/AdminHeader'
 import AdminNavigationBar from '../../components/AdminNavigationBar'
 import AdminSubHeading from '../../components/AdminSubHeading'
 
-function adminPage() {
+function AdminPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
 
   return (
@@ -13,10 +13,11 @@ function adminPage() {
         
         <AdminSubHeading 
         toggleNav={() => setIsNavOpen(!isNavOpen)}
+        title = "Class"
         />
         
         {isNavOpen && (
-          <div className="w-20 border-r border-r border-white/20 bg-[#141a35]">
+          <div className="w-20 border-r border-white/20 bg-[#141a35]">
             <AdminNavigationBar />
           </div>
         )}
@@ -25,4 +26,4 @@ function adminPage() {
   )
 }
 
-export default adminPage;
+export default AdminPage;

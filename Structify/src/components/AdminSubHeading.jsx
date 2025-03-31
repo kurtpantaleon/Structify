@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import HamburgerMenu from '../assets/images/Hamburger Menu.png';
 import CreateIcon from '../assets/images/Create Icon.png';
 
-function AdminSubHeading({ toggleNav }) {
+function AdminSubHeading({ toggleNav, title }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+    setIsDropdownOpen(!isDropdownOpen); 
   };
 
   return (
@@ -17,7 +17,9 @@ function AdminSubHeading({ toggleNav }) {
       </button>
 
       {/* Center: Subheading */}
-      <h2 className="text-white font-bold text-lg tracking-wide">Admin Page</h2>
+      <h2 className="text-white font-bold text-lg tracking-wide">
+        {title}
+      </h2>
 
       {/* ✅ Create Dropdown */}
       <div className="relative">
