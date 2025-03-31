@@ -29,6 +29,7 @@ function MainPage() {
       <SubHeading 
         toggleNav={() => setIsNavOpen(!isNavOpen)}
         toggleLearningPath={() => setIsLearningPathOpen(!isLearningPathOpen)}
+        title="Introduction to Data Structures"
       />
 
       <div className="flex flex-1 ">

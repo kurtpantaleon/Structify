@@ -2,7 +2,7 @@ import React from 'react'
 import HamburgerMenu from '../assets/images/Hamburger Menu.png'
 import MenuButton from '../assets/images/Menu Button.png'   
 
-function SubHeading({ toggleNav, toggleLearningPath }) {
+function SubHeading({ toggleNav, toggleLearningPath, title }) {
   return (
     <div className="bg-[#1F274D] flex items-center justify-between px-7 py-3 shadow-md border-b-1 border-gray-200">
       {/* ✅ Click Button to Toggle Sidebar */}
@@ -12,7 +12,7 @@ function SubHeading({ toggleNav, toggleLearningPath }) {
 
       {/* Center: Subheading Title */}
       <h2 className="text-white font-bold text-lg tracking-wide">
-        Introduction to Data Structures
+        {title}
       </h2>
 
       {/* Right: Mene Icon */}

@@ -24,6 +24,7 @@ function Week3Page() {
       <SubHeading 
         toggleNav={() => setIsNavOpen(!isNavOpen)}
         toggleLearningPath={() => setIsLearningPathOpen(!isLearningPathOpen)}
+        title = "Stacks, Queues, and Recursion"
       />
 
       {/* Main Layout Grid */}

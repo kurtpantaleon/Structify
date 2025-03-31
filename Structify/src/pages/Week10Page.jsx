@@ -24,6 +24,7 @@ function Week3Page() {
       <SubHeading 
         toggleNav={() => setIsNavOpen(!isNavOpen)}
         toggleLearningPath={() => setIsLearningPathOpen(!isLearningPathOpen)}
+        title = "Trees"
       />
 
       {/* Main Layout Grid */}

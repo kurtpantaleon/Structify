@@ -24,6 +24,7 @@ function Week3Page() {
       <SubHeading 
         toggleNav={() => setIsNavOpen(!isNavOpen)}
         toggleLearningPath={() => setIsLearningPathOpen(!isLearningPathOpen)}
+        title="Arrays, Records, and Pointers"
       />
 
       {/* Main Layout Grid */}

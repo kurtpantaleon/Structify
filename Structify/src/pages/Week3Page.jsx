@@ -31,6 +31,7 @@ export default function Week3Page() {
       <SubHeading 
         toggleNav={() => setIsNavOpen(!isNavOpen)}
         toggleLearningPath={() => setIsLearningPathOpen(!isLearningPathOpen)}
+        title="String Processing"
       />
 
       <div className="flex flex-1 ">

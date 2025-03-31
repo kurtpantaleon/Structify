@@ -31,6 +31,7 @@ export default function Week2Page() {
       <SubHeading 
         toggleNav={() => setIsNavOpen(!isNavOpen)}
         toggleLearningPath={() => setIsLearningPathOpen(!isLearningPathOpen)}
+        title="Algorithms & Complexity"
       />
 
       <div className="flex flex-1 ">
