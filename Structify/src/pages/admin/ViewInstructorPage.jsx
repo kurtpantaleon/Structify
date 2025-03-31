@@ -8,7 +8,7 @@ function ViewInstructorPage() {
 
   const instructors = [
     { instructor: 'Kurt Pantaleon', section: 'BSIT 3-1' },
-    { instructor: 'Lebron James', section: 'BSIT 3-2' },
+    { instructor: 'Lebron James', section: 'BSIT 3-2' }, 
     { instructor: 'Stephen Curry', section: 'BSIT 3-3' },
   ];
 
