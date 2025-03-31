@@ -253,6 +253,8 @@ import CodePlayground  from './pages/CodePlayground'
 
 import AdminPage from './pages/admin/adminPage'
 
+import ViewInstructorPage from './pages/admin/ViewInstructorPage'
+
 function App() {
   return (
     <Routes>
@@ -502,6 +504,9 @@ function App() {
       <Route path="/codePlayground" element={<CodePlayground/>} />
 
       <Route path="/AdminPage" element={<AdminPage/>} />
+
+      <Route path="/ViewInstructorPage" element={<ViewInstructorPage/>} />
+
     </Routes> 
   )
 }
