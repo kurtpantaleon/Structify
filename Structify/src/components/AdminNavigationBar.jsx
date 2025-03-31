@@ -9,9 +9,9 @@ const AdminNavigationBar = () => {
     <div className="fixed bg-[#1F274D] h-screen w-20 flex flex-col items-center py-8 space-y-8 px-1 border-r-1 border-gray-200">
       {/* Navigation Icons */}
       <nav className="flex flex-col space-y-8">
-        <NavItem to="/" icon={HomeIcon} label="Home" />
-        <NavItem to="/" icon={InstructorIcon} label="Instructor" />
-        <NavItem to="/" icon={StudentIcon} label="Student" /> 
+        <NavItem to="/AdminPage" icon={HomeIcon} label="Home" />
+        <NavItem to="/ViewInstructorPage" icon={InstructorIcon} label="Instructor" />
+        <NavItem to="/ViewStudentsPage" icon={StudentIcon} label="Student" /> 
         {/* Optionally, you can add more NavItems as needed */}
       </nav>
     </div>

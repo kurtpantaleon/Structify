@@ -255,6 +255,8 @@ import AdminPage from './pages/admin/adminPage'
 
 import ViewInstructorPage from './pages/admin/ViewInstructorPage'
 
+import ViewStudentsPage from './pages/admin/ViewStudentsPage'
+
 function App() {
   return (
     <Routes>
@@ -501,11 +503,13 @@ function App() {
       <Route path="/week10Activity3" element={<Week10Activity3/>} />
 
       {/* Code Playground */}
-      <Route path="/codePlayground" element={<CodePlayground/>} />
+      <Route path="/codePlayground" element={<CodePlayground/>} /> 
 
       <Route path="/AdminPage" element={<AdminPage/>} />
 
       <Route path="/ViewInstructorPage" element={<ViewInstructorPage/>} />
+
+      <Route path="/ViewStudentsPage" element={<ViewStudentsPage/>} />
 
     </Routes> 
   )
