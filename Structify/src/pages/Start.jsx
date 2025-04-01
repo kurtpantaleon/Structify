@@ -33,7 +33,7 @@ function StartPage() {
         <div className="flex items-center flex-col gap-4 w-full px-4">
           {/* Student button */}
           <button
-            onClick={() => navigate('/mainPage')}
+            onClick={() => navigate('/Login')}
             className="bg-blue-500 text-white py-3 rounded-lg w-full max-w-xs hover:bg-blue-600 transition-all duration-200"
           >
             Student
@@ -41,7 +41,7 @@ function StartPage() {
 
           {/* Admin button */}
           <button
-            onClick={() => navigate('/adminPage')}
+            onClick={() => navigate('/Login')}
             className="bg-blue-500 text-white py-3 rounded-lg w-full max-w-xs hover:bg-blue-600 transition-all duration-200"
           >
             Admin

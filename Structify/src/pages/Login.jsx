@@ -3,29 +3,49 @@ import { useState } from 'react'
 import Logo from '../assets/images/Logo Structify.png'
 //import { createUserWithEmailAndPassword } from "firebase/auth" (import this if you want to create an account)
 import { signInWithEmailAndPassword } from "firebase/auth" //import this if you want to login to an account
-import { auth } from '../services/firebaseConfig'
+import { auth, db } from '../services/firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
-    const [error, setError] = React.useState(false);
-    const [email, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
-
-    const handleLogin = (e) => {
-        e.preventDefault(); //prevent default/empty form submission
-
-        //use createUserWithEmailAndPassword htmlFor adminPage (when creating an account)
-        signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            // Signed up 
-            const user = userCredential.user;
-            console.log(user);
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
+    const [error, setError] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+    
+    const handleLogin = async (e) => {
+        e.preventDefault();//prevent default/empty form submission
+        try {
+          //use createUserWithEmailAndPassword htmlFor adminPage (when creating an account)
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+    
+          // Fetch role
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            const role = userDoc.data().role;
+            console.log("User role:", role);
+    
+            // Redirect based on role
+            if (role === "admin") {
+              navigate("/adminPage");
+            } else if (role === "student") {
+              navigate("/MainPage");
+            } else if (role === "instructor") {
+              navigate("/");
+            } else {
+              setError(true);
+              console.error("No role found.");
+            }
+          } else {
             setError(true);
-  });
-    }
+            console.error("User data not found.");
+          }
+        } catch (err) {
+          console.error("Login failed:", err.message);
+          setError(true);
+        }
+      };
     return ( 
     <section className="bg-gradient-to-tr from-[#1F274D] via-[#2e3a6c] to-[#1F274D] w-screen h-screen overflow-hidden">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
