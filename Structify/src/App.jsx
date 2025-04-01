@@ -1,8 +1,9 @@
 import './App.css'
-import { Routes, Route } from 'react-router-dom'
+import { useContext } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import StartPage from './pages/Start'
-
 import Login from './pages/Login'
+import { AuthContext } from './context/authContext'
 
 /*WEEK 1 */
 import MainPage from './pages/MainPage'
@@ -258,259 +259,263 @@ import ViewInstructorPage from './pages/admin/ViewInstructorPage'
 import ViewStudentsPage from './pages/admin/ViewStudentsPage'
 
 function App() {
+  // For login
+  const {currentUser} = useContext(AuthContext);
+  const RequireAuth = ({children}) => {
+    return currentUser ? children : <Navigate to="/Login"/>;
+  }
+  console.log(currentUser)
+
   return (
     <Routes>
       <Route path="/login" element={<Login/>} />
       <Route path="/" element={<StartPage/>} />
-      <Route path="/mainPage" element={<MainPage/>} />
+      <Route path="/mainPage" element={<RequireAuth><MainPage/></RequireAuth>} />
+
       {/* Week 1 lesson 1 pages */}
-      <Route path="/page1" element={<Page1/>} />
-      <Route path="/page2" element={<Page2/>} />
-      <Route path="/page3" element={<Page3/>} />
-      <Route path="/page4" element={<Page4/>} />
-      <Route path="/page5" element={<Page5/>} />
-      <Route path="/page6" element={<Page6/>} />
-      <Route path="/page7" element={<Page7/>} />
-      <Route path="/page8" element={<Page8/>} />
+      <Route path="/page1" element={<RequireAuth><Page1 /></RequireAuth>} />
+      <Route path="/page2" element={<RequireAuth><Page2 /></RequireAuth>} />
+      <Route path="/page3" element={<RequireAuth><Page3 /></RequireAuth>} />
+      <Route path="/page4" element={<RequireAuth><Page4 /></RequireAuth>} />
+      <Route path="/page5" element={<RequireAuth><Page5 /></RequireAuth>} />
+      <Route path="/page6" element={<RequireAuth><Page6 /></RequireAuth>} />
+      <Route path="/page7" element={<RequireAuth><Page7 /></RequireAuth>} />
+      <Route path="/page8" element={<RequireAuth><Page8 /></RequireAuth>} />
       {/* Week 1 lesson 2 pages */}
-      <Route path="/l2page1" element={<L2Page1/>} />
-      <Route path="/l2page2" element={<L2Page2/>} />
-      <Route path="/l2page3" element={<L2Page3/>} />
-       {/* Week 1 lesson 3 pages */}
-      <Route path="/l3page1" element={<L3Page1/>} />
-      <Route path="/l3page2" element={<L3Page2/>} />
-      <Route path="/l3page3" element={<L3Page3/>} />
-      <Route path="/l3page4" element={<L3Page4/>} />
-      <Route path="/l3page5" element={<L3Page5/>} />
-      <Route path="/l3page6" element={<L3Page6/>} />
-      <Route path="/l3page7" element={<L3Page7/>} />
-      <Route path="/l3page8" element={<L3Page8/>} />
-      {/* Week activity 1 */} 
-      <Route path="/week1activity1" element={<Week1Activity1/>} />
-      <Route path="/week1activity2" element={<Week1Activity2/>} />
-      <Route path="/week1activity3" element={<Week1Activity3/>} />
+      <Route path="/l2page1" element={<RequireAuth><L2Page1 /></RequireAuth>} />
+      <Route path="/l2page2" element={<RequireAuth><L2Page2 /></RequireAuth>} />
+      <Route path="/l2page3" element={<RequireAuth><L2Page3 /></RequireAuth>} />
+      {/* Week 1 lesson 3 pages */}
+      <Route path="/l3page1" element={<RequireAuth><L3Page1 /></RequireAuth>} />
+      <Route path="/l3page2" element={<RequireAuth><L3Page2 /></RequireAuth>} />
+      <Route path="/l3page3" element={<RequireAuth><L3Page3 /></RequireAuth>} />
+      <Route path="/l3page4" element={<RequireAuth><L3Page4 /></RequireAuth>} />
+      <Route path="/l3page5" element={<RequireAuth><L3Page5 /></RequireAuth>} />
+      <Route path="/l3page6" element={<RequireAuth><L3Page6 /></RequireAuth>} />
+      <Route path="/l3page7" element={<RequireAuth><L3Page7 /></RequireAuth>} />
+      <Route path="/l3page8" element={<RequireAuth><L3Page8 /></RequireAuth>} />
+      {/* Week activity 1 */}
+      <Route path="/week1activity1" element={<RequireAuth><Week1Activity1 /></RequireAuth>} />
+      <Route path="/week1activity2" element={<RequireAuth><Week1Activity2 /></RequireAuth>} />
+      <Route path="/week1activity3" element={<RequireAuth><Week1Activity3 /></RequireAuth>} />
       {/* Week 1 quiz */}
-      <Route path='/quizWeek1' element={<QuizWeek1/>} />
+      <Route path='/quizWeek1' element={<RequireAuth><QuizWeek1 /></RequireAuth>} />
 
-      {/* Week 2*/}
-      <Route path="/week2Page" element={<Week2/>} />
-      <Route path='/quizWeek2' element={<QuizWeek2/>} />
+      {/* Week 2 */}
+      <Route path="/week2Page" element={<RequireAuth><Week2 /></RequireAuth>} />
+      <Route path='/quizWeek2' element={<RequireAuth><QuizWeek2 /></RequireAuth>} />
       {/* Week 2 lesson 1 pages */}
-      <Route path="/week2Page1" element={<Week2Page1/>} />
-      <Route path="/week2Page2" element={<Week2Page2/>} />
-      <Route path="/week2Page3" element={<Week2Page3/>} />
-      <Route path="/week2Page4" element={<Week2Page4/>} />
-      <Route path="/week2Page5" element={<Week2Page5/>} />
-      <Route path="/week2Page6" element={<Week2Page6/>} />
-      <Route path="/week2Page7" element={<Week2Page7/>} />
-      <Route path="/week2Page8" element={<Week2Page8/>} />
+      <Route path="/week2Page1" element={<RequireAuth><Week2Page1 /></RequireAuth>} />
+      <Route path="/week2Page2" element={<RequireAuth><Week2Page2 /></RequireAuth>} />
+      <Route path="/week2Page3" element={<RequireAuth><Week2Page3 /></RequireAuth>} />
+      <Route path="/week2Page4" element={<RequireAuth><Week2Page4 /></RequireAuth>} />
+      <Route path="/week2Page5" element={<RequireAuth><Week2Page5 /></RequireAuth>} />
+      <Route path="/week2Page6" element={<RequireAuth><Week2Page6 /></RequireAuth>} />
+      <Route path="/week2Page7" element={<RequireAuth><Week2Page7 /></RequireAuth>} />
+      <Route path="/week2Page8" element={<RequireAuth><Week2Page8 /></RequireAuth>} />
       {/* Week 2 lesson 2 pages */}
-      <Route path="/week2L2Page1" element={<Week2L2Page1/>} />
-      <Route path="/week2L2Page2" element={<Week2L2Page2/>} />
-      <Route path="/week2L2Page3" element={<Week2L2Page3/>} />
-      <Route path="/week2L2Page4" element={<Week2L2Page4/>} />
-      <Route path="/week2L2Page5" element={<Week2L2Page5/>} />
-      <Route path="/week2L2Page6" element={<Week2L2Page6/>} />
-      <Route path="/week2L2Page7" element={<Week2L2Page7/>} />
-      <Route path="/week2L2Page8" element={<Week2L2Page8/>} />
+      <Route path="/week2L2Page1" element={<RequireAuth><Week2L2Page1 /></RequireAuth>} />
+      <Route path="/week2L2Page2" element={<RequireAuth><Week2L2Page2 /></RequireAuth>} />
+      <Route path="/week2L2Page3" element={<RequireAuth><Week2L2Page3 /></RequireAuth>} />
+      <Route path="/week2L2Page4" element={<RequireAuth><Week2L2Page4 /></RequireAuth>} />
+      <Route path="/week2L2Page5" element={<RequireAuth><Week2L2Page5 /></RequireAuth>} />
+      <Route path="/week2L2Page6" element={<RequireAuth><Week2L2Page6 /></RequireAuth>} />
+      <Route path="/week2L2Page7" element={<RequireAuth><Week2L2Page7 /></RequireAuth>} />
+      <Route path="/week2L2Page8" element={<RequireAuth><Week2L2Page8 /></RequireAuth>} />
       {/* Week 2 lesson 3 pages */}
-      <Route path="/week2L3Page1" element={<Week2L3Page1/>} />
-      <Route path="/week2L3Page2" element={<Week2L3Page2/>} />
-      <Route path="/week2L3Page3" element={<Week2L3Page3/>} />
-      <Route path="/week2L3Page4" element={<Week2L3Page4/>} />
-      <Route path="/week2L3Page5" element={<Week2L3Page5/>} />
-      <Route path="/week2L3Page6" element={<Week2L3Page6/>} />
+      <Route path="/week2L3Page1" element={<RequireAuth><Week2L3Page1 /></RequireAuth>} />
+      <Route path="/week2L3Page2" element={<RequireAuth><Week2L3Page2 /></RequireAuth>} />
+      <Route path="/week2L3Page3" element={<RequireAuth><Week2L3Page3 /></RequireAuth>} />
+      <Route path="/week2L3Page4" element={<RequireAuth><Week2L3Page4 /></RequireAuth>} />
+      <Route path="/week2L3Page5" element={<RequireAuth><Week2L3Page5 /></RequireAuth>} />
+      <Route path="/week2L3Page6" element={<RequireAuth><Week2L3Page6 /></RequireAuth>} />
       {/* Week 2 activities */}
-      <Route path="/week2Activity1" element={<Week2Activity1/>} />
-      <Route path="/week2Activity2" element={<Week2Activity2/>} />
-      <Route path="/week2Activity3" element={<Week2Activity3/>} />
-      
+      <Route path="/week2Activity1" element={<RequireAuth><Week2Activity1 /></RequireAuth>} />
+      <Route path="/week2Activity2" element={<RequireAuth><Week2Activity2 /></RequireAuth>} />
+      <Route path="/week2Activity3" element={<RequireAuth><Week2Activity3 /></RequireAuth>} />
+
       {/* Week 3 */}
-      <Route path="/week3Page" element={<Week3/>} />
-      <Route path='/quizWeek3' element={<QuizWeek3/>} />
-      {/* Week 2 lesson 1 pages */}
-      <Route path="/week3Page1" element={<Week3Page1/>} />
-      <Route path="/week3Page2" element={<Week3Page2/>} />
-      <Route path="/week3Page3" element={<Week3Page3/>} />
-      <Route path="/week3Page4" element={<Week3Page4/>} />
-      <Route path="/week3Page5" element={<Week3Page5/>} />
-      <Route path="/week3Page6" element={<Week3Page6/>} />
-      <Route path="/week3Page7" element={<Week3Page7/>} />
-      <Route path="/week3Page8" element={<Week3Page8/>} />
+      <Route path="/week3Page" element={<RequireAuth><Week3 /></RequireAuth>} />
+      <Route path='/quizWeek3' element={<RequireAuth><QuizWeek3 /></RequireAuth>} />
+      {/* Week 3 lesson 1 pages */}
+      <Route path="/week3Page1" element={<RequireAuth><Week3Page1 /></RequireAuth>} />
+      <Route path="/week3Page2" element={<RequireAuth><Week3Page2 /></RequireAuth>} />
+      <Route path="/week3Page3" element={<RequireAuth><Week3Page3 /></RequireAuth>} />
+      <Route path="/week3Page4" element={<RequireAuth><Week3Page4 /></RequireAuth>} />
+      <Route path="/week3Page5" element={<RequireAuth><Week3Page5 /></RequireAuth>} />
+      <Route path="/week3Page6" element={<RequireAuth><Week3Page6 /></RequireAuth>} />
+      <Route path="/week3Page7" element={<RequireAuth><Week3Page7 /></RequireAuth>} />
+      <Route path="/week3Page8" element={<RequireAuth><Week3Page8 /></RequireAuth>} />
       {/* Week 3 lesson 2 pages */}
-      <Route path="/week3L2Page1" element={<Week3L2Page1/>} />
-      <Route path="/week3L2Page2" element={<Week3L2Page2/>} />
-      <Route path="/week3L2Page3" element={<Week3L2Page3/>} />
-      <Route path="/week3L2Page4" element={<Week3L2Page4/>} />
-      <Route path="/week3L2Page5" element={<Week3L2Page5/>} />
-      <Route path="/week3L2Page6" element={<Week3L2Page6/>} />
-      <Route path="/week3L2Page7" element={<Week3L2Page7/>} />
-      <Route path="/week3L2Page8" element={<Week3L2Page8/>} />
+      <Route path="/week3L2Page1" element={<RequireAuth><Week3L2Page1 /></RequireAuth>} />
+      <Route path="/week3L2Page2" element={<RequireAuth><Week3L2Page2 /></RequireAuth>} />
+      <Route path="/week3L2Page3" element={<RequireAuth><Week3L2Page3 /></RequireAuth>} />
+      <Route path="/week3L2Page4" element={<RequireAuth><Week3L2Page4 /></RequireAuth>} />
+      <Route path="/week3L2Page5" element={<RequireAuth><Week3L2Page5 /></RequireAuth>} />
+      <Route path="/week3L2Page6" element={<RequireAuth><Week3L2Page6 /></RequireAuth>} />
+      <Route path="/week3L2Page7" element={<RequireAuth><Week3L2Page7 /></RequireAuth>} />
+      <Route path="/week3L2Page8" element={<RequireAuth><Week3L2Page8 /></RequireAuth>} />
       {/* Week 3 lesson 3 pages */}
-      <Route path="/week3L3Page1" element={<Week3L3Page1/>} />
-      <Route path="/week3L3Page2" element={<Week3L3Page2/>} />
-      <Route path="/week3L3Page3" element={<Week3L3Page3/>} />
-      <Route path="/week3L3Page4" element={<Week3L3Page4/>} />
-      <Route path="/week3L3Page5" element={<Week3L3Page5/>} />
-      <Route path="/week3L3Page6" element={<Week3L3Page6/>} />
-      <Route path="/week3L3Page7" element={<Week3L3Page7/>} />
-      <Route path="/week3L3Page8" element={<Week3L3Page8/>} />
+      <Route path="/week3L3Page1" element={<RequireAuth><Week3L3Page1 /></RequireAuth>} />
+      <Route path="/week3L3Page2" element={<RequireAuth><Week3L3Page2 /></RequireAuth>} />
+      <Route path="/week3L3Page3" element={<RequireAuth><Week3L3Page3 /></RequireAuth>} />
+      <Route path="/week3L3Page4" element={<RequireAuth><Week3L3Page4 /></RequireAuth>} />
+      <Route path="/week3L3Page5" element={<RequireAuth><Week3L3Page5 /></RequireAuth>} />
+      <Route path="/week3L3Page6" element={<RequireAuth><Week3L3Page6 /></RequireAuth>} />
+      <Route path="/week3L3Page7" element={<RequireAuth><Week3L3Page7 /></RequireAuth>} />
+      <Route path="/week3L3Page8" element={<RequireAuth><Week3L3Page8 /></RequireAuth>} />
       {/* Week 3 activities */}
-      <Route path="/week3Activity1" element={<Week3Activity1/>} />
-      <Route path="/week3Activity2" element={<Week3Activity2/>} />
-      <Route path="/week3Activity3" element={<Week3Activity3/>} />
+      <Route path="/week3Activity1" element={<RequireAuth><Week3Activity1 /></RequireAuth>} />
+      <Route path="/week3Activity2" element={<RequireAuth><Week3Activity2 /></RequireAuth>} />
+      <Route path="/week3Activity3" element={<RequireAuth><Week3Activity3 /></RequireAuth>} />
 
-      {/* Week 4&5*/}
-      <Route path="/week4Page" element={<Week4/>} />
-      <Route path='/quizWeek4-5' element={<QuizWeek4/>} />
+      {/* Week 4&5 */}
+      <Route path="/week4Page" element={<RequireAuth><Week4 /></RequireAuth>} />
+      <Route path='/quizWeek4-5' element={<RequireAuth><QuizWeek4 /></RequireAuth>} />
       {/* Week 4&5 lesson 1 pages */}
-      <Route path="/week4Page1" element={<Week4Page1/>} />
-      <Route path="/week4Page2" element={<Week4Page2/>} />
-      <Route path="/week4Page3" element={<Week4Page3/>} />
-      <Route path="/week4Page4" element={<Week4Page4/>} />
-      <Route path="/week4Page5" element={<Week4Page5/>} />
-      <Route path="/week4Page6" element={<Week4Page6/>} />
-      <Route path="/week4Page7" element={<Week4Page7/>} />
-      <Route path="/week4Page8" element={<Week4Page8/>} />
+      <Route path="/week4Page1" element={<RequireAuth><Week4Page1 /></RequireAuth>} />
+      <Route path="/week4Page2" element={<RequireAuth><Week4Page2 /></RequireAuth>} />
+      <Route path="/week4Page3" element={<RequireAuth><Week4Page3 /></RequireAuth>} />
+      <Route path="/week4Page4" element={<RequireAuth><Week4Page4 /></RequireAuth>} />
+      <Route path="/week4Page5" element={<RequireAuth><Week4Page5 /></RequireAuth>} />
+      <Route path="/week4Page6" element={<RequireAuth><Week4Page6 /></RequireAuth>} />
+      <Route path="/week4Page7" element={<RequireAuth><Week4Page7 /></RequireAuth>} />
+      <Route path="/week4Page8" element={<RequireAuth><Week4Page8 /></RequireAuth>} />
       {/* Week 4&5 lesson 2 pages */}
-      <Route path="/week4L2Page1" element={<Week4L2Page1/>} />
-      <Route path="/week4L2Page2" element={<Week4L2Page2/>} />
-      <Route path="/week4L2Page3" element={<Week4L2Page3/>} />
-      <Route path="/week4L2Page4" element={<Week4L2Page4/>} />
-      <Route path="/week4L2Page5" element={<Week4L2Page5/>} />
-      <Route path="/week4L2Page6" element={<Week4L2Page6/>} />
-      <Route path="/week4L2Page7" element={<Week4L2Page7/>} />
-      <Route path="/week4L2Page8" element={<Week4L2Page8/>} />
+      <Route path="/week4L2Page1" element={<RequireAuth><Week4L2Page1 /></RequireAuth>} />
+      <Route path="/week4L2Page2" element={<RequireAuth><Week4L2Page2 /></RequireAuth>} />
+      <Route path="/week4L2Page3" element={<RequireAuth><Week4L2Page3 /></RequireAuth>} />
+      <Route path="/week4L2Page4" element={<RequireAuth><Week4L2Page4 /></RequireAuth>} />
+      <Route path="/week4L2Page5" element={<RequireAuth><Week4L2Page5 /></RequireAuth>} />
+      <Route path="/week4L2Page6" element={<RequireAuth><Week4L2Page6 /></RequireAuth>} />
+      <Route path="/week4L2Page7" element={<RequireAuth><Week4L2Page7 /></RequireAuth>} />
+      <Route path="/week4L2Page8" element={<RequireAuth><Week4L2Page8 /></RequireAuth>} />
       {/* Week 4&5 lesson 3 pages */}
-      <Route path="/week4L3Page1" element={<Week4L3Page1/>} />
-      <Route path="/week4L3Page2" element={<Week4L3Page2/>} />
-      <Route path="/week4L3Page3" element={<Week4L3Page3/>} />
-      <Route path="/week4L3Page4" element={<Week4L3Page4/>} />
-      <Route path="/week4L3Page5" element={<Week4L3Page5/>} />
-      <Route path="/week4L3Page6" element={<Week4L3Page6/>} />
-      <Route path="/week4L3Page7" element={<Week4L3Page7/>} />
-      <Route path="/week4L3Page8" element={<Week4L3Page8/>} />
+      <Route path="/week4L3Page1" element={<RequireAuth><Week4L3Page1 /></RequireAuth>} />
+      <Route path="/week4L3Page2" element={<RequireAuth><Week4L3Page2 /></RequireAuth>} />
+      <Route path="/week4L3Page3" element={<RequireAuth><Week4L3Page3 /></RequireAuth>} />
+      <Route path="/week4L3Page4" element={<RequireAuth><Week4L3Page4 /></RequireAuth>} />
+      <Route path="/week4L3Page5" element={<RequireAuth><Week4L3Page5 /></RequireAuth>} />
+      <Route path="/week4L3Page6" element={<RequireAuth><Week4L3Page6 /></RequireAuth>} />
+      <Route path="/week4L3Page7" element={<RequireAuth><Week4L3Page7 /></RequireAuth>} />
+      <Route path="/week4L3Page8" element={<RequireAuth><Week4L3Page8 /></RequireAuth>} />
       {/* Week 4&5 activities */}
-      <Route path="/week4Activity1" element={<Week4Activity1/>} />
-      <Route path="/week4Activity2" element={<Week4Activity2/>} />
-      <Route path="/week4Activity3" element={<Week4Activity3/>} />
+      <Route path="/week4Activity1" element={<RequireAuth><Week4Activity1 /></RequireAuth>} />
+      <Route path="/week4Activity2" element={<RequireAuth><Week4Activity2 /></RequireAuth>} />
+      <Route path="/week4Activity3" element={<RequireAuth><Week4Activity3 /></RequireAuth>} />
 
-      {/* Week 6*/}
-      <Route path="/week6Page" element={<Week6/>} />
+      {/* Week 6 */}
+      <Route path="/week6Page" element={<RequireAuth><Week6 /></RequireAuth>} />
       {/* Week 6 quiz */}
-      <Route path='/quizWeek6' element={<QuizWeek6/>} />
+      <Route path='/quizWeek6' element={<RequireAuth><QuizWeek6 /></RequireAuth>} />
       {/* Week 6 lesson 1 pages */}
-      <Route path="/week6Page1" element={<Week6Page1/>} />
-      <Route path="/week6Page2" element={<Week6Page2/>} />
-      <Route path="/week6Page3" element={<Week6Page3/>} />
-      <Route path="/week6Page4" element={<Week6Page4/>} />
-      <Route path="/week6Page5" element={<Week6Page5/>} />
-      <Route path="/week6Page6" element={<Week6Page6/>} />
-      <Route path="/week6Page7" element={<Week6Page7/>} />
+      <Route path="/week6Page1" element={<RequireAuth><Week6Page1 /></RequireAuth>} />
+      <Route path="/week6Page2" element={<RequireAuth><Week6Page2 /></RequireAuth>} />
+      <Route path="/week6Page3" element={<RequireAuth><Week6Page3 /></RequireAuth>} />
+      <Route path="/week6Page4" element={<RequireAuth><Week6Page4 /></RequireAuth>} />
+      <Route path="/week6Page5" element={<RequireAuth><Week6Page5 /></RequireAuth>} />
+      <Route path="/week6Page6" element={<RequireAuth><Week6Page6 /></RequireAuth>} />
+      <Route path="/week6Page7" element={<RequireAuth><Week6Page7 /></RequireAuth>} />
       {/* Week 6 lesson 2 pages */}
-      <Route path="/week6L2Page1" element={<Week6L2Page1/>} />
-      <Route path="/week6L2Page2" element={<Week6L2Page2/>} />
-      <Route path="/week6L2Page3" element={<Week6L2Page3/>} />
-      <Route path="/week6L2Page4" element={<Week6L2Page4/>} />
-      <Route path="/week6L2Page5" element={<Week6L2Page5/>} />
-      <Route path="/week6L2Page6" element={<Week6L2Page6/>} />
-      <Route path="/week6L2Page7" element={<Week6L2Page7/>} />
-      <Route path="/week6L2Page8" element={<Week6L2Page8/>} />
+      <Route path="/week6L2Page1" element={<RequireAuth><Week6L2Page1 /></RequireAuth>} />
+      <Route path="/week6L2Page2" element={<RequireAuth><Week6L2Page2 /></RequireAuth>} />
+      <Route path="/week6L2Page3" element={<RequireAuth><Week6L2Page3 /></RequireAuth>} />
+      <Route path="/week6L2Page4" element={<RequireAuth><Week6L2Page4 /></RequireAuth>} />
+      <Route path="/week6L2Page5" element={<RequireAuth><Week6L2Page5 /></RequireAuth>} />
+      <Route path="/week6L2Page6" element={<RequireAuth><Week6L2Page6 /></RequireAuth>} />
+      <Route path="/week6L2Page7" element={<RequireAuth><Week6L2Page7 /></RequireAuth>} />
+      <Route path="/week6L2Page8" element={<RequireAuth><Week6L2Page8 /></RequireAuth>} />
       {/* Week 6 lesson 3 pages */}
-      <Route path="/week6L3Page1" element={<Week6L3Page1/>} />
-      <Route path="/week6L3Page2" element={<Week6L3Page2/>} />
-      <Route path="/week6L3Page3" element={<Week6L3Page3/>} />
-      <Route path="/week6L3Page4" element={<Week6L3Page4/>} />
-      <Route path="/week6L3Page5" element={<Week6L3Page5/>} />
-      <Route path="/week6L3Page6" element={<Week6L3Page6/>} />
-      <Route path="/week6L3Page7" element={<Week6L3Page7/>} />
-      <Route path="/week6L3Page8" element={<Week6L3Page8/>} />
+      <Route path="/week6L3Page1" element={<RequireAuth><Week6L3Page1 /></RequireAuth>} />
+      <Route path="/week6L3Page2" element={<RequireAuth><Week6L3Page2 /></RequireAuth>} />
+      <Route path="/week6L3Page3" element={<RequireAuth><Week6L3Page3 /></RequireAuth>} />
+      <Route path="/week6L3Page4" element={<RequireAuth><Week6L3Page4 /></RequireAuth>} />
+      <Route path="/week6L3Page5" element={<RequireAuth><Week6L3Page5 /></RequireAuth>} />
+      <Route path="/week6L3Page6" element={<RequireAuth><Week6L3Page6 /></RequireAuth>} />
+      <Route path="/week6L3Page7" element={<RequireAuth><Week6L3Page7 /></RequireAuth>} />
+      <Route path="/week6L3Page8" element={<RequireAuth><Week6L3Page8 /></RequireAuth>} />
       {/* Week 6 activities */}
-      <Route path="/week6Activity1" element={<Week6Activity1/>} />
-      <Route path="/week6Activity2" element={<Week6Activity2/>} />
-      <Route path="/week6Activity3" element={<Week6Activity3/>} />
+      <Route path="/week6Activity1" element={<RequireAuth><Week6Activity1 /></RequireAuth>} />
+      <Route path="/week6Activity2" element={<RequireAuth><Week6Activity2 /></RequireAuth>} />
+      <Route path="/week6Activity3" element={<RequireAuth><Week6Activity3 /></RequireAuth>} />
 
-      {/* Week 7*/}
-      <Route path="/week7Page" element={<Week7/>} />
-      {/* Week7 quiz */}
-      <Route path='/quizWeek7' element={<QuizWeek7/>} />
+      {/* Week 7 */}
+      <Route path="/week7Page" element={<RequireAuth><Week7 /></RequireAuth>} />
+      {/* Week 7 quiz */}
+      <Route path='/quizWeek7' element={<RequireAuth><QuizWeek7 /></RequireAuth>} />
       {/* Week 7 lesson 1 pages */}
-      <Route path="/week7Page1" element={<Week7Page1/>} />
-      <Route path="/week7Page2" element={<Week7Page2/>} />
-      <Route path="/week7Page3" element={<Week7Page3/>} />
-      <Route path="/week7Page4" element={<Week7Page4/>} />
-      <Route path="/week7Page5" element={<Week7Page5/>} />
-      <Route path="/week7Page6" element={<Week7Page6/>} />
-      <Route path="/week7Page7" element={<Week7Page7/>} />
-      <Route path="/week7Page8" element={<Week7Page8/>} />
+      <Route path="/week7Page1" element={<RequireAuth><Week7Page1 /></RequireAuth>} />
+      <Route path="/week7Page2" element={<RequireAuth><Week7Page2 /></RequireAuth>} />
+      <Route path="/week7Page3" element={<RequireAuth><Week7Page3 /></RequireAuth>} />
+      <Route path="/week7Page4" element={<RequireAuth><Week7Page4 /></RequireAuth>} />
+      <Route path="/week7Page5" element={<RequireAuth><Week7Page5 /></RequireAuth>} />
+      <Route path="/week7Page6" element={<RequireAuth><Week7Page6 /></RequireAuth>} />
+      <Route path="/week7Page7" element={<RequireAuth><Week7Page7 /></RequireAuth>} />
+      <Route path="/week7Page8" element={<RequireAuth><Week7Page8 /></RequireAuth>} />
       {/* Week 7 lesson 2 pages */}
-      <Route path="/week7L2Page1" element={<Week7L2Page1/>} />
-      <Route path="/week7L2Page2" element={<Week7L2Page2/>} />
-      <Route path="/week7L2Page3" element={<Week7L2Page3/>} />
-      <Route path="/week7L2Page4" element={<Week7L2Page4/>} />
-      <Route path="/week7L2Page5" element={<Week7L2Page5/>} />
-      <Route path="/week7L2Page6" element={<Week7L2Page6/>} />
-      <Route path="/week7L2Page7" element={<Week7L2Page7/>} />
-      <Route path="/week7L2Page8" element={<Week7L2Page8/>} />
+      <Route path="/week7L2Page1" element={<RequireAuth><Week7L2Page1 /></RequireAuth>} />
+      <Route path="/week7L2Page2" element={<RequireAuth><Week7L2Page2 /></RequireAuth>} />
+      <Route path="/week7L2Page3" element={<RequireAuth><Week7L2Page3 /></RequireAuth>} />
+      <Route path="/week7L2Page4" element={<RequireAuth><Week7L2Page4 /></RequireAuth>} />
+      <Route path="/week7L2Page5" element={<RequireAuth><Week7L2Page5 /></RequireAuth>} />
+      <Route path="/week7L2Page6" element={<RequireAuth><Week7L2Page6 /></RequireAuth>} />
+      <Route path="/week7L2Page7" element={<RequireAuth><Week7L2Page7 /></RequireAuth>} />
+      <Route path="/week7L2Page8" element={<RequireAuth><Week7L2Page8 /></RequireAuth>} />
       {/* Week 7 lesson 3 pages */}
-      <Route path="/week7L3Page1" element={<Week7L3Page1/>} />
-      <Route path="/week7L3Page2" element={<Week7L3Page2/>} />
-      <Route path="/week7L3Page3" element={<Week7L3Page3/>} />
-      <Route path="/week7L3Page4" element={<Week7L3Page4/>} />
-      <Route path="/week7L3Page5" element={<Week7L3Page5/>} />
-      <Route path="/week7L3Page6" element={<Week7L3Page6/>} />
-      <Route path="/week7L3Page7" element={<Week7L3Page7/>} />
-      <Route path="/week7L3Page8" element={<Week7L3Page8/>} />
+      <Route path="/week7L3Page1" element={<RequireAuth><Week7L3Page1 /></RequireAuth>} />
+      <Route path="/week7L3Page2" element={<RequireAuth><Week7L3Page2 /></RequireAuth>} />
+      <Route path="/week7L3Page3" element={<RequireAuth><Week7L3Page3 /></RequireAuth>} />
+      <Route path="/week7L3Page4" element={<RequireAuth><Week7L3Page4 /></RequireAuth>} />
+      <Route path="/week7L3Page5" element={<RequireAuth><Week7L3Page5 /></RequireAuth>} />
+      <Route path="/week7L3Page6" element={<RequireAuth><Week7L3Page6 /></RequireAuth>} />
+      <Route path="/week7L3Page7" element={<RequireAuth><Week7L3Page7 /></RequireAuth>} />
+      <Route path="/week7L3Page8" element={<RequireAuth><Week7L3Page8 /></RequireAuth>} />
       {/* Week 7 activities */}
-      <Route path="/week7Activity1" element={<Week7Activity1/>} />
-      <Route path="/week7Activity2" element={<Week7Activity2/>} />
-      <Route path="/week7Activity3" element={<Week7Activity3/>} />
+      <Route path="/week7Activity1" element={<RequireAuth><Week7Activity1 /></RequireAuth>} />
+      <Route path="/week7Activity2" element={<RequireAuth><Week7Activity2 /></RequireAuth>} />
+      <Route path="/week7Activity3" element={<RequireAuth><Week7Activity3 /></RequireAuth>} />
 
-      {/* Week 10&11*/}
-      <Route path="/week10Page" element={<Week10/>} />
+      {/* Week 10&11 */}
+      <Route path="/week10Page" element={<RequireAuth><Week10 /></RequireAuth>} />
       {/* Week 10&11 quiz */}
-      <Route path='/quizWeek10-11' element={<QuizWeek10/>} />
+      <Route path='/quizWeek10-11' element={<RequireAuth><QuizWeek10 /></RequireAuth>} />
       {/* Week 10&11 lesson 1 pages */}
-      <Route path="/week10Page1" element={<Week10Page1/>} />
-      <Route path="/week10Page2" element={<Week10Page2/>} />
-      <Route path="/week10Page3" element={<Week10Page3/>} />
-      <Route path="/week10Page4" element={<Week10Page4/>} />
-      <Route path="/week10Page5" element={<Week10Page5/>} />
-      <Route path="/week10Page6" element={<Week10Page6/>} />
-      <Route path="/week10Page7" element={<Week10Page7/>} />
-      <Route path="/week10Page8" element={<Week10Page8/>} />
-      {/* 10&11 lesson 2 pages */}
-      <Route path="/week10L2Page1" element={<Week10L2Page1/>} />
-      <Route path="/week10L2Page2" element={<Week10L2Page2/>} />
-      <Route path="/week10L2Page3" element={<Week10L2Page3/>} />
-      <Route path="/week10L2Page4" element={<Week10L2Page4/>} />
-      <Route path="/week10L2Page5" element={<Week10L2Page5/>} />
-      <Route path="/week10L2Page6" element={<Week10L2Page6/>} />
-      <Route path="/week10L2Page7" element={<Week10L2Page7/>} />
-      <Route path="/week10L2Page8" element={<Week10L2Page8/>} />
-      {/* 10&11 lesson 3 pages */}
-      <Route path="/week10L3Page1" element={<Week10L3Page1/>} />
-      <Route path="/week10L3Page2" element={<Week10L3Page2/>} />
-      <Route path="/week10L3Page3" element={<Week10L3Page3/>} />
-      <Route path="/week10L3Page4" element={<Week10L3Page4/>} />
-      <Route path="/week10L3Page5" element={<Week10L3Page5/>} />
-      <Route path="/week10L3Page6" element={<Week10L3Page6/>} />
-      <Route path="/week10L3Page7" element={<Week10L3Page7/>} />
-      <Route path="/week10L3Page8" element={<Week10L3Page8/>} />
+      <Route path="/week10Page1" element={<RequireAuth><Week10Page1 /></RequireAuth>} />
+      <Route path="/week10Page2" element={<RequireAuth><Week10Page2 /></RequireAuth>} />
+      <Route path="/week10Page3" element={<RequireAuth><Week10Page3 /></RequireAuth>} />
+      <Route path="/week10Page4" element={<RequireAuth><Week10Page4 /></RequireAuth>} />
+      <Route path="/week10Page5" element={<RequireAuth><Week10Page5 /></RequireAuth>} />
+      <Route path="/week10Page6" element={<RequireAuth><Week10Page6 /></RequireAuth>} />
+      <Route path="/week10Page7" element={<RequireAuth><Week10Page7 /></RequireAuth>} />
+      <Route path="/week10Page8" element={<RequireAuth><Week10Page8 /></RequireAuth>} />
+      {/* Week 10&11 lesson 2 pages */}
+      <Route path="/week10L2Page1" element={<RequireAuth><Week10L2Page1 /></RequireAuth>} />
+      <Route path="/week10L2Page2" element={<RequireAuth><Week10L2Page2 /></RequireAuth>} />
+      <Route path="/week10L2Page3" element={<RequireAuth><Week10L2Page3 /></RequireAuth>} />
+      <Route path="/week10L2Page4" element={<RequireAuth><Week10L2Page4 /></RequireAuth>} />
+      <Route path="/week10L2Page5" element={<RequireAuth><Week10L2Page5 /></RequireAuth>} />
+      <Route path="/week10L2Page6" element={<RequireAuth><Week10L2Page6 /></RequireAuth>} />
+      <Route path="/week10L2Page7" element={<RequireAuth><Week10L2Page7 /></RequireAuth>} />
+      <Route path="/week10L2Page8" element={<RequireAuth><Week10L2Page8 /></RequireAuth>} />
+      {/* Week 10&11 lesson 3 pages */}
+      <Route path="/week10L3Page1" element={<RequireAuth><Week10L3Page1 /></RequireAuth>} />
+      <Route path="/week10L3Page2" element={<RequireAuth><Week10L3Page2 /></RequireAuth>} />
+      <Route path="/week10L3Page3" element={<RequireAuth><Week10L3Page3 /></RequireAuth>} />
+      <Route path="/week10L3Page4" element={<RequireAuth><Week10L3Page4 /></RequireAuth>} />
+      <Route path="/week10L3Page5" element={<RequireAuth><Week10L3Page5 /></RequireAuth>} />
+      <Route path="/week10L3Page6" element={<RequireAuth><Week10L3Page6 /></RequireAuth>} />
+      <Route path="/week10L3Page7" element={<RequireAuth><Week10L3Page7 /></RequireAuth>} />
+      <Route path="/week10L3Page8" element={<RequireAuth><Week10L3Page8 /></RequireAuth>} />
       {/* Week 10&11 activities */}
-      <Route path="/week10Activity1" element={<Week10Activity1/>} />
-      <Route path="/week10Activity2" element={<Week10Activity2/>} />
-      <Route path="/week10Activity3" element={<Week10Activity3/>} />
+      <Route path="/week10Activity1" element={<RequireAuth><Week10Activity1 /></RequireAuth>} />
+      <Route path="/week10Activity2" element={<RequireAuth><Week10Activity2 /></RequireAuth>} />
+      <Route path="/week10Activity3" element={<RequireAuth><Week10Activity3 /></RequireAuth>} />
 
       {/* Code Playground */}
-      <Route path="/codePlayground" element={<CodePlayground/>} /> 
-
-      <Route path="/AdminPage" element={<AdminPage/>} />
-
-      <Route path="/ViewInstructorPage" element={<ViewInstructorPage/>} />
-
-      <Route path="/ViewStudentsPage" element={<ViewStudentsPage/>} />
-
+      <Route path="/codePlayground" element={<RequireAuth><CodePlayground /></RequireAuth>} />
+      <Route path="/AdminPage" element={<RequireAuth><AdminPage /></RequireAuth>} />
+      <Route path="/ViewInstructorPage" element={<RequireAuth><ViewInstructorPage /></RequireAuth>} />
+      <Route path="/ViewStudentsPage" element={<RequireAuth><ViewStudentsPage /></RequireAuth>} />
     </Routes> 
   )
 }
