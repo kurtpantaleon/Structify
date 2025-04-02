@@ -51,10 +51,10 @@ export default function Week4Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY 
 
 
                                                                                   {/*YUNG PATH LALAGYAN TO !!!!!!!*/}
-                <CardSection title="What are Strings?" subtitle="Lesson 1" progress={12.5} path=""  mediaSrc={card1} mediaType="video"/>
-                <CardSection title="String Operations" subtitle="Lesson 2" progress={0} path="" mediaSrc={card2} mediaType="video"/>
-                <CardSection title="How Computers Process Text" subtitle="Lesson 3" progress={0} path="" mediaSrc={card3} mediaType="video" />
-                <CardSection title="Build a Name Formatter" subtitle="Challenge" progress={0} path="" mediaSrc={Challenges} mediaType="video"/>
+                <CardSection title="What are Strings?" subtitle="Lesson 1" progress={12.5} path="/week4Page1"  mediaSrc={card1} mediaType="video"/>
+                <CardSection title="String Operations" subtitle="Lesson 2" progress={0} path="/week4L2Page1" mediaSrc={card2} mediaType="video"/>
+                <CardSection title="How Computers Process Text" subtitle="Lesson 3" progress={0} path="/week4L3Page1" mediaSrc={card3} mediaType="video" />
+                <CardSection title="Build a Name Formatter" subtitle="Challenge" progress={0} path="/quizWeek4" mediaSrc={Challenges} mediaType="video"/>
               </div>
             </div>
 
@@ -66,18 +66,18 @@ export default function Week4Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY 
               {/* Lessons */}
               <div className="space-y-4">
                                                                                      {/*YUNG PATH LALAGYAN TO !!!!!!! */}
-                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/"  />
-                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/"/>
-                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/" />
+                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/week4Page1"  />
+                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week4L2Page1"/>
+                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week4L3Page1" />
               </div>
 
               {/* Activities */}
               <div className="mt-6 space-y-4">
                 <h3 className="text-lg font-semibold text-yellow-300"> Activities</h3>
                                                                                                             {/*YUNG PATH LALAGYAN TO !!!!!!!!*/}
-                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path=""/>
-                <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path=""/>
-                <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path=""/>
+                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week4Activity1"/>
+                <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week4Activity2"/>
+                <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week4Activity3"/>
               </div>
             </div>
           </div>

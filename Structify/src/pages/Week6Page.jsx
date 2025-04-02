@@ -10,78 +10,82 @@ import PracticeIcon from '../assets/images/Practice Icon.png';
 import StudyIcon from '../assets/images/Study Icon.png';
 import LearningPath from '../components/LearningPath';
 
-function Week3Page() {
-  const [isNavOpen, setIsNavOpen] = useState(false); // Sidebar toggle state
-  const [isLearningPathOpen, setIsLearningPathOpen] = useState(false); // Learning Path toggle state
+import card1 from "../assets/clip/string.mp4"
+import card2 from "../assets/clip/operation.mp4"
+import card3 from "../assets/clip/process.mp4"
 
+import Challenges from "../assets/clip/challenge.mp4"
+
+
+export default function Week6Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY PASTE LANG
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [isLearningPathOpen, setIsLearningPathOpen] = useState(false);
+
+  const toggleLearningPath = () => {
+    setIsLearningPathOpen(!isLearningPathOpen);
+  };
   return (
-    <div className="min-h-screen bg-[#1F274D] text-white flex flex-col">
-
-      {/* Header on Top */}
+    <div className=" min-h-screen bg-gradient-to-tr from-[#1F274D] via-[#2e3a6c] to-[#1F274D] text-white flex flex-col">
       <Header />
 
-      {/* Sub Heading Below Header */}
       <SubHeading 
         toggleNav={() => setIsNavOpen(!isNavOpen)}
         toggleLearningPath={() => setIsLearningPathOpen(!isLearningPathOpen)}
-        title="Linked Lists"
+        title="String Processing"
       />
 
-      {/* Main Layout Grid */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar (left) */}
+      <div className="flex flex-1 ">
         {isNavOpen && (
-          <div className="w-20 border-r border-white/20">
+          <div className="w-20 border-r border-white/20 bg-[#141a35]">
             <NavigationBar />
           </div>
         )}
 
-        {/* Main Content */}
-        <main className="flex-1 px-20 py-8 overflow-y-auto bg-[#1F274D]">
-          
-          {/* Flex container for aligning both sections */}
-          <div className="flex items-start gap-8">
-            
-            {/* ✅ Left: Section Cards (Take most of the space) */}
-            <div className="w-5/10 flex-shrink-0"> 
-              <h2 className="text-xl font-bold mb-2">SECTION</h2>
-              <div className="border-t border-white/100 w-full mb-5"></div>
+        <main className=" flex-1 px-12 py-8 ">
+          <div className=" flex items-start gap-8 ">
+            {/* Left Section */}
+            <div className="w-6/12 flex-shrink-0">
+              <h2 className="text-2xl font-extrabold tracking-wide mb-2">SECTION</h2>
+              <div className="border-t border-white/50 w-full mb-5"></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <CardSection title="Introduction to Data Structures" subtitle="Lesson 1" progress="1/8" path="/week6Page1" />
-                <CardSection title="Computers and Data Structures" subtitle="Lesson 2" progress="0/8" path="/week6L2Page1" />
-                <CardSection title="Types of Data Structures?" subtitle="Lesson 3" progress="0/8" path="/week6L3Page1" />
-                <CardSection title="Create a Mini Library" subtitle="Challenge" />
+
+                                                                                  {/*YUNG PATH LALAGYAN TO !!!!!!!*/}
+                <CardSection title="What are Strings?" subtitle="Lesson 1" progress={12.5} path=""  mediaSrc={card1} mediaType="video"/>
+                <CardSection title="String Operations" subtitle="Lesson 2" progress={0} path="" mediaSrc={card2} mediaType="video"/>
+                <CardSection title="How Computers Process Text" subtitle="Lesson 3" progress={0} path="" mediaSrc={card3} mediaType="video" />
+                <CardSection title="Build a Name Formatter" subtitle="Challenge" progress={0} path="" mediaSrc={Challenges} mediaType="video"/>
               </div>
             </div>
 
-            {/* ✅ Right: Week 1 Section (Shrunk to remove excess space) */}
-            <div className="w-5/10 flex-shrink-0"> 
-              <h2 className="text-xl font-bold mb-2">WEEK 6</h2>
-              <div className="border-t border-white/100 w-full mb-5"></div>
+            {/* Right Section */}
+            <div className=" w-6/12 flex-shrink-0 bg-[#141a35] p-4 rounded-xl shadow-xl">
+              <h2 className="text-2xl font-extrabold tracking-wide mb-2"> WEEK 4 GOALS</h2>{/*YUNG WEEK NUMBER LANG */}
+              <div className="border-t border-white/50 w-full mb-5"></div>
 
               {/* Lessons */}
               <div className="space-y-4">
-                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/week6Page1"  />
-                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week6L2Page1"/>
-                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week6L3Page1" />
+                                                                                     {/*YUNG PATH LALAGYAN TO !!!!!!! */}
+                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/"  />
+                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/"/>
+                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/" />
               </div>
 
               {/* Activities */}
-              <div className="mt-4 space-y-4">
-                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/week6Activity1"/>
-                <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/week6Activity2"/>
-                <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/week6Activity3"/>
+              <div className="mt-6 space-y-4">
+                <h3 className="text-lg font-semibold text-yellow-300"> Activities</h3>
+                                                                                                            {/*YUNG PATH LALAGYAN TO !!!!!!!!*/}
+                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path=""/>
+                <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path=""/>
+                <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path=""/>
               </div>
             </div>
-
           </div>
         </main>
-        {/* Show LearningPath only if toggled */}
-        {isLearningPathOpen && <LearningPath />}
+        <LearningPath isOpen={isLearningPathOpen} toggleLearningPath={toggleLearningPath} />
       </div>
     </div>
-  )
+  );
 }
 
-export default Week3Page
+
