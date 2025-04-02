@@ -252,11 +252,11 @@ import Week10Activity3 from './pages/Week 10-11 Pages/Activities Week 10&11/Acti
 
 import CodePlayground  from './pages/CodePlayground'
 
-import AdminPage from './pages/admin/adminPage'
-
+{/*Admin Page */}
+import AdminPage from './pages/admin/AdminPage'
 import ViewInstructorPage from './pages/admin/ViewInstructorPage'
-
 import ViewStudentsPage from './pages/admin/ViewStudentsPage'
+import ViewClassPage from './pages/admin/ViewClassPage'
 
 function App() {
   // For login
@@ -513,9 +513,12 @@ function App() {
 
       {/* Code Playground */}
       <Route path="/codePlayground" element={<RequireAuth><CodePlayground /></RequireAuth>} />
+
+      {/* Admin Page */}
       <Route path="/AdminPage" element={<RequireAuth><AdminPage /></RequireAuth>} />
       <Route path="/ViewInstructorPage" element={<RequireAuth><ViewInstructorPage /></RequireAuth>} />
       <Route path="/ViewStudentsPage" element={<RequireAuth><ViewStudentsPage /></RequireAuth>} />
+      <Route path="/ViewClassPage" element={<RequireAuth><ViewClassPage/></RequireAuth>} />
     </Routes> 
   )
 }
