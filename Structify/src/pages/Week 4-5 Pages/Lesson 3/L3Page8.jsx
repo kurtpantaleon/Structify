@@ -62,7 +62,7 @@ export default function Page1() {
       <SubHeading2
         progress={currentIndex + 1} // 1-based progress index
         totalSteps={lessons.length}   
-        exitPath="/week3Page"
+        exitPath="/week4Page"
 
         onNext={nextLesson}
         onPrev={prevLesson}
@@ -89,7 +89,7 @@ export default function Page1() {
       {currentIndex === lessons.length - 1 && (
         <LessonFooter
           buttonText="Continue"
-          onClick={() => navigate('/weeK6Page1')}
+          onClick={() => navigate('/week4Activity1')}
           className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
         />
       )}
