@@ -22,7 +22,8 @@ function AdminSubHeading({ toggleNav, title }) {
       </h2>
 
       {/* Create Dropdown */}
-      <div className="relative">
+      <div className="opacity-0">
+        {/*
         <button onClick={toggleDropdown}>
           <img src={CreateIcon} alt="Create Icon" className="h-5 w-5 cursor-pointer" />
         </button>
@@ -47,7 +48,7 @@ function AdminSubHeading({ toggleNav, title }) {
               </li>
             </ul>
           </div>
-        )}
+        )}* */}
         
       </div>
     </div>

@@ -8,7 +8,7 @@ function ViewInstructorPage() {
 
   const instructors = [
     { instructor: 'Kurt Pantaleon', section: 'BSIT 3-1' },
-    { instructor: 'Lebron James', section: 'BSIT 3-2' }, 
+    { instructor: 'LeBron James', section: 'BSIT 3-2' },
     { instructor: 'Stephen Curry', section: 'BSIT 3-3' },
   ];
 
@@ -25,36 +25,39 @@ function ViewInstructorPage() {
         </div>
       )}
 
-      {/* Add Button */}
-      <div className="max-w-4xl mx-auto mt-10 flex justify-end px-6">
-        <button className="bg-[#141a35] text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-[#1f274d] transition cursor-pointer">
-          Add Instructor
-        </button>
-      </div>
-
       {/* Instructor List */}
-      <div className="max-w-4xl mx-auto mt-4 bg-white p-6 rounded-lg shadow">
-        {instructors.map((item, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between py-4 border-b last:border-b-0"
-          >
-            {/* Instructor Name */}
-            <span className="text-lg font-medium text-[#141a35]">
-              {item.instructor}
-            </span>
+      <div className="max-w-6xl mx-auto mt-7 bg-white p-6 rounded-lg shadow h-[75vh] flex flex-col">
+        {/* Add Instructor Button */}
+        <div className="flex justify-end mb-4">
+          <button className="bg-[#141a35] text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-[#1f274d] transition">
+            Add Instructor
+          </button>
+        </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center gap-2">
-              <button className="bg-[#5c70c8] text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-[#1f274d] transition">
-                {item.section}
-              </button>
-              <button className="bg-red-500 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-red-600 transition">
-                Delete
-              </button>
+        {/* Scrollable Instructor List */}
+        <div className="overflow-y-auto pr-2 space-y-4 flex-grow">
+          {instructors.map((item, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between py-3 border-b"
+            >
+              <div>
+                <h3 className="text-lg font-semibold text-[#141a35]">
+                  {item.instructor}
+                </h3>
+                <p className="text-sm text-gray-600">{item.section}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button className="text-sm font-medium text-blue-700 hover:underline cursor-pointer">
+                  Remove
+                </button>
+                <button className="text-sm font-medium text-red-500 hover:underline cursor-pointer">
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
