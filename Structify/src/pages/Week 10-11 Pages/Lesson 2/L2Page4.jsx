@@ -1,49 +1,99 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react'; // React and useState hook
+import { useNavigate } from 'react-router-dom'; // For navigation between pages
 
+// Importing components and assets
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/images/Week10&11-2 Images/Lesson2/Page 4/Bullet 1.png';
+
+import Bullet1 from '../../../assets/clip/clip1.mp4';
+
+
+
+
+
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
 
+export default function Page1() {
+  const navigate = useNavigate(); // Hook to trigger route changes
+  const [currentIndex, setCurrentIndex] = useState(0); // Track current lesson index
 
-
-export default function L2Page4() {
-
-  const navigate = useNavigate();
-
-  const handleClick = (path) => {
-    navigate(path); // navigating to the given path
-  }
-
-  // Lesson content stored in an array
+  // All slides in this lesson
   const lessons = [
     {
-      description: <>Efficient searching: Finding an element in a BST is faster than searching in a list.</>,
-      image: Bullet1
+      description: (
+        <>
+         
+          <span className="font-extrabold text-yellow-400 animate-pulse">
+          Efficient searching:
+          </span>{' '}
+          Finding an element in a BST is {' '}
+          <span className="font-extrabold text-yellow-400 animate-pulse">
+          faster than searching in a list.
+          </span>
+          
+          
+        </>
+      ),
+      video: Bullet1, // MP4 video source
     }
   ];
 
+  // Move to next lesson if not last
+  const nextLesson = () => {
+    if (currentIndex < lessons.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    }
+  };
+
+  // Move to previous lesson if not first
+  const prevLesson = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#1F274D] text-white flex flex-col">
+    <div className="h-screen overflow-hidden bg-gradient-to-b from-[#1F274D] to-[#0E1328] text-white flex flex-col font-sans relative">
       <Header />
-      <SubHeading2 />
-      <LessonPages 
-        title="Why Are BSTs Useful?"
-        lessons={lessons}  // Pass lessons array
-        leftIcon={BigLeftNextIcon}
-        rightIcon={BigRightNextIcon}
+
+      {/* Top bar with navigation arrows + progress bar */}
+      <SubHeading2
+        progress={currentIndex + 1} // 1-based progress index
+        totalSteps={lessons.length}   
+        exitPath="/week10Page"
+
+        onNext={nextLesson}
+        onPrev={prevLesson}
       />
-      <LessonFooter 
-      buttonText="Continue"
-      onClick={handleClick} 
-      path="/week10L2Page5"
-      />
+
+      {/* Lesson content area */}
+      <div className="flex-grow flex flex-col justify-center items-center gap-8 overflow-y-auto px-4 animate-fade-in">
+        <LessonPages
+          title={
+            <span className="text-3xl font-black text-center text-teal-400 drop-shadow-md">
+           Why Are BSTs Useful?
+            </span>
+          }
+          lessons={lessons}
+          currentIndex={currentIndex}
+          nextLesson={nextLesson}
+          prevLesson={prevLesson}
+          leftIcon={BigLeftNextIcon}
+          rightIcon={BigRightNextIcon}
+        />
+      </div>
+
+      {/* Conditionally render the footer button when at last lesson */}
+      {currentIndex === lessons.length - 1 && (
+        <LessonFooter
+          buttonText="Continue"
+          onClick={() => navigate('/week10L2Page5')}
+          className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
+        />
+      )}
     </div>
   );
 }
-
- 

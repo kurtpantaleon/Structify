@@ -60,7 +60,7 @@ export default function Week4Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY 
 
             {/* Right Section */}
             <div className=" w-6/12 flex-shrink-0 bg-[#141a35] p-4 rounded-xl shadow-xl">
-              <h2 className="text-2xl font-extrabold tracking-wide mb-2"> WEEK 4 GOALS</h2>{/*YUNG WEEK NUMBER LANG */}
+              <h2 className="text-2xl font-extrabold tracking-wide mb-2"> WEEK 4&5 GOALS</h2>{/*YUNG WEEK NUMBER LANG */}
               <div className="border-t border-white/50 w-full mb-5"></div>
 
               {/* Lessons */}
