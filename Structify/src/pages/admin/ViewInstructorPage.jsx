@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
 
 function ViewInstructorPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const [instructors, setInstructors] = useState([]);
 
-  const instructors = [
-    { instructor: 'Kurt Pantaleon', section: 'BSIT 3-1' },
-    { instructor: 'LeBron James', section: 'BSIT 3-2' },
-    { instructor: 'Stephen Curry', section: 'BSIT 3-3' },
-  ];
+  useEffect(() => {
+    const fetchInstructors = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'instructors'));
+        const data = querySnapshot.docs.map((doc) => doc.data());
+        setInstructors(data);
+      } catch (error) {
+        console.error('Error fetching instructors:', error);
+      }
+    };
+
+    fetchInstructors();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -43,20 +54,23 @@ function ViewInstructorPage() {
             >
               <div>
                 <h3 className="text-lg font-semibold text-[#141a35]">
-                  {item.instructor}
+                  {item.name}
                 </h3>
                 <p className="text-sm text-gray-600">{item.section}</p>
               </div>
               <div className="flex items-center gap-3">
                 <button className="text-sm font-medium text-blue-700 hover:underline cursor-pointer">
-                  Remove
+                  Re-assign Section
                 </button>
                 <button className="text-sm font-medium text-red-500 hover:underline cursor-pointer">
-                  Delete
+                  Delete Account
                 </button>
               </div>
             </div>
           ))}
+          {instructors.length === 0 && (
+            <p className="text-center text-sm text-gray-500">No instructors found.</p>
+          )}
         </div>
       </div>
     </div>

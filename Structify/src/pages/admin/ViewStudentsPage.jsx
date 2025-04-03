@@ -1,21 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
 
 function ViewStudentsPage() {
-  const [isNavOpen, setIsNavOpen] = React.useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [sections, setSections] = useState([]);
 
-  const sections = [
-    {
-      section: 'BSIT 3-1',
-      students: ['Kurt Pantaleon', 'Kurt Pantaleon', 'Kurt Pantaleon', 'Kurt Pantaleon', 'Kurt Pantaleon', 'Kurt Pantaleon'],
-    },
-    {
-      section: 'BSIT 3-2',
-      students: ['Kurt Pantaleon', 'Kurt Pantaleon', 'Kurt Pantaleon', 'Kurt Pantaleon'],
-    },
-  ];
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'students'));
+        const studentsData = querySnapshot.docs.map((doc) => doc.data());
+
+        // Group students by section
+        const grouped = studentsData.reduce((acc, student) => {
+          if (!acc[student.section]) {
+            acc[student.section] = [];
+          }
+          acc[student.section].push(student.name);
+          return acc;
+        }, {});
+
+        // Convert to array format for rendering
+        const sectionList = Object.keys(grouped).map((section) => ({
+          section,
+          students: grouped[section],
+        }));
+
+        setSections(sectionList);
+      } catch (error) {
+        console.error('Error fetching students:', error);
+      }
+    };
+
+    fetchStudents();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -56,13 +78,16 @@ function ViewStudentsPage() {
                 >
                   <span className="text-[#141a35] text-base font-medium">{student}</span>
                   <div className="flex items-center gap-3">
-                    <button className="text-sm font-medium text-blue-700 hover:underline cursor-pointer">Remove</button>
-                    <button className="text-sm font-medium text-red-500 hover:underline cursor-pointer">Delete</button>
+                    <button className="text-sm font-medium text-blue-700 hover:underline cursor-pointer">Re-Assign Section</button>
+                    <button className="text-sm font-medium text-red-500 hover:underline cursor-pointer">Delete Account</button>
                   </div>
                 </div>
               ))}
             </div>
           ))}
+          {sections.length === 0 && (
+            <p className="text-center text-sm text-gray-500">No students found.</p>
+          )}
         </div>
       </div>
     </div>
