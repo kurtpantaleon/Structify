@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { collection, getDocs, addDoc, query, where } from 'firebase/firestore';
+import { db } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
@@ -9,29 +11,77 @@ function AdminPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const navigate = useNavigate();
 
-  const [sections, setSections] = useState([
-    { sectionName: 'BSIT 3-1', instructor: 'Kurt Pantaleon', studentCount: 50 },
-    { sectionName: 'BSIT 3-2', instructor: 'LeBron James', studentCount: 45 },
-    { sectionName: 'BSIT 2-1', instructor: 'John Doe', studentCount: 35 },
-    { sectionName: 'BSIT 1-2', instructor: 'Jane Smith', studentCount: 40 },
-  ]);
-
+  const [sections, setSections] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newClassName, setNewClassName] = useState('');
 
-  const handleAddClass = () => {
+  // Fetch sections + instructor + student count
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const classSnapshot = await getDocs(collection(db, 'classes'));
+        const classData = classSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        // For each class, fetch instructor & students
+        const updatedSections = await Promise.all(
+          classData.map(async (section) => {
+            // Instructor
+            const qInstructor = query(
+              collection(db, 'instructors'),
+              where('section', '==', section.sectionName)
+            );
+            const instructorSnapshot = await getDocs(qInstructor);
+            const instructorData = instructorSnapshot.docs.map((doc) => doc.data());
+            const instructorName = instructorData.length > 0 ? instructorData[0].name : 'TBA';
+
+            // Students
+            const qStudents = query(
+              collection(db, 'students'),
+              where('section', '==', section.sectionName)
+            );
+            const studentSnapshot = await getDocs(qStudents);
+            const studentCount = studentSnapshot.size;
+
+            return {
+              ...section,
+              instructor: instructorName,
+              studentCount: studentCount,
+            };
+          })
+        );
+
+        setSections(updatedSections);
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleAddClass = async () => {
     if (newClassName.trim() === '') {
       alert('Please enter a class name');
       return;
     }
+
     const newSection = {
       sectionName: newClassName,
       instructor: 'TBA',
       studentCount: 0,
     };
-    setSections([...sections, newSection]);
-    setIsPopupOpen(false);
-    setNewClassName('');
+
+    try {
+      const docRef = await addDoc(collection(db, 'classes'), newSection);
+      setSections([...sections, { id: docRef.id, ...newSection }]);
+      setIsPopupOpen(false);
+      setNewClassName('');
+    } catch (error) {
+      console.error('Error adding class: ', error);
+    }
   };
 
   return (
@@ -62,11 +112,13 @@ function AdminPage() {
         <div className="p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pr-2 flex-grow">
           {sections.map((item, index) => (
             <SectionCard
-              key={index}
+              key={item.id || index}
               sectionName={item.sectionName}
               instructor={item.instructor}
               studentCount={item.studentCount}
-              onClick={() => navigate('/ViewClassPage', { state: { section: item } })}
+              onClick={() =>
+                navigate('/ViewClassPage', { state: { section: item } })
+              }
             />
           ))}
         </div>
