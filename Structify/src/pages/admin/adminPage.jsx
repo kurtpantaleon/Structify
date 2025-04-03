@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
-import SectionCard from '../../components/SectionCard';
+import SectionCard from '../../components/AdminSectionCard';
 
 function AdminPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const navigate = useNavigate();
+
   const [sections, setSections] = useState([
     { sectionName: 'BSIT 3-1', instructor: 'Kurt Pantaleon', studentCount: 50 },
     { sectionName: 'BSIT 3-2', instructor: 'LeBron James', studentCount: 45 },
@@ -21,7 +24,11 @@ function AdminPage() {
       alert('Please enter a class name');
       return;
     }
-    const newSection = { sectionName: newClassName, instructor: '', studentCount: '' };
+    const newSection = {
+      sectionName: newClassName,
+      instructor: 'TBA',
+      studentCount: 0,
+    };
     setSections([...sections, newSection]);
     setIsPopupOpen(false);
     setNewClassName('');
@@ -52,13 +59,14 @@ function AdminPage() {
         </div>
 
         {/* Scrollable Section Cards */}
-        <div className="max-w-7xl p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pr-2 flex-grow">
+        <div className="p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pr-2 flex-grow">
           {sections.map((item, index) => (
             <SectionCard
               key={index}
               sectionName={item.sectionName}
               instructor={item.instructor}
               studentCount={item.studentCount}
+              onClick={() => navigate('/ViewClassPage', { state: { section: item } })}
             />
           ))}
         </div>

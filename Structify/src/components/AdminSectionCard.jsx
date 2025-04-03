@@ -1,9 +1,9 @@
 import React from 'react';
 import CreateIcon from '../assets/images/Create Icon.png';
 
-function SectionCard({ sectionName, instructor, studentCount }) {
+function SectionCard({ sectionName, instructor, studentCount, onClick }) {
   return (
-    <div className="w-64 h-60 mb-3 rounded-xl overflow-hidden shadow-md bg-white hover:shadow-lg transition duration-300 cursor-pointer">
+    <div className="w-64 h-60 mb-3 rounded-xl overflow-hidden shadow-md bg-white hover:shadow-lg  hover:scale-105 transition duration-300 cursor-pointer" onClick={onClick}>
       {/* Header Section */}
       <div className="h-3/5 bg-[#141a35] relative">
         <div className="absolute top-3 right-3">
