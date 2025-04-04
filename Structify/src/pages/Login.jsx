@@ -5,7 +5,7 @@ import { auth, db } from '../services/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/authContext';
-
+ 
 function Login() {
   const [error, setError] = useState(false);
   const [email, setEmail] = useState("");

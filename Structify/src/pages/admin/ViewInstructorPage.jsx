@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
@@ -12,7 +12,12 @@ function ViewInstructorPage() {
   useEffect(() => {
     const fetchInstructors = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'instructors'));
+        // ✅ Updated query from 'instructors' → 'users' with role filter
+        const q = query(
+          collection(db, 'users'),
+          where('role', '==', 'instructor')
+        );
+        const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map((doc) => doc.data());
         setInstructors(data);
       } catch (error) {
@@ -50,7 +55,7 @@ function ViewInstructorPage() {
           {instructors.map((item, index) => (
             <div
               key={index}
-              className="flex items-center justify-between py-3 border-b"
+              className="flex items-center justify-between py-1 border-b"
             >
               <div>
                 <h3 className="text-lg font-semibold text-[#141a35]">

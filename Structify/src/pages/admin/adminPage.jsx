@@ -15,7 +15,7 @@ function AdminPage() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newClassName, setNewClassName] = useState('');
 
-  // Fetch sections + instructor + student count
+  // ✅ Updated to fetch from users collection with role filtering
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -25,22 +25,23 @@ function AdminPage() {
           ...doc.data(),
         }));
 
-        // For each class, fetch instructor & students
         const updatedSections = await Promise.all(
           classData.map(async (section) => {
-            // Instructor
+            // ✅ Fetch instructor from "users" where role is instructor
             const qInstructor = query(
-              collection(db, 'instructors'),
-              where('section', '==', section.sectionName)
+              collection(db, 'users'),
+              where('section', '==', section.sectionName),
+              where('role', '==', 'instructor')
             );
             const instructorSnapshot = await getDocs(qInstructor);
             const instructorData = instructorSnapshot.docs.map((doc) => doc.data());
             const instructorName = instructorData.length > 0 ? instructorData[0].name : 'TBA';
 
-            // Students
+            // ✅ Fetch students from "users" where role is student
             const qStudents = query(
-              collection(db, 'students'),
-              where('section', '==', section.sectionName)
+              collection(db, 'users'),
+              where('section', '==', section.sectionName),
+              where('role', '==', 'student')
             );
             const studentSnapshot = await getDocs(qStudents);
             const studentCount = studentSnapshot.size;

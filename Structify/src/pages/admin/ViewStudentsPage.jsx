@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
@@ -12,10 +12,15 @@ function ViewStudentsPage() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'students'));
+        // ✅ Query students from the unified "users" collection
+        const q = query(
+          collection(db, 'users'),
+          where('role', '==', 'student')
+        );
+        const querySnapshot = await getDocs(q);
         const studentsData = querySnapshot.docs.map((doc) => doc.data());
 
-        // Group students by section
+        // ✅ Group students by section
         const grouped = studentsData.reduce((acc, student) => {
           if (!acc[student.section]) {
             acc[student.section] = [];
@@ -24,7 +29,7 @@ function ViewStudentsPage() {
           return acc;
         }, {});
 
-        // Convert to array format for rendering
+        // ✅ Convert to array format for rendering
         const sectionList = Object.keys(grouped).map((section) => ({
           section,
           students: grouped[section],
@@ -76,7 +81,7 @@ function ViewStudentsPage() {
                   key={idx}
                   className="flex items-center justify-between py-2 border-b last:border-b-0"
                 >
-                  <span className="text-[#141a35] text-base font-medium">{student}</span>
+                  <span className="text-[#141a35] text-base">{student}</span>
                   <div className="flex items-center gap-3">
                     <button className="text-sm font-medium text-blue-700 hover:underline cursor-pointer">Re-Assign Section</button>
                     <button className="text-sm font-medium text-red-500 hover:underline cursor-pointer">Delete Account</button>

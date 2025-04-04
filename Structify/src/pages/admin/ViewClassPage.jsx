@@ -15,23 +15,25 @@ function ViewClassPage() {
 
   const { section } = location.state;
 
-  // Fetch students & instructor based on section
+  // ✅ Fetch students & instructor from users collection
   useEffect(() => {
     const fetchStudentsAndInstructor = async () => {
       try {
-        // Fetch students
+        // ✅ Fetch students
         const qStudents = query(
-          collection(db, 'students'),
-          where('section', '==', section.sectionName)
+          collection(db, 'users'),
+          where('section', '==', section.sectionName),
+          where('role', '==', 'student')
         );
         const studentSnapshot = await getDocs(qStudents);
         const studentData = studentSnapshot.docs.map((doc) => doc.data());
         setStudents(studentData);
 
-        // Fetch instructor
+        // ✅ Fetch instructor
         const qInstructor = query(
-          collection(db, 'instructors'),
-          where('section', '==', section.sectionName)
+          collection(db, 'users'),
+          where('section', '==', section.sectionName),
+          where('role', '==', 'instructor')
         );
         const instructorSnapshot = await getDocs(qInstructor);
         const instructorData = instructorSnapshot.docs.map((doc) => doc.data());
@@ -78,7 +80,7 @@ function ViewClassPage() {
         <h1 className="text-3xl font-extrabold text-[#141a35] mb-2">{section.sectionName}</h1>
         <hr className="border-gray-300 my-2" />
 
-        <h2 className="text-lg font-semibold text-[#141a35] mb-1 mt-4">Instructor</h2>
+        <h2 className="text-lg font-semibold text-[#141a35] mb-2 mt-4">Instructor</h2>
         {instructor ? (
           <p className="text-[#141a35] text-base mb-4">{instructor.name}</p>
         ) : (
@@ -100,7 +102,7 @@ function ViewClassPage() {
                 key={index}
                 className="flex items-center justify-between py-3 border-b"
               >
-                <p className="text-[#141a35] text-base font-medium">{student.name}</p>
+                <p className="text-[#141a35] text-base">{student.name}</p>
               </div>
             ))
           ) : (
