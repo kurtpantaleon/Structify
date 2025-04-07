@@ -48,6 +48,7 @@ export default function Week3Page() {
               <h2 className="text-2xl font-extrabold tracking-wide mb-2">SECTION</h2>
               <div className="border-t border-white/50 w-full mb-5"></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                
                 <CardSection title="What are Strings?" subtitle="Lesson 1" progress={12.5} path="/week3Page1"  mediaSrc={card1} mediaType="video"/>
                 <CardSection title="String Operations" subtitle="Lesson 2" progress={0} path="/week3L2Page1" mediaSrc={card2} mediaType="video"/>
                 <CardSection title="How Computers Process Text" subtitle="Lesson 3" progress={0} path="/week3L3Page1" mediaSrc={card3} mediaType="video" />
