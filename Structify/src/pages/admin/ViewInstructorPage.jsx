@@ -19,12 +19,17 @@ function ViewInstructorPage() {
     confirmPassword: '',
   });
 
+  const [selectedInstructor, setSelectedInstructor] = useState(null);
+  const [reassignModalOpen, setReassignModalOpen] = useState(false);
+  const [availableSections, setAvailableSections] = useState([]);
+  const [selectedSection, setSelectedSection] = useState('');
+
   useEffect(() => {
     const fetchInstructors = async () => {
       try {
         const q = query(collection(db, 'users'), where('role', '==', 'instructor'));
         const querySnapshot = await getDocs(q);
-        const data = querySnapshot.docs.map((doc) => doc.data());
+        const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         setInstructors(data);
       } catch (error) {
         console.error('Error fetching instructors:', error);
@@ -58,13 +63,13 @@ function ViewInstructorPage() {
         email,
         name,
         role: 'instructor',
-        section: ''
+        section: '',
       });
 
       setInstructors((prev) => [...prev, { email, name, role: 'instructor', section: '' }]);
       setFormData({ name: '', email: '', password: '', confirmPassword: '' });
       setShowModal(false);
-      setShowSuccessModal(true); // 🎉 Show success modal
+      setShowSuccessModal(true);
     } catch (error) {
       console.error('Error creating instructor:', error.message);
       alert('Error: ' + error.message);
@@ -76,13 +81,59 @@ function ViewInstructorPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const openReassignModal = async (instructor) => {
+    try {
+      const classesSnapshot = await getDocs(collection(db, 'classes'));
+      const classList = classesSnapshot.docs.map((doc) => doc.data().sectionName);
+
+      const instructorsSnapshot = await getDocs(
+        query(collection(db, 'users'), where('role', '==', 'instructor'))
+      );
+      const usedSections = instructorsSnapshot.docs.map((doc) => doc.data().section);
+
+      const available = classList.filter(
+        (section) => !usedSections.includes(section) || section === instructor.section
+      );
+
+      setAvailableSections(available);
+      setSelectedInstructor(instructor);
+      setSelectedSection('');
+      setReassignModalOpen(true);
+    } catch (error) {
+      console.error('Error loading sections:', error);
+    }
+  };
+
+  const handleReassignSection = async () => {
+    if (!selectedInstructor) return;
+  
+    try {
+      const newSection = selectedSection === '__unassign__' ? '' : selectedSection;
+  
+      await setDoc(doc(db, 'users', selectedInstructor.id), {
+        ...selectedInstructor,
+        section: newSection,
+      });
+  
+      const updated = instructors.map((inst) =>
+        inst.id === selectedInstructor.id
+          ? { ...inst, section: newSection }
+          : inst
+      );
+  
+      setInstructors(updated);
+      setReassignModalOpen(false);
+      setSelectedInstructor(null);
+      setSelectedSection('');
+    } catch (error) {
+      console.error('Error updating section:', error);
+    }
+  };  
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
-      <AdminSubHeading
-        toggleNav={() => setIsNavOpen(!isNavOpen)}
-        title="Instructors"
-      />
+      <AdminSubHeading toggleNav={() => setIsNavOpen(!isNavOpen)} title="Instructors" />
       {isNavOpen && (
         <div className="w-20 border-r border-white/20 bg-[#141a35]">
           <AdminNavigationBar />
@@ -101,19 +152,17 @@ function ViewInstructorPage() {
 
         <div className="overflow-y-auto pr-2 space-y-4 flex-grow">
           {instructors.map((item, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between py-1 border-b"
-            >
+            <div key={index} className="flex items-center justify-between py-1 border-b">
               <div>
-                <h3 className="text-lg font-semibold text-[#141a35]">
-                  {item.name}
-                </h3>
+                <h3 className="text-lg font-semibold text-[#141a35]">{item.name}</h3>
                 <p className="text-sm text-gray-600">{item.section}</p>
               </div>
               <div className="flex items-center gap-3">
-                <button className="text-sm font-medium text-blue-700 hover:underline cursor-pointer">
-                  Re-assign Section
+                <button
+                  className="text-sm font-medium text-blue-700 hover:underline cursor-pointer"
+                  onClick={() => openReassignModal(item)}
+                >
+                  {item.section === '' ? 'Assign Section' : 'Re-assign Section'}
                 </button>
                 <button className="text-sm font-medium text-red-500 hover:underline cursor-pointer">
                   Delete Account
@@ -166,9 +215,7 @@ function ViewInstructorPage() {
                 className="w-full border border-gray-300 rounded-md px-3 py-2"
               />
               {passwordMismatch && (
-                <p className="text-sm font-medium text-red-500 mt-1">
-                  Passwords do not match.
-                </p>
+                <p className="text-sm font-medium text-red-500 mt-1">Passwords do not match.</p>
               )}
               <div className="flex justify-end gap-3">
                 <button
@@ -206,6 +253,48 @@ function ViewInstructorPage() {
             >
               OK
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Reassign Section Modal */}
+      {reassignModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="bg-white px-6 py-5 rounded-lg shadow-md w-full max-w-sm">
+            <h3 className="text-lg font-bold text-[#141a35] mb-3">Re-assign Section</h3>
+            {availableSections.length > 0 ? (
+              <>
+                <select
+                  value={selectedSection}
+                  onChange={(e) => setSelectedSection(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
+                >
+                  <option value="">Select Section</option>
+                  {availableSections.map((section, idx) => (
+                    <option key={idx} value={section}>{section}</option>
+                  ))}
+                  {selectedInstructor?.section && (
+                    <option value="__unassign__" className="text-red-600">Unassign Section</option>
+                  )}
+                </select>
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setReassignModalOpen(false)}
+                    className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleReassignSection}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Save
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-gray-600">No available sections.</p>
+            )}
           </div>
         </div>
       )}

@@ -6,6 +6,7 @@ import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
 import SectionCard from '../../components/AdminSectionCard';
+import { serverTimestamp } from 'firebase/firestore'; 
 
 function AdminPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -68,13 +69,14 @@ function AdminPage() {
       alert('Please enter a class name');
       return;
     }
-
+  
     const newSection = {
       sectionName: newClassName,
       instructor: 'TBA',
       studentCount: 0,
+      createdAt: serverTimestamp(), // ✅ timestamp for sorting
     };
-
+  
     try {
       const docRef = await addDoc(collection(db, 'classes'), newSection);
       setSections([...sections, { id: docRef.id, ...newSection }]);
@@ -113,13 +115,13 @@ function AdminPage() {
         <div className="p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pr-2 flex-grow">
           {sections.map((item, index) => (
             <SectionCard
-              key={item.id || index}
+              key={item.id}
               sectionName={item.sectionName}
               instructor={item.instructor}
               studentCount={item.studentCount}
-              onClick={() =>
-                navigate('/ViewClassPage', { state: { section: item } })
-              }
+              onClick={() => navigate('/ViewClassPage', { state: { section: item } })}
+              onEdit={() => handleEditSection(item)}
+              onDelete={() => handleDeleteSection(item)}
             />
           ))}
         </div>
