@@ -11,7 +11,7 @@ function LessonPages({ title, lessons, leftIcon, rightIcon, currentIndex, nextLe
         {lessons[currentIndex].description}
       </p>
 
-      {/* Slide video with gamified visual */}
+      {/* Slide video */}
       <div className="flex items-center justify-between w-250 h-full relative">
         {/* Left arrow */}
         <button
@@ -29,21 +29,33 @@ function LessonPages({ title, lessons, leftIcon, rightIcon, currentIndex, nextLe
           />
         </button>
 
-        {/* Central lesson video with border and gamified UI */}
+        {/* Conditional rendering of video or image */}
         <div className="relative ">
-          <video
-            src={lessons[currentIndex].video} // Replace the image with the video source
-            alt="Lesson"
-            className={`${
-              lessons[currentIndex].resizeClass || 'h-80'
-            } w-auto border-4 border-yellow-400 rounded-2xl shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105 hover:brightness-110`}
-            autoPlay
-            loop
-            muted // Typically required for autoplay to work on mobile devices
-          />
+          {/* If it's a video, show the video player */}
+          {lessons[currentIndex].mediaType === 'video' ? (
+            <video
+              src={lessons[currentIndex].video} // Use the video source
+              alt="Lesson"
+              className={`${
+                lessons[currentIndex].resizeClass || 'h-85'
+              } w-auto border-4 border-yellow-400 rounded-2xl shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105 hover:brightness-110`}
+              autoPlay
+              loop
+              muted // Auto-play and muted for mobile compatibility
+            />
+          ) : (
+            // Otherwise, display the image
+            <img
+              src={lessons[currentIndex].image} // Use the image source
+              alt="Lesson"
+              className={`${
+                lessons[currentIndex].resizeClass || 'h-85'
+              } w-auto border-10 border-yellow-400 rounded-2xl shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105 hover:brightness-110`}
+            />
+          )}
 
-          {/* Gamified visual: Glow effect on video */}
-          <div className="absolute inset-0 rounded-2xl border-4 border-teal-500 animate-pulse w-141" />
+          {/* Gamified visual: Glow effect on media */}
+          <div className="absolute inset-0 rounded-2xl border-10 border-teal-600 animate-pulse h-85" />
         </div>
 
         {/* Right arrow */}

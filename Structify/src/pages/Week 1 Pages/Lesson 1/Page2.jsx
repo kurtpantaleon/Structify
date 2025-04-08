@@ -6,9 +6,9 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/clip/clip1.mp4';
-import Bullet2 from '../../../assets/clip/clip2.mp4';
-import Bullet3 from '../../../assets/clip/clip2.mp4';
+import Bullet1 from '../../../assets/image/image1.png';
+import Bullet2 from '../../../assets/image/image2.png';
+import Bullet3 from '../../../assets/image/image3.png';
 
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
@@ -31,7 +31,8 @@ export default function Page2() {
           
         </>
       ),
-      video: Bullet1, 
+    mediaType: 'image',
+    image: Bullet1,
       
     },
     {
@@ -44,7 +45,9 @@ export default function Page2() {
           
         </>
       ),
-      video: Bullet2, // MP4 video source
+    mediaType: 'image',
+    image: Bullet2,
+    
     },
     {
       description: (
@@ -57,7 +60,8 @@ export default function Page2() {
           .
         </>
       ),
-      video: Bullet3, // MP4 video source
+    mediaType: 'image',
+    image: Bullet3,
     }
   ];
 

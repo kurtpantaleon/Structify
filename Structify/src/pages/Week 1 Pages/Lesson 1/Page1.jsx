@@ -32,7 +32,9 @@ export default function Page1() {
           so that it can be used effectively.
         </>
       ),
+      mediaType: 'video',
       video: Bullet1, // MP4 video source
+      resizeClass: 'h-70', // Resize class for the video
     },
     {
       description: (
@@ -44,6 +46,7 @@ export default function Page1() {
           , so efficient organization is essential.
         </>
       ),
+      mediaType: 'video',
       video: Bullet2,
     },
     {
@@ -56,6 +59,7 @@ export default function Page1() {
           .
         </>
       ),
+      mediaType: 'video',
       video: Bullet3,
     }
   ];
