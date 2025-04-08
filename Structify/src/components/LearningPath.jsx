@@ -8,12 +8,12 @@ function LearningPath({ isOpen, toggleLearningPath }) {
     { week: "", topic: "Algorithms & Complexity", path: "/week2Page" },
     { week: "", topic: "String Processing", path: "/week3Page" },
     { week: "", topic: "Array, Records, and Pointers", path: "/week4Page" },
-    { week: "", topic: "Linked Lists", path: "/week5Page" },
-    { week: "", topic: "Stacks, Queues, and Recursion", path: "/week6Page" },
-    { week: "", topic: "Trees", path: "/week7Page" },
-    { week: "", topic: "Graph Algorithms", path: "/week8Page" },
-    { week: "", topic: "Sorting and Searching", path: "/week9Page" },
-    { week: "", topic: "Hashing", path: "/week10Page" },
+    { week: "", topic: "Linked Lists", path: "/week6Page" },
+    { week: "", topic: "Stacks, Queues, and Recursion", path: "/week7Page" },
+    { week: "", topic: "Trees", path: "/week10Page" },
+    { week: "", topic: "Graph Algorithms", path: " "},
+    { week: "", topic: "Sorting and Searching", path: "" },
+    { week: "", topic: "Hashing", path: "" },
   ];
 
   return (
