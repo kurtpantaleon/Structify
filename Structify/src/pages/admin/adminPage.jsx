@@ -56,6 +56,7 @@ function AdminPage() {
         );
 
         setSections(updatedSections);
+        updatedSections.sort((a, b) => a.sectionName.localeCompare(b.sectionName));
       } catch (error) {
         console.error('Error fetching data: ', error);
       }

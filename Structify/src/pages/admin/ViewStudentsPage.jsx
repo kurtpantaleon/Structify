@@ -44,6 +44,7 @@ function ViewStudentsPage() {
     };
 
     fetchStudents();
+    
   }, []);
 
   const groupedBySection = students.reduce((acc, student) => {
@@ -161,7 +162,7 @@ function ViewStudentsPage() {
         </div>
 
         <div className="overflow-y-scroll pr-2 space-y-6">
-          {Object.entries(groupedBySection).map(([section, studentsInSection], index) => (
+          {Object.entries(groupedBySection).sort(([a], [b]) => a.localeCompare(b)).map(([section, studentsInSection], index) => (
             <div key={index} className="mb-2">
               <h3 className="text-2xl font-bold text-[#141a35] mb-2 border-b pb-1">{section}</h3>
               {studentsInSection.map((student, idx) => (
