@@ -12,7 +12,7 @@ function SectionCard({ sectionName, instructor, studentCount, onClick, onEdit, o
   const handleEdit = (e) => {
     e.stopPropagation();
     setShowMenu(false);
-    onEdit(); // callback from parent
+    onEdit({ sectionName, instructor, studentCount }); // callback from parent
   };
 
   const handleDelete = (e) => {
