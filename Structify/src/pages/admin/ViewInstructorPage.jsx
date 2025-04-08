@@ -5,6 +5,7 @@ import { db, auth } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
+import { deleteDoc } from 'firebase/firestore';
 
 function ViewInstructorPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -18,11 +19,13 @@ function ViewInstructorPage() {
     password: '',
     confirmPassword: '',
   });
-
   const [selectedInstructor, setSelectedInstructor] = useState(null);
   const [reassignModalOpen, setReassignModalOpen] = useState(false);
   const [availableSections, setAvailableSections] = useState([]);
   const [selectedSection, setSelectedSection] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [instructorToDelete, setInstructorToDelete] = useState(null);
+  const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
 
   useEffect(() => {
     const fetchInstructors = async () => {
@@ -130,6 +133,21 @@ function ViewInstructorPage() {
     }
   };  
 
+  const handleDeleteInstructor = async () => {
+    if (!instructorToDelete) return;
+  
+    try {
+      await deleteDoc(doc(db, 'users', instructorToDelete.id));
+      setInstructors((prev) => prev.filter((i) => i.id !== instructorToDelete.id));
+      setShowDeleteModal(false);
+      setInstructorToDelete(null);
+      setShowDeleteSuccessModal(true); // Show modal instead of alert
+    } catch (error) {
+      console.error('Error deleting instructor:', error);
+      alert('Failed to delete instructor.');
+    }
+  };  
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
@@ -151,11 +169,11 @@ function ViewInstructorPage() {
         </div>
 
         <div className="overflow-y-auto pr-2 space-y-4 flex-grow">
-          {instructors.map((item, index) => (
+          {[...instructors].sort((a, b) => a.section.localeCompare(b.section)).map((item, index) => (
             <div key={index} className="flex items-center justify-between py-1 border-b">
               <div>
                 <h3 className="text-lg font-semibold text-[#141a35]">{item.name}</h3>
-                <p className="text-sm text-gray-600">{item.section}</p>
+                <p className="text-sm text-gray-600">{item.section || 'Unassigned'}</p>
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -164,7 +182,7 @@ function ViewInstructorPage() {
                 >
                   {item.section === '' ? 'Assign Section' : 'Re-assign Section'}
                 </button>
-                <button className="text-sm font-medium text-red-500 hover:underline cursor-pointer">
+                <button className="text-sm font-medium text-red-500 hover:underline cursor-pointer" onClick={() => { setInstructorToDelete(item); setShowDeleteModal(true); }}>
                   Delete Account
                 </button>
               </div>
@@ -293,11 +311,65 @@ function ViewInstructorPage() {
                 </div>
               </>
             ) : (
-              <p className="text-sm text-gray-600">No available sections.</p>
+              <div className="text-center">
+                <p className="text-sm text-gray-600 mb-4">No available sections.</p>
+                <button
+                  onClick={() => setReassignModalOpen(false)}
+                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                >
+                  OK
+                </button>
+              </div>
             )}
           </div>
         </div>
       )}
+
+      {/* Delete Instructor Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center">
+          <div className="bg-white px-6 py-5 rounded-lg shadow-md w-full max-w-sm text-center">
+            <h3 className="text-lg font-semibold text-[#141a35] mb-2">Confirm Deletion</h3>
+            <p className="text-gray-700 mb-4">
+              Are you sure you want to delete <span className="font-medium">{instructorToDelete?.name}</span>'s account?
+            </p>
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setInstructorToDelete(null);
+                }}
+                className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteInstructor}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Success Modal */}
+      {showDeleteSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="bg-white px-6 py-4 rounded-lg shadow-md text-center w-full max-w-sm">
+            <h2 className="text-xl font-semibold text-[#141a35] mb-2">Success</h2>
+            <p className="text-gray-700">Instructor account has been deleted successfully!</p>
+            <button
+              onClick={() => setShowDeleteSuccessModal(false)}
+              className="mt-4 px-4 py-2 bg-[#141a35] text-white rounded hover:bg-[#1f274d]"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

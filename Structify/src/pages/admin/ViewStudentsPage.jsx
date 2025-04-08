@@ -12,6 +12,8 @@ import { db, auth } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
+import { deleteDoc } from 'firebase/firestore';
+
 
 function ViewStudentsPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -30,6 +32,10 @@ function ViewStudentsPage() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [availableSections, setAvailableSections] = useState([]);
   const [selectedSection, setSelectedSection] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState(null);
+  const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
+
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -141,6 +147,21 @@ function ViewStudentsPage() {
     }
   };
 
+  const handleDeleteStudent = async () => {
+    if (!studentToDelete) return;
+  
+    try {
+      await deleteDoc(doc(db, 'users', studentToDelete.id));
+      setStudents((prev) => prev.filter((s) => s.id !== studentToDelete.id));
+      setShowDeleteModal(false);
+      setStudentToDelete(null);
+      setShowDeleteSuccessModal(true);
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      alert('Failed to delete student.');
+    }
+  };  
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
@@ -175,7 +196,7 @@ function ViewStudentsPage() {
                     >
                       {student.section === '' ? 'Assign Section' : 'Re-assign Section'}
                     </button>
-                    <button className="text-sm font-medium text-red-500 hover:underline cursor-pointer">
+                    <button className="text-sm font-medium text-red-500 hover:underline cursor-pointer" onClick={() => { setStudentToDelete(student); setShowDeleteModal(true); }}>
                       Delete Account
                     </button>
                   </div>
@@ -309,11 +330,65 @@ function ViewStudentsPage() {
                 </div>
               </>
             ) : (
-              <p className="text-sm text-gray-600">No available sections.</p>
+              <div className="text-center">
+                <p className="text-sm text-gray-600 mb-4">No available sections.</p>
+                <button
+                  onClick={() => setReassignModalOpen(false)}
+                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                >
+                  OK
+                </button>
+              </div>
             )}
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="bg-white px-6 py-5 rounded-lg shadow-md w-full max-w-sm text-center">
+            <h3 className="text-lg font-semibold text-[#141a35] mb-2">Confirm Deletion</h3>
+            <p className="text-gray-700 mb-4">
+              Are you sure you want to delete <span className="font-medium">{studentToDelete?.name}</span>'s account?
+            </p>
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setStudentToDelete(null);
+                }}
+                className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteStudent}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Success Modal */}
+      {showDeleteSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="bg-white px-6 py-4 rounded-lg shadow-md text-center w-full max-w-sm">
+            <h2 className="text-xl font-semibold text-[#141a35] mb-2">Success</h2>
+            <p className="text-gray-700">Student account has been deleted successfully!</p>
+            <button
+              onClick={() => setShowDeleteSuccessModal(false)}
+              className="mt-4 px-4 py-2 bg-[#141a35] text-white rounded hover:bg-[#1f274d]"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
