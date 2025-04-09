@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, addDoc, updateDoc, doc, query, where, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
@@ -18,6 +18,10 @@ function AdminPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editedSection, setEditedSection] = useState(null);
   const [editedName, setEditedName] = useState('');
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [sectionToDelete, setSectionToDelete] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,9 +121,23 @@ function AdminPage() {
   };
 
   const handleDeleteSection = (section) => {
-    console.log('Delete functionality not yet implemented for:', section);
-    // You can add your delete logic here
+    setSectionToDelete(section);
+    setShowDeleteModal(true);
   };
+  
+  const confirmDeleteSection = async () => {
+    if (!sectionToDelete) return;
+  
+    try {
+      await deleteDoc(doc(db, 'classes', sectionToDelete.id));
+      setSections((prev) => prev.filter((s) => s.id !== sectionToDelete.id));
+      setShowDeleteModal(false);
+      setSectionToDelete(null);
+    } catch (error) {
+      console.error('Error deleting section:', error);
+      alert('Failed to delete section.');
+    }
+  };  
 
   return (
     <div className="min-h-screen bg-gray-200 relative">
@@ -213,6 +231,36 @@ function AdminPage() {
             </div>
           </div>
         )}
+
+        {/* Delete Section Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+            <div className="bg-white px-6 py-5 rounded-lg shadow-md w-full max-w-sm text-center">
+              <h3 className="text-lg font-semibold text-[#141a35] mb-2">Delete Section</h3>
+              <p className="text-gray-700 mb-4">
+                Are you sure you want to delete <span className="font-medium">{sectionToDelete?.sectionName}</span>?
+              </p>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setSectionToDelete(null);
+                  }}
+                  className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteSection}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
