@@ -18,26 +18,25 @@ function Login() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
-      // Fetch role from Firestore
+  
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
         const role = userDoc.data().role;
         console.log("User role:", role);
-
-        // Save to context
-        dispatch({ type: "LOGIN", payload: user });
-
-        // Redirect based on role
+  
+        // ✅ Correctly dispatch both user and role
+        dispatch({ type: "LOGIN", payload: { user, role } });
+  
+        // ✅ Redirect based on role
         if (role === "admin") {
-          navigate("/adminPage");
+          navigate("/adminPage", { replace: true });
         } else if (role === "student") {
-          navigate("/mainPage");
+          navigate("/mainPage", { replace: true });
         } else if (role === "instructor") {
-          navigate("/");
+          navigate("/", { replace: true });
         } else {
           setError(true);
-          console.error("No role found.");
+          console.error("No valid role found.");
         }
       } else {
         setError(true);
@@ -47,7 +46,7 @@ function Login() {
       console.error("Login failed:", err.message);
       setError(true);
     }
-  };
+  };  
 
   return (
     <section className="bg-gradient-to-tr from-[#1F274D] via-[#2e3a6c] to-[#1F274D] w-screen h-screen overflow-hidden">

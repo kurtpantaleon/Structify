@@ -1,9 +1,7 @@
 import './App.css'
-import { useContext } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import StartPage from './pages/Start'
 import Login from './pages/Login'
-import { AuthContext } from './context/authContext'
 
 /*WEEK 1 */
 import MainPage from './pages/MainPage'
@@ -262,6 +260,9 @@ import ViewClassPage from './pages/admin/ViewClassPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import Unauthorized from './pages/UnauthorizedPage'
 
+{/*Profile Page */}
+import ViewProfile from './pages/ViewProfile'
+
 function App() {
   return (
     <Routes>
@@ -519,6 +520,9 @@ function App() {
 
       {/* Unauthorized Page */}
       <Route path="/unauthorized" element={<Unauthorized />} />
+
+      {/*View Profile Page */}
+      <Route path="/ViewProfile" element={<ViewProfile />} />
     </Routes> 
   )
 }
