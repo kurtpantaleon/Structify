@@ -1,5 +1,3 @@
-// src/context/AuthContextProvider.jsx
-
 import { useEffect, useReducer } from "react";
 import { getDoc, doc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
