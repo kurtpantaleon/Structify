@@ -28,7 +28,7 @@ function StartPage() {
 
       {/* Right side */}
       <div className="flex items-center justify-center flex-col p-6 sm:p-10 lg:p-16 bg-white rounded-t-3xl lg:rounded-l-3xl lg:rounded-t-none shadow-lg w-full lg:w-1/2 h-1/2 lg:h-full space-y-8">
-        <h1 className="font-bold text-2xl sm:text-3xl lg:text-4xl text-center">Select your account</h1>
+        <h1 className="font-bold text-2xl sm:text-3xl lg:text-3xl text-center">Sign In to your Structify Account</h1>
 
         <div className="flex items-center flex-col gap-4 w-full px-4">
           {/* Student button */}
@@ -36,16 +36,11 @@ function StartPage() {
             onClick={() => navigate('/Login')}
             className="bg-blue-500 text-white py-3 rounded-lg w-full max-w-xs hover:bg-blue-600 transition-all duration-200"
           >
-            Student
+            Sign In
           </button>
 
           {/* Admin button */}
-          <button
-            onClick={() => navigate('/Login')}
-            className="bg-blue-500 text-white py-3 rounded-lg w-full max-w-xs hover:bg-blue-600 transition-all duration-200"
-          >
-            Admin
-          </button>
+          
         </div>
       </div>
     </div>
