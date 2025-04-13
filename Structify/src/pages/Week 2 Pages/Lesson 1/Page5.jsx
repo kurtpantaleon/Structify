@@ -6,11 +6,10 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/clip/clip1.mp4';
-import Bullet2 from '../../../assets/clip/clip2.mp4';
-import Bullet3 from '../../../assets/clip/clip2.mp4';
-import Bullet4 from '../../../assets/clip/clip2.mp4';
-
+import Bullet1 from '../../../assets/image/Lesson1.2/image12.png';
+import Bullet2 from '../../../assets/image/Lesson1.2/image13.png'; // Image source for lesson 2
+import Bullet3 from '../../../assets/image/Lesson1.2/image14.png'; // Image source for lesson 3
+import Bullet4 from '../../../assets/image/Lesson1.2/image15.png'; // Image source for lesson 4
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -31,8 +30,9 @@ export default function Page1() {
           Find elements in data (e.g., Binary Search). 
             </>
       ),
-      video: Bullet1, // MP4 video source
-    },
+       mediaType: 'image',
+       image: Bullet1,      
+     },
     {
       description: (
         <>
@@ -43,8 +43,9 @@ export default function Page1() {
           
         </>
       ),
-      video: Bullet2,
-    },
+       mediaType: 'image',
+       image: Bullet2,      
+     },
     {
       description: (
         <>
@@ -56,8 +57,9 @@ export default function Page1() {
           
         </>
       ),
-      video: Bullet3,
-    },
+       mediaType: 'image',
+       image: Bullet3,      
+     },
     {
       description: (
         <>
@@ -69,8 +71,9 @@ export default function Page1() {
           
         </>
       ),
-      video: Bullet4,
-    }
+       mediaType: 'image',
+       image: Bullet4,      
+     }
   ];
 
   // Move to next lesson if not last
