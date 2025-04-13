@@ -5,9 +5,10 @@ import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
 
-import Bullet1 from '../../../assets/image/image7.png';
-import Bullet2 from '../../../assets/image/image6.png';
-import Bullet3 from '../../../assets/image/image8.png';
+
+import Bullet1 from '../../../assets/image/Lesson1.1/image7.png';
+import Bullet2 from '../../../assets/image/Lesson1.1/image6.png';
+import Bullet3 from '../../../assets/image/Lesson1.1/image8.png';
 
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';

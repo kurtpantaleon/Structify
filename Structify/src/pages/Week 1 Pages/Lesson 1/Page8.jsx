@@ -4,7 +4,7 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/clip/clip1.mp4';
+import Bullet1 from '../../../assets/image/Lesson1.1/image18.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -33,8 +33,8 @@ export default  function Page8() {
              
              </>
           ),
-          video: Bullet1, // MP4 video source
-     }
+       mediaType: 'image',
+       image: Bullet1,         }
   ];
 
 

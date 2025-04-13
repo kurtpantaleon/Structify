@@ -6,9 +6,9 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/image/image1.png';
-import Bullet2 from '../../../assets/image/image2.png';
-import Bullet3 from '../../../assets/image/image3.png';
+import Bullet1 from '../../../assets/image/Lesson1.1/image1.png';
+import Bullet2 from '../../../assets/image/Lesson1.1/image2.png';
+import Bullet3 from '../../../assets/image/Lesson1.1/image3.png';
 
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';

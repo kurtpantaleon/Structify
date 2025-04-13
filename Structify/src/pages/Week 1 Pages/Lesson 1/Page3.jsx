@@ -3,8 +3,8 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/image/image4.png';
-import Bullet2 from '../../../assets/image/image5.png';
+import Bullet1 from '../../../assets/image/Lesson1.1/image4.png';
+import Bullet2 from '../../../assets/image/Lesson1.1/image5.png';
 
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';

@@ -34,7 +34,6 @@ export default function Page1() {
       ),
       mediaType: 'video',
       video: Bullet1, // MP4 video source
-      resizeClass: 'h-70', // Resize class for the video
     },
     {
       description: (
