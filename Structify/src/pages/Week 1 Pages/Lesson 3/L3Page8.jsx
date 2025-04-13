@@ -6,8 +6,7 @@ import LessonFooter from '../../../components/LessonFooter';
 
 
 
-import Bullet1 from '../../../assets/clip/clip1.mp4';
-
+import Bullet1 from '../../../assets/image/Lesson3.1/image22.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
@@ -36,8 +35,9 @@ export default  function L3Page8() {
                      
            </>
          ),
-         video: Bullet1, // MP4 video source
-       }
+         mediaType: 'image',
+         image: Bullet1,  
+        }
   ];
 
 

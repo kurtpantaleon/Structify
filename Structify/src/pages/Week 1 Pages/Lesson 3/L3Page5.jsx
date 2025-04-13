@@ -6,9 +6,9 @@ import LessonFooter from '../../../components/LessonFooter';
 
 
 
-import Bullet1 from '../../../assets/clip/clip1.mp4';
-import Bullet2 from '../../../assets/clip/clip2.mp4';
-import Bullet3 from '../../../assets/clip/clip2.mp4';
+import Bullet1 from '../../../assets/image/Lesson3.1/image13.png';
+import Bullet2 from '../../../assets/image/Lesson3.1/image14.png';
+import Bullet3 from '../../../assets/image/Lesson3.1/image15.png';
 
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
@@ -38,8 +38,9 @@ export default  function L3Page5() {
                      
            </>
          ),
-         video: Bullet1, // MP4 video source
-       },
+         mediaType: 'image',
+         image: Bullet1,  
+        },
        {
          description: (
            <>
@@ -48,8 +49,9 @@ export default  function L3Page5() {
              </span>{' '} Trade-offs in access speed.
            </>
          ),
-         video: Bullet2,
-       },
+         mediaType: 'image',
+         image: Bullet2,  
+        },
        {
          description: (
            <>
@@ -60,8 +62,9 @@ export default  function L3Page5() {
              .
            </>
          ),
-         video: Bullet3,
-       }
+         mediaType: 'image',
+         image: Bullet3,  
+        }
   ];
 
 

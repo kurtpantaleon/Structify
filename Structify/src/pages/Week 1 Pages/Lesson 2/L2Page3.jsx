@@ -4,9 +4,9 @@ import LessonPages from '../../../components/LessonPages';
 import LessonFooter from '../../../components/LessonFooter';
 
 
-import Bullet1 from '../../../assets/image/Lesson1.2/image7.png';
-import Bullet2 from '../../../assets/image/Lesson1.2/image8.png';
-import Bullet3 from '../../../assets/image/Lesson1.2/image9.png';
+import Bullet1 from '../../../assets/image/Lesson2.1/image7.png';
+import Bullet2 from '../../../assets/image/Lesson2.1/image8.png';
+import Bullet3 from '../../../assets/image/Lesson2.1/image9.png';
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';

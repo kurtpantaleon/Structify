@@ -5,10 +5,9 @@ import LessonPages from '../../../components/LessonPages';
 import LessonFooter from '../../../components/LessonFooter';
 
 
-
-import Bullet1 from '../../../assets/clip/clip1.mp4';
-import Bullet2 from '../../../assets/clip/clip2.mp4';
-import Bullet3 from '../../../assets/clip/clip2.mp4';
+import Bullet1 from '../../../assets/image/Lesson3.1/image4.png';
+import Bullet2 from '../../../assets/image/Lesson3.1/image5.png';
+import Bullet3 from '../../../assets/image/Lesson3.1/image6.png';
 
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
@@ -38,8 +37,9 @@ export default  function L3Page2() {
                      
            </>
          ),
-         video: Bullet1, // MP4 video source
-       },
+         mediaType: 'image',
+         image: Bullet1,  
+        },
        {
          description: (
            <>
@@ -49,8 +49,9 @@ export default  function L3Page2() {
              </span>{' '}  speeds up searches.
            </>
          ),
-         video: Bullet2,
-       },
+         mediaType: 'image',
+         image: Bullet2,  
+        },
        {
          description: (
            <>
@@ -61,8 +62,9 @@ export default  function L3Page2() {
              .
            </>
          ),
-         video: Bullet3,
-       }
+         mediaType: 'image',
+         image: Bullet3,  
+        }
   ];
 
 
