@@ -263,6 +263,9 @@ import Unauthorized from './pages/UnauthorizedPage'
 {/*Profile Page */}
 import ViewProfile from './pages/ViewProfile'
 
+{/*Instructor Page */}
+import InstructorPage from './pages/instructor/instructorPage'
+ 
 function App() {
   return (
     <Routes>
@@ -523,6 +526,9 @@ function App() {
 
       {/*View Profile Page */}
       <Route path="/ViewProfile" element={<ViewProfile />} />
+
+      {/*Instructor Page */}
+      <Route path="/InstructorPage" element={<ProtectedRoute allowedRoles={['instructor']}><InstructorPage /></ProtectedRoute>} />
     </Routes> 
   )
 }

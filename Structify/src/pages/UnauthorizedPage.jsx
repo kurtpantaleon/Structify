@@ -15,7 +15,7 @@ const Unauthorized = () => {
       >
         Go Back
       </button>
-    </div>
+    </div> 
   );
 };
 
