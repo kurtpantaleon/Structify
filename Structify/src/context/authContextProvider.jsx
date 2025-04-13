@@ -1,9 +1,10 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { getDoc, doc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "../services/firebaseConfig";
 import { AuthContext } from "./authContext";
 import authReducer from "./authReducer";
+import LoadingCircle from "../components/LoadingCircle";
 
 const INITIAL_STATE = {
   currentUser: null,
@@ -12,9 +13,11 @@ const INITIAL_STATE = {
 
 function AuthContextProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, INITIAL_STATE);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const auth = getAuth();
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
@@ -22,7 +25,19 @@ function AuthContextProvider({ children }) {
           const docSnap = await getDoc(docRef);
           const userRole = docSnap.exists() ? docSnap.data().role : null;
 
-          dispatch({ type: "LOGIN", payload: { user, role: userRole } });
+          dispatch({
+            type: "LOGIN",
+            payload: {
+              user: {
+                uid: user.uid,
+                email: user.email,
+                name: docSnap.data().name,
+                section: docSnap.data().section,
+              },
+              role: userRole,
+            },
+          });
+
           localStorage.setItem("user", JSON.stringify(user));
           localStorage.setItem("role", userRole);
         } catch (error) {
@@ -33,16 +48,24 @@ function AuthContextProvider({ children }) {
         localStorage.removeItem("user");
         localStorage.removeItem("role");
       }
+
+      setLoading(false); // ✅ finish loading
     });
 
     return () => unsubscribe();
   }, []);
+
+  // ✅ Show loading spinner while loading
+  if (loading) {
+    return <LoadingCircle />;
+  }
 
   return (
     <AuthContext.Provider
       value={{
         currentUser: state.currentUser,
         role: state.role,
+        loading,
         dispatch,
       }}
     >

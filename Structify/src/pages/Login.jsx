@@ -47,7 +47,7 @@ function Login() {
         } else if (role === 'student') {
           navigate('/mainPage', { replace: true });
         } else if (role === 'instructor') {
-          navigate('/', { replace: true });
+          navigate('/instructorPage', { replace: true });
         } else {
           setError(true);
           console.error('No valid role found.');
