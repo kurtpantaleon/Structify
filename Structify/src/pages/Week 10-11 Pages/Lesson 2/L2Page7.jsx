@@ -6,8 +6,8 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/clip/clip1.mp4';
-import Bullet2 from '../../../assets/clip/clip2.mp4';
+import Bullet1 from '../../../assets/image/Lesson10.2/image7.png';
+import Bullet2 from '../../../assets/image/Lesson10.2/image8.png';;
 
 
 
@@ -34,7 +34,8 @@ export default function Page1() {
           
         </>
       ),
-      video: Bullet1, // MP4 video source
+       mediaType: 'image',
+                       image: Bullet1,
     },
     {
       description: (
@@ -48,7 +49,8 @@ export default function Page1() {
           
         </>
       ),
-      video: Bullet2, // MP4 video source
+       mediaType: 'image',
+                                                       image: Bullet2,
     }
   ];
 
