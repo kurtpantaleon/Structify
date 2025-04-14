@@ -6,8 +6,7 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/clip/clip1.mp4';
-
+import Bullet1 from '../../../assets/image/Lesson3.2/image11.png'; // Image source for lesson 1
 
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
@@ -26,7 +25,8 @@ export default function Page1() {
         Code Example
         </>
       ),
-      video: Bullet1, // MP4 video source
+      mediaType: 'image',
+      image: Bullet1,      
     }
   ];
 
@@ -79,7 +79,7 @@ export default function Page1() {
       {currentIndex === lessons.length - 1 && (
         <LessonFooter
           buttonText="Continue"
-          onClick={() => navigate('/week3Page1')}
+          onClick={() => navigate('/week2Activity1')}
           className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
         />
       )}
