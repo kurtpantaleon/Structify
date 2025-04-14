@@ -1,26 +1,19 @@
-import React, { useState } from 'react'; // React and useState hook
-import { useNavigate } from 'react-router-dom'; // For navigation between pages
-
-// Importing components and assets
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-
 import Bullet1 from '../../../assets/clip/clip1.mp4';
 import Bullet2 from '../../../assets/clip/clip2.mp4';
 import Bullet3 from '../../../assets/clip/clip3.mp4';
-
-
-
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
 
 export default function Page1() {
-  const navigate = useNavigate(); // Hook to trigger route changes
-  const [currentIndex, setCurrentIndex] = useState(0); // Track current lesson index
+  const navigate = useNavigate();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // All slides in this lesson
   const lessons = [
     {
       description: (
@@ -60,41 +53,39 @@ export default function Page1() {
       ),
       mediaType: 'video',
       video: Bullet3,
-    }
+    },
   ];
 
-  // Move to next lesson if not last
   const nextLesson = () => {
     if (currentIndex < lessons.length - 1) {
-      setCurrentIndex(prev => prev + 1);
+      setCurrentIndex((prev) => prev + 1);
     }
   };
 
-  // Move to previous lesson if not first
   const prevLesson = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
+      setCurrentIndex((prev) => prev - 1);
     }
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-b from-[#1F274D] to-[#0E1328] text-white flex flex-col font-sans relative">
+    <div className="min-h-screen bg-gradient-to-b from-[#1F274D] to-[#0E1328] text-white flex flex-col font-sans relative">
       <Header />
 
       {/* Top bar with navigation arrows + progress bar */}
       <SubHeading2
-        progress={currentIndex + 1} // 1-based progress index
+        progress={currentIndex + 1}
         totalSteps={lessons.length}
-         exitPath="/mainPage"
+        exitPath="/mainPage"
         onNext={nextLesson}
         onPrev={prevLesson}
       />
 
       {/* Lesson content area */}
-      <div className="flex-grow flex flex-col justify-center items-center gap-8 overflow-y-auto px-4 animate-fade-in">
+      <div className="flex-grow flex flex-col justify-center items-center gap-4 sm:gap-6 md:gap-8 px-4 sm:px-6 md:px-8 py-4 sm:py-6 overflow-y-auto">
         <LessonPages
           title={
-            <span className="text-3xl font-black text-center text-teal-400 drop-shadow-md">
+            <span className="text-xl sm:text-2xl md:text-3xl font-black text-center text-teal-400 drop-shadow-md">
               What is Data Structure?
             </span>
           }
@@ -112,7 +103,7 @@ export default function Page1() {
         <LessonFooter
           buttonText="Continue"
           onClick={() => navigate('/page2')}
-          className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
+          className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-sm sm:text-base md:text-lg font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300 mx-auto mb-4 sm:mb-6"
         />
       )}
     </div>

@@ -2,12 +2,12 @@ import React from 'react';
 
 function LessonPages({ title, lessons, leftIcon, rightIcon, currentIndex, nextLesson, prevLesson }) {
   return (
-    <div className="bg-[#1F274D] text-white px-10 py-1 rounded-lg flex flex-col gap-1 items-center h-130">
+    <div className="bg-[#1F274D] text-white px-4 sm:px-8 md:px-10 py-4 sm:py-6 flex flex-col gap-2 sm:gap-4 items-center min-h-screen md:min-h-[80vh]">
       {/* Slide title */}
-      <h2 className="text-4xl font-bold mb-4 text-center">{title}</h2>
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-center">{title}</h2>
 
       {/* Slide description */}
-      <p className="text-center max-w-2xl text-2xl mb-6">
+      <p className="text-center max-w-xs sm:max-w-md md:max-w-2xl text-base sm:text-lg md:text-2xl mb-4 sm:mb-6">
         {lessons[currentIndex].description}
       </p>
 
@@ -17,15 +17,16 @@ function LessonPages({ title, lessons, leftIcon, rightIcon, currentIndex, nextLe
         <button
           onClick={prevLesson}
           disabled={currentIndex === 0}
-          className={`transform transition-all duration-300 ease-in-out 
+          className={`p-2 sm:p-3 transform transition-all duration-300 ease-in-out focus:ring-2 focus:ring-white
             ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          aria-label="Previous Lesson"
         >
           <img
             src={leftIcon}
             alt="Previous"
-            className={`h-12 w-7 
-              ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''} 
-              hover:scale-125 hover:filter hover:brightness-125 transition-transform duration-500 ease-in-out`} 
+            className={`h-8 w-5 sm:h-10 sm:w-6 md:h-12 md:w-7
+              ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}
+              hover:scale-125 hover:brightness-125 transition-transform duration-500 ease-in-out`}
           />
         </button>
 
@@ -62,15 +63,16 @@ function LessonPages({ title, lessons, leftIcon, rightIcon, currentIndex, nextLe
         <button
           onClick={nextLesson}
           disabled={currentIndex === lessons.length - 1}
-          className={`transform transition-all duration-300 ease-in-out 
+          className={`p-2 sm:p-3 transform transition-all duration-300 ease-in-out focus:ring-2 focus:ring-white
             ${currentIndex === lessons.length - 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          aria-label="Next Lesson"
         >
           <img
             src={rightIcon}
             alt="Next"
-            className={`h-12 w-7 
-              ${currentIndex === lessons.length - 1 ? 'opacity-50 cursor-not-allowed' : ''} 
-              hover:scale-125 hover:filter hover:brightness-125 transition-transform duration-500 ease-in-out`} 
+            className={`h-8 w-5 sm:h-10 sm:w-6 md:h-12 md:w-7
+              ${currentIndex === lessons.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}
+              hover:scale-125 hover:brightness-125 transition-transform duration-500 ease-in-out`}
           />
         </button>
       </div>
