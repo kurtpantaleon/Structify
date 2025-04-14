@@ -14,7 +14,7 @@ const NavigationBar = () => {
                  md:top-0 md:bottom-auto md:left-0 md:right-auto md:h-screen md:w-20 md:flex-col md:justify-start md:items-center md:py-8 md:space-y-8 md:border-t-0 md:border-r md:border-gray-200"
     >
       {/* Navigation Icons */}
-      <nav className="flex w-full justify-around md:flex-col md:space-y-8 md:justify-start">
+      <nav className="flex w-100 justify-around md:flex-col md:space-y-8 md:justify-start">
         <NavItem to="/mainPage" icon={LearnIcon} label="Learn" />
         <NavItem to="/codePlayground" icon={CodeIcon} label="Code" />
         <NavItem to="/pvp" icon={PvPIcon} label="PvP" />
