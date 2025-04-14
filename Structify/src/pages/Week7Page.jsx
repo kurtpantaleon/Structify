@@ -51,10 +51,10 @@ export default function Week7Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY 
 
 
                                                                                   {/*YUNG PATH LALAGYAN TO !!!!!!!*/}
-                <CardSection title="What are Strings?" subtitle="Lesson 1" progress={12.5} path="/week7Page1"  mediaSrc={card1} mediaType="video"/>
-                <CardSection title="String Operations" subtitle="Lesson 2" progress={0} path="/week7L2Page1" mediaSrc={card2} mediaType="video"/>
-                <CardSection title="How Computers Process Text" subtitle="Lesson 3" progress={0} path="/week7L3Page1" mediaSrc={card3} mediaType="video" />
-                <CardSection title="Build a Name Formatter" subtitle="Challenge" progress={0} path="/quizWeek7" mediaSrc={Challenges} mediaType="video"/>
+                <CardSection title="What is a Stack?" subtitle="Lesson 1" progress={12.5} path="/week7Page1"  mediaSrc={card1} mediaType="video"/>
+                <CardSection title=" What is a Queue?" subtitle="Lesson 2" progress={0} path="/week7L2Page1" mediaSrc={card2} mediaType="video"/>
+                <CardSection title="Understanding Recursion" subtitle="Lesson 3" progress={0} path="/week7L3Page1" mediaSrc={card3} mediaType="video" />
+                <CardSection title=" Build a Mini Task Manager" subtitle="Challenge" progress={0} path="/quizWeek7" mediaSrc={Challenges} mediaType="video"/>
               </div>
             </div>
 

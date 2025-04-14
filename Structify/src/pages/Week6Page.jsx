@@ -51,10 +51,10 @@ export default function Week6Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY 
 
 
                                                                                   {/*YUNG PATH LALAGYAN TO !!!!!!!*/}
-                <CardSection title="What are Strings?" subtitle="Lesson 1" progress={12.5} path="/week6Page1"  mediaSrc={card1} mediaType="video"/>
-                <CardSection title="String Operations" subtitle="Lesson 2" progress={0} path="/week6L2Page1" mediaSrc={card2} mediaType="video"/>
-                <CardSection title="How Computers Process Text" subtitle="Lesson 3" progress={0} path="/week6L3Page1" mediaSrc={card3} mediaType="video" />
-                <CardSection title="Build a Name Formatter" subtitle="Challenge" progress={0} path="/quizWeek6" mediaSrc={Challenges} mediaType="video"/>
+                <CardSection title=" What is a Linked List?" subtitle="Lesson 1" progress={12.5} path="/week6Page1"  mediaSrc={card1} mediaType="video"/>
+                <CardSection title="Nodes and Links" subtitle="Lesson 2" progress={0} path="/week6L2Page1" mediaSrc={card2} mediaType="video"/>
+                <CardSection title="Operations on a Linked List" subtitle="Lesson 3" progress={0} path="/week6L3Page1" mediaSrc={card3} mediaType="video" />
+                <CardSection title="Create a Simple Linked List in Java" subtitle="Challenge" progress={0} path="/quizWeek6" mediaSrc={Challenges} mediaType="video"/>
               </div>
             </div>
 

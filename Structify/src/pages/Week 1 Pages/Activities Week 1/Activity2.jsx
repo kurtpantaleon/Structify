@@ -98,7 +98,7 @@ export default function Activity2() {
     <> 
       <Header /> 
       <div className="flex justify-between items-center p-4 bg-[#1c2452] border-b border-[#2a3366]">
-      <button onClick={() => (window.location.href = "/week2Page")} className="text-white">          
+      <button onClick={() => (window.location.href = "/mainPage")} className="text-white">          
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>

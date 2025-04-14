@@ -51,10 +51,10 @@ export default function Week10Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY
 
 
                                                                                   {/*YUNG PATH LALAGYAN TO !!!!!!!*/}
-                <CardSection title="What are Strings?" subtitle="Lesson 1" progress={12.5} path="/week10Page1"  mediaSrc={card1} mediaType="video"/>
-                <CardSection title="String Operations" subtitle="Lesson 2" progress={0} path="/week10L2Page1" mediaSrc={card2} mediaType="video"/>
-                <CardSection title="How Computers Process Text" subtitle="Lesson 3" progress={0} path="/week10L3Page1" mediaSrc={card3} mediaType="video" />
-                <CardSection title="Build a Name Formatter" subtitle="Challenge" progress={0} path="/quizWeek10" mediaSrc={Challenges} mediaType="video"/>
+                <CardSection title="Introduction to Trees" subtitle="Lesson 1" progress={12.5} path="/week10Page1"  mediaSrc={card1} mediaType="video"/>
+                <CardSection title=" Binary Trees and Binary Search Trees (BST)" subtitle="Lesson 2" progress={0} path="/week10L2Page1" mediaSrc={card2} mediaType="video"/>
+                <CardSection title="Tree Traversal (How to Search a Tree)" subtitle="Lesson 3" progress={0} path="/week10L3Page1" mediaSrc={card3} mediaType="video" />
+                <CardSection title="Build a Simple BST in Java" subtitle="Challenge" progress={0} path="/quizWeek10" mediaSrc={Challenges} mediaType="video"/>
               </div>
             </div>
 

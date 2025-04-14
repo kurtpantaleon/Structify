@@ -26,7 +26,7 @@ function DraggableItem({ id, children }) {
       style={style} 
       {...listeners} 
       {...attributes} 
-      className="px-4 py-1 bg-transparent border border-white text-white rounded text-center uppercase text-sm cursor-pointer w-32"
+      className="p-2 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-47"
     >
       {children}
     </div>
@@ -38,7 +38,7 @@ function DroppableArea({ id, answer }) {
   return (
     <div 
       ref={setNodeRef} 
-      className="inline-block w-36 h-6 bg-transparent border border-white rounded mx-1"
+      className="inline-block bg-gradient-to-r from-blue-900 to-blue-1000 rounded-xs border border-white/100 rounded text-center uppercase text-lg font-bold cursor-pointer h-10 w-50"
     >
       <div className="w-full h-full flex items-center justify-center text-white text-sm">
         {answer || ""}
@@ -93,7 +93,7 @@ export default function Activity2() {
     <div className="bg-[#1c2452] min-h-screen flex flex-col">
       <> <Header /> 
       <div className="flex justify-between items-center p-4 bg-[#1c2452] border-b border-[#2a3366]">
-      <button onClick={() => (window.location.href = "/mainPage")} className="text-white">          
+      <button onClick={() => (window.location.href = "/week4Page")} className="text-white">          
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -105,14 +105,14 @@ export default function Activity2() {
       {/* Main content */}
       <div className="flex-1 p-6 flex flex-col items-center">
         <DndContext onDragEnd={handleDrop}>
-          <div className="max-w-3xl w-full">
-            {/* Questions with blanks */}
-            <div className="mb-8">
+        <div className="max-w-3xl w-full flex flex-col  items-center mb-10">
+        {/* Questions with blanks */}
+            <div className="h-100 w-200 p-5 bg-[#141a35] rounded-lg border border-white/100">
               {questions.map((question, index) => renderQuestion(question, index))}
             </div>
 
             {/* Options */}
-            <div className="flex flex-wrap gap-4 justify-center mt-8">
+            <div className="flex  gap-4 justify-center w-5xl mt-8">
               {options.map((opt) => (
                 !Object.values(answers).includes(opt) && (
                   <DraggableItem key={opt} id={opt}>{opt}</DraggableItem>
@@ -122,39 +122,42 @@ export default function Activity2() {
           </div>
         </DndContext>
 
-        {/* Submit button */}
-        <button 
-          className="mt-8 px-6 py-2 bg-blue-600 text-white rounded" 
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
+     
 
         {feedback && (
           <p className="mt-4 text-white font-medium">{feedback}</p>
         )}
       </div>
       </>
-      <div className="flex justify-between w-full px-6 pb-6">
-        <button 
-          className="px-4 py-2 bg-gray-600 text-white rounded flex items-center"
-          onClick={goToPreviousActivity}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-          </svg>
-          Previous Activity
-        </button>
-        <button 
-          className="px-4 py-2 bg-blue-600 text-white rounded flex items-center"
-          onClick={goToNextActivity}
-        >
-          Next Activity
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-          </svg>
-        </button>
-      </div>
+      <div className="mt-1 flex justify-between align-center items-center w-full px-6 pb-6">
+              <button 
+                className="px-4 h-10 bg-blue-600 text-white rounded flex items-center"
+                onClick={goToPreviousActivity}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                Previous Activity
+              </button>
+
+               {/* Submit button */}
+                <button 
+                  className=" px-20 py-4 bg-blue-600 text-white rounded" 
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </button>
+
+              <button 
+                className="px-4 h-10 bg-blue-600 text-white rounded flex items-center"
+                onClick={goToNextActivity}
+              >
+                Next Activity
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+              </button>
+        </div>
     </div>
   );
 }

@@ -26,7 +26,7 @@ function DraggableItem({ id, children }) {
       style={style} 
       {...listeners} 
       {...attributes} 
-      className="px-4 py-2 bg-transparent border border-white text-white rounded text-center uppercase text-sm cursor-pointer w-32"
+      className="p-2 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-47"
     >
       {children}
     </div>
@@ -38,7 +38,7 @@ function DroppableArea({ id, answer }) {
   return (
     <div 
       ref={setNodeRef} 
-      className="w-full h-8 bg-transparent border border-white rounded flex items-center justify-center text-white text-sm"
+      className="w-100 h-15 bg-gradient-to-r from-blue-900 to-blue-1000 rounded-lg border border-white/100  font-bold rounded flex items-center justify-center text-white text-xl"
     >
       {answer || ""}
     </div>
@@ -78,7 +78,7 @@ export default function Activity1() {
     
       <Header />
       <div className="flex justify-between items-center p-4 bg-[#1c2452] border-b border-[#2a3366]">
-      <button onClick={() => (window.location.href = "/mainPage")} className="text-white">          
+      <button onClick={() => (window.location.href = "/week6Page")} className="text-white">          
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -92,8 +92,8 @@ export default function Activity1() {
         <DndContext onDragEnd={handleDrop}>
           <div className="flex gap-8 justify-center max-w-4xl">
             {/* Left column with numbers and drop areas */}
-            <div className="border border-white rounded p-6 w-64">
-              {[1, 2, 3, 4, 5].map((num, index) => (
+            <div className="flex flex-col item-center justify-center gap-2 border-r border-white/20 rounded-xl p-6 w-100 bg-[#141a35]">
+              {[1, 2, 3].map((num, index) => (
                 <div key={num} className="flex items-center gap-4 mb-4">
                   <span className="text-white font-medium w-6">{num}.</span>
                   <DroppableArea id={descriptions[index]} answer={answers[descriptions[index]]} />
@@ -102,7 +102,7 @@ export default function Activity1() {
             </div>
 
             {/* Right column with descriptions */}
-            <div className="border border-white rounded p-6 w-64">
+            <div className="rounded p-6 w-100 flex flex-col item-center justify-center gap-13 rounded-xl  bg-[#141a35] ">
               {descriptions.map((desc, index) => (
                 <p key={index} className="text-white text-sm mb-4">{desc}</p>
               ))}
@@ -118,22 +118,25 @@ export default function Activity1() {
             ))}
           </div>
         </DndContext>            
-        {/* Submit button */}
-        <button 
-          className="mt-8 px-6 py-2 bg-blue-600 text-white rounded" 
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
+        
 
         {feedback && (
           <p className="mt-4 text-white font-medium">{feedback}</p>
         )}
       </div>
-      <div className="flex justify-between w-full px-6 pb-6">
-       
+      <div className="flex justify-between align-center items-center w-full px-6 pb-6 mt-3">
+        <button className="px-4 h-10 bg-gray-600 text-white rounded flex items-center"
+          >Previous Activity
+         </button>
+        {/* Submit button */}
         <button 
-          className="px-4 py-2 bg-blue-600 text-white rounded flex items-center"
+          className=" px-20 py-4 bg-blue-600 text-white rounded" 
+          onClick={handleSubmit}
+        >
+          Submit
+        </button>
+        <button 
+          className="px-4 h-10 bg-blue-600 text-white rounded flex items-center"
           onClick={goToNextActivity}
         >
           Next Activity

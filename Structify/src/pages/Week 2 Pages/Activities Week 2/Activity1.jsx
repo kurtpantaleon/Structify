@@ -81,7 +81,7 @@ export default function Activity1() {
     
       <Header />
       <div className="flex justify-between items-center p-4 bg-[#1c2452] border-b border-[#2a3366]">
-      <button onClick={() => (window.location.href = "/mainPage")} className="text-white">          
+      <button onClick={() => (window.location.href = "/week2Page")} className="text-white">          
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -127,27 +127,27 @@ export default function Activity1() {
           <p className="mt-4 text-white font-medium">{feedback}</p>
         )}
       </div>
-      <div className="flex justify-between align-center items-center w-full px-6 pb-6 mt-3">
-        <button className="px-4 h-10 bg-gray-600 text-white rounded flex items-center"
-          >Previous Activity
-         </button>
-        {/* Submit button */}
-        <button 
-          className=" px-20 py-4 bg-blue-600 text-white rounded" 
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
-        <button 
-          className="px-4 h-10 bg-blue-600 text-white rounded flex items-center"
-          onClick={goToNextActivity}
-        >
-          Next Activity
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-          </svg>
-        </button>
-      </div>
+            <div className="flex justify-between align-center items-center w-full px-6 pb-6 mt-3">
+              <button className="px-4 h-10 bg-gray-600 text-white rounded flex items-center"
+                >Previous Activity
+              </button>
+              {/* Submit button */}
+              <button 
+                className=" px-20 py-4 bg-blue-600 text-white rounded" 
+                onClick={handleSubmit}
+              >
+                Submit
+              </button>
+              <button 
+                className="px-4 h-10 bg-blue-600 text-white rounded flex items-center"
+                onClick={goToNextActivity}
+              >
+                Next Activity
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
     </div>
   );
 }
