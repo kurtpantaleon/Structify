@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  setDoc,
-} from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, setDoc,} from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { db, auth } from '../../services/firebaseConfig';
+import { db, auth, secondaryAuth } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
@@ -68,28 +61,30 @@ function ViewStudentsPage() {
   const createStudent = async (e) => {
     e.preventDefault();
     const { name, email, password, confirmPassword } = formData;
-
+  
     if (!name || !email || !password || !confirmPassword) {
       alert('Please fill out all fields.');
       return;
     }
-
+  
     if (password !== confirmPassword) {
       setPasswordMismatch(true);
       return;
     }
-
+  
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
       const uid = userCredential.user.uid;
-
+  
       await setDoc(doc(db, 'users', uid), {
         name,
         email,
         section: '',
         role: 'student',
       });
-
+  
+      await secondaryAuth.signOut(); // 🧼 Clean up secondary session
+  
       setStudents((prev) => [...prev, { id: uid, name, email, section: '', role: 'student' }]);
       setFormData({ name: '', email: '', password: '', confirmPassword: '' });
       setShowModal(false);
@@ -98,7 +93,7 @@ function ViewStudentsPage() {
       console.error('Error creating student:', error.message);
       alert('Error: ' + error.message);
     }
-  };
+  };  
 
   const openReassignModal = async (student) => {
     try {

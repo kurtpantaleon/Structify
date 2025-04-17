@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, doc, setDoc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { db, auth } from '../../services/firebaseConfig';
+import { db, auth, secondaryAuth } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
@@ -59,7 +59,9 @@ function ViewInstructorPage() {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+      await secondaryAuth.signOut(); // Prevent session memory bloat
+
       const uid = userCredential.user.uid;
 
       await setDoc(doc(db, 'users', uid), {
