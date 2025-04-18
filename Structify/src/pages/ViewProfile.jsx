@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { getAuth, signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/authContext';
-import Header from '../components/Header'; // For students; replace with AdminHeader if role is 'admin'
+import Header from '../components/AdminHeader'; // For students; replace with AdminHeader if role is 'admin'
 
 function ViewProfile() {
   const [isNavOpen, setIsNavOpen] = useState(false);
