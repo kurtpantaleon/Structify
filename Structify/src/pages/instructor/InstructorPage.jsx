@@ -69,7 +69,7 @@ function InstructorPage() {
       )}
 
       <div className="max-w-7xl mx-auto mt-6 bg-white p-6 rounded-lg shadow h-[75vh] overflow-y-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 m-9 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {sections.map((section) => (
             <SectionCard
               key={section.id}
