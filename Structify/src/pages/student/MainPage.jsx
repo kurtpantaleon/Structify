@@ -1,18 +1,20 @@
 import { useState } from 'react';
-import NavigationBar from '../components/NavigationBar';
-import SubHeading from '../components/SubHeading';
-import Header from '../components/Header';
-import CardSection from '../components/CardSection';
-import WeekButton from '../components/WeekButton';
-import CheckIcon from '../assets/images/Check Icon.png';
-import UncheckIcon from '../assets/images/Uncheck Icon.png';
-import PracticeIcon from '../assets/images/Practice Icon.png';
-import StudyIcon from '../assets/images/Study Icon.png';
-import LearningPath from '../components/LearningPath';
-import Data from "../assets/clip/data.mp4";
-import Computer from "../assets/clip/Computer.mp4";
-import Type from "../assets/clip/types.mp4";
-import Challenges from "../assets/clip/challenge.mp4";
+import NavigationBar from '../../components/NavigationBar';
+import SubHeading from '../../components/SubHeading';
+import Header from '../../components/Header';
+import CardSection from '../../components/CardSection';
+import WeekButton from '../../components/WeekButton';
+import LearningPath from '../../components/LearningPath';
+
+import CheckIcon from '../../assets/images/Check Icon.png';
+import UncheckIcon from '../../assets/images/Uncheck Icon.png';
+import PracticeIcon from '../../assets/images/Practice Icon.png';
+import StudyIcon from '../../assets/images/Study Icon.png';
+
+import Data from "../../assets/clip/data.mp4";
+import Computer from "../../assets/clip/Computer.mp4";
+import Type from "../../assets/clip/types.mp4";
+import Challenges from "../../assets/clip/challenge.mp4";
 
 function MainPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);

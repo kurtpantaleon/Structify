@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Header';
 import { useNavigate } from 'react-router-dom';
-import Week3Page from '../../Week6Page';
+import Week3Page from '../../student/Week6Page';
 
 
 const QuizWeek4 = () => {

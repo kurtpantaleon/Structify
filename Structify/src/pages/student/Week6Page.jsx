@@ -1,20 +1,20 @@
 import { useState } from 'react';
-import NavigationBar from '../components/NavigationBar';
-import SubHeading from '../components/SubHeading';
-import Header from '../components/Header';
-import CardSection from '../components/CardSection';
-import WeekButton from '../components/WeekButton';
-import CheckIcon from '../assets/images/Check Icon.png';
-import UncheckIcon from '../assets/images/Uncheck Icon.png';
-import PracticeIcon from '../assets/images/Practice Icon.png';
-import StudyIcon from '../assets/images/Study Icon.png';
-import LearningPath from '../components/LearningPath';
+import NavigationBar from '../../components/NavigationBar';
+import SubHeading from '../../components/SubHeading';
+import Header from '../../components/Header';
+import CardSection from '../../components/CardSection';
+import WeekButton from '../../components/WeekButton';
+import LearningPath from '../../components/LearningPath';
 
-import card1 from "../assets/clip/string.mp4"
-import card2 from "../assets/clip/operation.mp4"
-import card3 from "../assets/clip/process.mp4"
+import CheckIcon from '../../assets/images/Check Icon.png';
+import UncheckIcon from '../../assets/images/Uncheck Icon.png';
+import PracticeIcon from '../../assets/images/Practice Icon.png';
+import StudyIcon from '../../assets/images/Study Icon.png';
 
-import Challenges from "../assets/clip/challenge.mp4"
+import card1 from "../../assets/clip/string.mp4"
+import card2 from "../../assets/clip/operation.mp4"
+import card3 from "../../assets/clip/process.mp4"
+import Challenges from "../../assets/clip/challenge.mp4"
 
 
 export default function Week6Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY PASTE LANG

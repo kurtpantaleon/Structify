@@ -4,7 +4,7 @@ import StartPage from './pages/Start'
 import Login from './pages/Login'
 
 /*WEEK 1 */
-import MainPage from './pages/MainPage'
+import MainPage from './pages/student/MainPage'
 {/*Week 1 Activities */}
 import Week1Activity1 from './pages/Week 1 Pages/Activities Week 1/Activity1'
 import Week1Activity2 from './pages/Week 1 Pages/Activities Week 1/Activity2'
@@ -35,7 +35,7 @@ import L3Page7 from './pages/Week 1 Pages/Lesson 3/L3Page7'
 import L3Page8 from './pages/Week 1 Pages/Lesson 3/L3Page8'
 
 /*WEEK 2  */
-import Week2 from './pages/Week2Page'
+import Week2 from './pages/student/Week2Page'
 {/*Week 2 Activities */}
 import Week2Activity1 from './pages/Week 2 Pages/Activities Week 2/Activity1'
 import Week2Activity2 from './pages/Week 2 Pages/Activities Week 2/Activity2'
@@ -69,7 +69,7 @@ import Week2L3Page5 from './pages/Week 2 Pages/Lesson 3/L3Page5'
 import Week2L3Page6 from './pages/Week 2 Pages/Lesson 3/L3Page6'
 
 {/*WEEK 3 */}
-import Week3 from './pages/Week3Page'
+import Week3 from './pages/student/Week3Page'
 {/*Week 3 Activities */}
 import Week3Activity1 from './pages/Week 3 Pages/Activities Week 3/Activity1'
 import Week3Activity2 from './pages/Week 3 Pages/Activities Week 3/Activity2'
@@ -105,7 +105,7 @@ import Week3L3Page7 from './pages/Week 3 Pages/Lesson 3/L3Page7'
 import Week3L3Page8 from './pages/Week 3 Pages/Lesson 3/L3Page8'
 
 /*WEEK 4 */
-import Week4 from './pages/Week4Page'
+import Week4 from './pages/student/Week4Page'
 {/*Week 4 Activities */}
 import Week4Activity1 from './pages/Week 4-5 Pages/Activities Week 4&5/Activity1'
 import Week4Activity2 from './pages/Week 4-5 Pages/Activities Week 4&5/Activity2'
@@ -141,7 +141,7 @@ import Week4L3Page7 from './pages/Week 4-5 Pages/Lesson 3/L3Page7'
 import Week4L3Page8 from './pages/Week 4-5 Pages/Lesson 3/L3Page8'
 
 /*WEEK 6 */
-import Week6 from './pages/Week6Page'
+import Week6 from './pages/student/Week6Page'
 {/*Week 6 Activities */}
 import Week6Activity1 from './pages/Week 6 Pages/Activities Week 6/Activity1'
 import Week6Activity2 from './pages/Week 6 Pages/Activities Week 6/Activity2'
@@ -176,7 +176,7 @@ import Week6L3Page7 from './pages/Week 6 Pages/Lesson 3/L3Page7'
 import Week6L3Page8 from './pages/Week 6 Pages/Lesson 3/L3Page8'
 
 /*WEEK 7 */
-import Week7 from './pages/Week7Page'
+import Week7 from './pages/student/Week7Page'
 {/*Week 7 Activities */}
 import Week7Activity1 from './pages/Week 7-8 Pages/Activities Week 7&8/Activity1'
 import Week7Activity2 from './pages/Week 7-8 Pages/Activities Week 7&8/Activity2'
@@ -213,7 +213,7 @@ import Week7L3Page7 from './pages/Week 7-8 Pages/Lesson 3/L3Page7'
 import Week7L3Page8 from './pages/Week 7-8 Pages/Lesson 3/L3Page8'
 
 {/*week 10*/}
-import Week10 from './pages/Week10Page'
+import Week10 from './pages/student/Week10Page'
 {/*Week 10 Activities */}
 import QuizWeek10 from './pages/Week 10-11 Pages/Quiz Week 10-11/quizWeek10-11'
 {/*Week 10 Lesson 1 */}
@@ -248,7 +248,7 @@ import Week10Activity1 from './pages/Week 10-11 Pages/Activities Week 10&11/Acti
 import Week10Activity2 from './pages/Week 10-11 Pages/Activities Week 10&11/Activity2'
 import Week10Activity3 from './pages/Week 10-11 Pages/Activities Week 10&11/Activity3'
 
-import CodePlayground  from './pages/CodePlayground'
+import CodePlayground  from './pages/student/CodePlayground'
 
 {/*Admin Page */}
 import AdminPage from './pages/admin/adminPage'
