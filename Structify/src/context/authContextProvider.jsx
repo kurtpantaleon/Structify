@@ -5,6 +5,7 @@ import { db } from "../services/firebaseConfig";
 import { AuthContext } from "./authContext";
 import authReducer from "./authReducer";
 import LoadingCircle from "../components/LoadingCircle";
+import { useContext } from "react"; // ADD THIS
 
 const INITIAL_STATE = {
   currentUser: null,
@@ -17,7 +18,6 @@ function AuthContextProvider({ children }) {
 
   useEffect(() => {
     const auth = getAuth();
-
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
@@ -49,13 +49,12 @@ function AuthContextProvider({ children }) {
         localStorage.removeItem("role");
       }
 
-      setLoading(false); // ✅ finish loading
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  // ✅ Show loading spinner while loading
   if (loading) {
     return <LoadingCircle />;
   }
@@ -75,3 +74,8 @@ function AuthContextProvider({ children }) {
 }
 
 export default AuthContextProvider;
+
+// ✅ ADD THIS BELOW:
+export function useAuth() {
+  return useContext(AuthContext);
+}

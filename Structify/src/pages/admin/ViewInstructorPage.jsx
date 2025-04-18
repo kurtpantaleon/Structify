@@ -66,7 +66,7 @@ function ViewInstructorPage() {
 
       await setDoc(doc(db, 'users', uid), {
         email,
-        name,
+        name, 
         role: 'instructor',
         section: '',
       });
@@ -115,11 +115,31 @@ function ViewInstructorPage() {
     try {
       const newSection = selectedSection === '__unassign__' ? '' : selectedSection;
   
+      // 1. Update instructor document
       await setDoc(doc(db, 'users', selectedInstructor.id), {
         ...selectedInstructor,
         section: newSection,
       });
   
+      // 2. Update class document
+      if (newSection) {
+        const classQuery = query(
+          collection(db, 'classes'),
+          where('sectionName', '==', newSection)
+        );
+        const classSnapshot = await getDocs(classQuery);
+  
+        if (!classSnapshot.empty) {
+          const classDocId = classSnapshot.docs[0].id;
+  
+          await setDoc(doc(db, 'classes', classDocId), {
+            ...classSnapshot.docs[0].data(),
+            instructor: selectedInstructor.name, // optional: add instructorId
+          });
+        }
+      }
+  
+      // 3. Update local state
       const updated = instructors.map((inst) =>
         inst.id === selectedInstructor.id
           ? { ...inst, section: newSection }

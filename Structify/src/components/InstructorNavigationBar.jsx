@@ -1,18 +1,17 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Importing useNavigate
+import { useNavigate } from "react-router-dom";
 import HomeIcon from "../assets/images/Home Icon.png"; 
-import InstructorIcon from "../assets/images/Instructor Icon.png"; 
-import StudentIcon from "../assets/images/Student Icon.png"; 
+import Leaderboard from "../assets/images/Leaderboard Icon.png";
+import PvPIcon from "../assets/images/PvP Icon.png";
 
 const InstructorNavigationBar = () => {
   return (
-    <div className="fixed bg-[#1F274D] h-screen w-20 flex flex-col items-center py-8 space-y-8 px-1 border-r-1 border-gray-200">
+    <div className="fixed bg-[#1F274D] h-screen w-22 flex flex-col items-center py-8 space-y-8 px-1 border-r-1 border-gray-200">
       {/* Navigation Icons */}
       <nav className="flex flex-col space-y-8">
-        <NavItem to="/AdminPage" icon={HomeIcon} label="Home" />
-        <NavItem to="/ViewInstructorPage" icon={InstructorIcon} label="Instructor" />
-        <NavItem to="/ViewStudentsPage" icon={StudentIcon} label="Student" /> 
-        {/* Optionally, you can add more NavItems as needed */}
+        <NavItem to="/InstructorPage" icon={HomeIcon} label="Home" />
+        <NavItem to="" icon={Leaderboard} label="Leaderboard" />
+        <NavItem to="" icon={PvPIcon} label="PvP" /> 
       </nav>
     </div>
   );

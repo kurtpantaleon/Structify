@@ -120,19 +120,47 @@ function ViewStudentsPage() {
 
   const handleReassignSection = async () => {
     if (!selectedStudent) return;
-
+  
     try {
       const newSection = selectedSection === '__unassign__' ? '' : selectedSection;
-
+  
+      // Update user document
       await setDoc(doc(db, 'users', selectedStudent.id), {
         ...selectedStudent,
         section: newSection,
       });
-
+  
+      // 🔁 Update studentCount in the class document
+      if (newSection) {
+        const classQuery = query(
+          collection(db, 'classes'),
+          where('sectionName', '==', newSection)
+        );
+        const classSnapshot = await getDocs(classQuery);
+  
+        if (!classSnapshot.empty) {
+          const classDoc = classSnapshot.docs[0];
+          const classId = classDoc.id;
+  
+          const studentsQuery = query(
+            collection(db, 'users'),
+            where('role', '==', 'student'),
+            where('section', '==', newSection)
+          );
+          const studentsSnapshot = await getDocs(studentsQuery);
+          const studentCount = studentsSnapshot.size;
+  
+          await setDoc(doc(db, 'classes', classId), {
+            ...classDoc.data(),
+            studentCount: studentCount,
+          });
+        }
+      }
+  
       const updated = students.map((s) =>
         s.id === selectedStudent.id ? { ...s, section: newSection } : s
       );
-
+  
       setStudents(updated);
       setReassignModalOpen(false);
       setSelectedStudent(null);
@@ -140,7 +168,7 @@ function ViewStudentsPage() {
     } catch (error) {
       console.error('Error updating student section:', error);
     }
-  };
+  };  
 
   const handleDeleteStudent = async () => {
     if (!studentToDelete) return;
