@@ -76,9 +76,7 @@ function InstructorPage() {
               sectionName={section.sectionName}
               instructor={section.instructor}
               studentCount={section.studentCount}
-              onClick={() => {
-                // Optional: navigate to section view page
-              }}
+              hideMenu={true}
             />
           ))}
         </div>
