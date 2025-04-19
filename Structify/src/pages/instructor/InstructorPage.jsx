@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../../services/firebaseConfig';
 import { useAuth } from '../../context/authContextProvider'; // You must have an auth context set up
 import Header from '../../components/AdminHeader';
@@ -11,6 +12,7 @@ function InstructorPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [sections, setSections] = useState([]);
   const { currentUser } = useAuth(); // From context: contains Firebase user info
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchInstructorSections = async () => {
@@ -77,7 +79,10 @@ function InstructorPage() {
               instructor={section.instructor}
               studentCount={section.studentCount}
               hideMenu={true}
-            />
+              onClick={() =>
+                navigate('/viewScoresPage', { state: { section: section.sectionName } })
+              }
+            />          
           ))}
         </div>
       </div>
