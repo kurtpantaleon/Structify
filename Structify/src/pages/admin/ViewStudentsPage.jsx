@@ -105,9 +105,7 @@ function ViewStudentsPage() {
       );
       const usedSections = studentsSnapshot.docs.map((doc) => doc.data().section);
 
-      const available = classList.filter(
-        (section) => section === student.section || !usedSections.includes(section)
-      );
+      const available = classList;
 
       setAvailableSections(available);
       setSelectedStudent(student);
