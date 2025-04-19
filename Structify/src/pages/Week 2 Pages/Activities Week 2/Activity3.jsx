@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "../../../services/firebaseConfig";
+// import { doc, setDoc } from "firebase/firestore";
+// import { db } from "../../../services/firebaseConfig";
 
 const options = ["O(1)", "O(n)", "O(log n)", "O(n²)", "O(n log n)"];
 
@@ -95,18 +95,19 @@ export default function Week2Activity3() {
         : `You scored ${calculatedScore}/100. Try again!`
     );
 
-    try {
-      const scoreData = {
-        userId: "user1", // Replace with actual user ID
-        activityId: "week2activity3",
-        score: calculatedScore,
-        timestamp: new Date().toISOString()
-      };
-      await setDoc(doc(db, "activityScores", `${scoreData.userId}_${scoreData.timestamp}`), scoreData);
-    } catch (error) {
-      console.error("Error saving score:", error);
-      setFeedback("Error saving score. Please try again.");
-    }
+    // try {
+    //   const scoreData = {
+    //     userId: "user1", // Replace with actual user ID
+    //     activityId: "week2activity3",
+    //     score: calculatedScore,
+    //     timestamp: new Date().toISOString()
+    //   };
+    //   await setDoc(doc(db, "activityScores", `${scoreData.userId}_${scoreData.timestamp}`), scoreData);
+    // } catch (error) {
+    //   console.error("Error saving score:", error);
+    //   setFeedback("Error saving score. Please try again.");
+    // }
+    
     setTimeout(() => {
       navigate("/quizWeek2"); 
     }, 3000);

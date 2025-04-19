@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "../../../services/firebaseConfig";
+// import { doc, setDoc } from "firebase/firestore";
+// import { db } from "../../../services/firebaseConfig";
 
 const options = ["LINKED LIST", "ARRAY", "STACK", "QUEUE", "HASH TABLE"];
 const descriptions = [
@@ -88,18 +88,19 @@ export default function Activity1() {
     setScore(calculatedScore);
     setFeedback(calculatedScore === 100 ? "Correct! Well done." : `You scored ${calculatedScore}/100. Try again!`);
 
-    try {
-      const scoreData = {
-        userId: "user1", // Replace with actual user ID
-        activityId: "activity1",
-        score: calculatedScore,
-        timestamp: new Date().toISOString()
-      };
-      await setDoc(doc(db, "activityScores", `${scoreData.userId}_${scoreData.timestamp}`), scoreData);
-    } catch (error) {
-      console.error("Error saving score:", error);
-      setFeedback("Error saving score. Please try again.");
-    }
+    // try {
+    //   const scoreData = {
+    //     userId: "user1", // Replace with actual user ID
+    //     activityId: "activity1",
+    //     score: calculatedScore,
+    //     timestamp: new Date().toISOString()
+    //   };
+    //   await setDoc(doc(db, "activityScores", `${scoreData.userId}_${scoreData.timestamp}`), scoreData);
+    // } catch (error) {
+    //   console.error("Error saving score:", error);
+    //   setFeedback("Error saving score. Please try again.");
+    // }
+
     setTimeout(() => {
       navigate("/week1activity2"); 
     }, 3000);

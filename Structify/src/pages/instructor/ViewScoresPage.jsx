@@ -31,7 +31,7 @@ function ViewScoresPage() {
       )}
 
       <div className="max-w-6xl mx-auto mt-7 bg-white p-6 rounded-lg shadow h-[75vh] flex flex-col">
-        <div className="overflow-y-auto pr-2 space-y-6 flex-grow">
+        <div className="overflow-y-auto m-4 pr-2 space-y-6 flex-grow">
           {mockData.map((weekData, idx) => (
             <div key={idx}>
               <h2 className="text-2xl font-bold text-[#141a35] mb-2 py-1 border-b">{weekData.week}</h2>
