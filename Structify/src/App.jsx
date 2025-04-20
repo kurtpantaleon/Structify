@@ -523,16 +523,16 @@ function App() {
       <Route path="/ViewStudentsPage" element={<ProtectedRoute allowedRoles={['admin']}><ViewStudentsPage /></ProtectedRoute>} />
       <Route path="/ViewClassPage" element={<ProtectedRoute allowedRoles={['admin']}><ViewClassPage/></ProtectedRoute>} />
 
+      {/*Instructor Page */}
+      <Route path="/InstructorPage" element={<ProtectedRoute allowedRoles={['instructor']}><InstructorPage /></ProtectedRoute>} />
+      <Route path="/ViewScoresPage" element={<ProtectedRoute allowedRoles={['instructor']}><ViewScoresPage /></ProtectedRoute>} />
+      <Route path="/ViewStudentLists" element={<ProtectedRoute allowedRoles={['instructor']}><ViewStudentLists /></ProtectedRoute>} />
+
       {/* Unauthorized Page */}
       <Route path="/unauthorized" element={<Unauthorized />} />
 
       {/*View Profile Page */}
       <Route path="/ViewProfile" element={<ViewProfile />} />
-
-      {/*Instructor Page */}
-      <Route path="/InstructorPage" element={<ProtectedRoute allowedRoles={['instructor']}><InstructorPage /></ProtectedRoute>} />
-      <Route path="/ViewScoresPage" element={<ProtectedRoute allowedRoles={['instructor']}><ViewScoresPage /></ProtectedRoute>} />
-      <Route path="/ViewStudentLists" element={<ProtectedRoute allowedRoles={['instructor']}><ViewStudentLists /></ProtectedRoute>} />
     </Routes> 
   )
 }
