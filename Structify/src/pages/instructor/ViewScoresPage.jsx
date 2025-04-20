@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom'; // ✅ Import useNavigate
 import Header from '../../components/AdminHeader';
 import AdminSubHeading from '../../components/SubHeading';
 import AdminNavigationBar from '../../components/InstructorNavigationBar';
@@ -17,7 +17,6 @@ const weekLabels = [
   '17th Week',
 ];
 
-// Generate week data dynamically
 const mockData = weekLabels.map((week) => ({
   week,
   activities: ['Activity 1', 'Activity 2', 'Activity 3', 'Quiz'],
@@ -26,6 +25,7 @@ const mockData = weekLabels.map((week) => ({
 function ViewScoresPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate(); // ✅ Initialize navigate
   const sectionName = location.state?.section;
 
   return (
@@ -39,7 +39,16 @@ function ViewScoresPage() {
       )}
 
       <div className="max-w-6xl mx-auto mt-7 bg-white p-6 rounded-lg shadow h-[75vh] flex flex-col">
-        <div className="overflow-y-auto m-4 pr-2 space-y-6 flex-grow">
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => navigate('/viewStudentLists', { state: { section: { sectionName: sectionName } } })}
+            className="bg-[#141a35] text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-[#1f274d] transition"
+          >
+            View Student Lists
+          </button>
+        </div>
+
+        <div className="overflow-y-auto m-4 pr-6 space-y-6 flex-grow">
           {mockData.map((weekData, idx) => (
             <div key={idx}>
               <h2 className="text-2xl font-bold text-[#141a35] mb-2 py-1 border-b">

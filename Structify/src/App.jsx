@@ -266,6 +266,7 @@ import ViewProfile from './pages/ViewProfile'
 {/*Instructor Page */}
 import InstructorPage from './pages/instructor/InstructorPage'
 import ViewScoresPage from './pages/instructor/ViewScoresPage'
+import ViewStudentLists from './pages/instructor/ViewStudentLists'
  
 function App() {
   return (
@@ -531,7 +532,7 @@ function App() {
       {/*Instructor Page */}
       <Route path="/InstructorPage" element={<ProtectedRoute allowedRoles={['instructor']}><InstructorPage /></ProtectedRoute>} />
       <Route path="/ViewScoresPage" element={<ProtectedRoute allowedRoles={['instructor']}><ViewScoresPage /></ProtectedRoute>} />
-
+      <Route path="/ViewStudentLists" element={<ProtectedRoute allowedRoles={['instructor']}><ViewStudentLists /></ProtectedRoute>} />
     </Routes> 
   )
 }
