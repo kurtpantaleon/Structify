@@ -267,6 +267,8 @@ import ViewProfile from './pages/ViewProfile'
 import InstructorPage from './pages/instructor/InstructorPage'
 import ViewScoresPage from './pages/instructor/ViewScoresPage'
 import ViewStudentLists from './pages/instructor/ViewStudentLists'
+
+import Leaderboard from './pages/Leaderboard'
  
 function App() {
   return (
@@ -533,6 +535,8 @@ function App() {
 
       {/*View Profile Page */}
       <Route path="/ViewProfile" element={<ViewProfile />} />
+
+      <Route path="/Leaderboard" element={<Leaderboard />} />      
     </Routes> 
   )
 }
