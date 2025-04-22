@@ -10,7 +10,7 @@ const InstructorNavigationBar = () => {
       {/* Navigation Icons */}
       <nav className="flex flex-col space-y-8">
         <NavItem to="/InstructorPage" icon={HomeIcon} label="Home" />
-        <NavItem to="" icon={Leaderboard} label="Leaderboard" />
+        <NavItem to="/Leaderboard" icon={Leaderboard} label="Leaderboard" />
         <NavItem to="" icon={PvPIcon} label="PvP" /> 
       </nav>
     </div>
