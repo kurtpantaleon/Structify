@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, where, orderBy, onSnapshot, getDocs } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../services/firebaseConfig';
+import { getAuth } from 'firebase/auth';
+
 import Header from '../components/AdminHeader';
 import AdminSubHeading from '../components/SubHeading';
 import AdminNavigationBar from '../components/InstructorNavigationBar';
+import StudentNavigationBar from '../components/NavigationBar';
+
 import Goldrank from '../assets/images/Gold Rank.png';
 import fire from '../assets/images/fire.png';
 import profile from '../assets/images/sample profile.png';
@@ -13,8 +17,26 @@ function Leaderboard() {
   const [students, setStudents] = useState([]);
   const [sections, setSections] = useState([]);
   const [selectedSection, setSelectedSection] = useState('');
+  const [userRole, setUserRole] = useState(null);
 
-  // 🔄 Fetch unique sections on initial load
+  // Get the current user's role
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (user) {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role);
+        }
+      }
+    };
+
+    fetchUserRole();
+  }, []);
+
+  // Fetch unique sections on initial load
   useEffect(() => {
     const fetchSections = async () => {
       const snapshot = await getDocs(query(collection(db, 'users'), where('role', '==', 'student')));
@@ -29,7 +51,7 @@ function Leaderboard() {
     fetchSections();
   }, []);
 
-  // 🔁 Fetch leaderboard data based on selected section
+  // Fetch leaderboard data based on selected section
   useEffect(() => {
     if (!selectedSection) return;
 
@@ -59,14 +81,23 @@ function Leaderboard() {
   const topThree = students.slice(0, 3);
   const others = students.slice(3);
 
+  if (userRole === null) return <div className="text-white p-4">Loading...</div>;
+
   return (
-    <div className="bg-[#0e1344] min-h-screen text-white">
+    <div className="bg-[#0e1344] min-h-screen text-white pb-24 md:pb-0">
       <Header />
       <AdminSubHeading toggleNav={() => setIsNavOpen(!isNavOpen)} title="Leaderboard" />
+      
       {isNavOpen && (
-        <div className="w-20 border-r border-white/20 bg-[#141a35] fixed z-50">
-          <AdminNavigationBar />
-        </div>
+        userRole === 'instructor' ? (
+          <div className="w-20 border-r border-white/20 bg-[#141a35] fixed z-50">
+            <AdminNavigationBar />
+          </div>
+        ) : (
+          <div className="w-20 border-r border-white/20 bg-[#141a35] fixed z-50 md:translate-x-0.5">
+            <StudentNavigationBar />
+          </div>
+        )
       )}
 
       {/* 🔽 Section Selector */}

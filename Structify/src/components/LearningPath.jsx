@@ -33,7 +33,7 @@ function LearningPath({ isOpen, toggleLearningPath }) {
       </button>
 
       <div className="ml-10 sm:ml-12 flex items-center justify-between mb-3 sm:mb-4">
-        <h2 className="font-bold text-base sm:text-lg md:text-xl">Learning Path</h2>
+        <h2 className="font-bold text-base sm:text-lg md:text-xl">Weekly Course Outline</h2>
         <p className="text-[10px] sm:text-xs">0/17</p>
       </div>
 
