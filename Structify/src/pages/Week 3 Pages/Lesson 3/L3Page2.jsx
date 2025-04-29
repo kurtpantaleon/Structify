@@ -6,8 +6,8 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/image/Lesson1.3/image1.png'; // Image source for lesson 1
-import Bullet2 from '../../../assets/image/Lesson1.3/image2.png'; // Image source for lesson 2
+import Bullet1 from '../../../assets/image/Lesson3.3/image2.png'; // Image source for lesson 1
+import Bullet2 from '../../../assets/image/Lesson3.3/image3.png'; // Image source for lesson 2
 
 
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';

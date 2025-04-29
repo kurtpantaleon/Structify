@@ -6,8 +6,8 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/image/Lesson1.2/image11.png'; // Image source for lesson 1
-import Bullet2 from '../../../assets/image/Lesson1.2/image12.png'; // Image source for lesson 1
+import Bullet1 from '../../../assets/image/Lesson4.1/image1.png'; // Image source for lesson 1
+import Bullet2 from '../../../assets/image/Lesson4.1/image2.png'; // Image source for lesson 1
 
 
 

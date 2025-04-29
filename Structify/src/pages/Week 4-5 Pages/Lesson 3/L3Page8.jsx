@@ -6,8 +6,8 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/clip/clip1.mp4';
-import Bullet2 from '../../../assets/clip/clip2.mp4';
+import Bullet1 from '../../../assets/image/Lesson4.3/image10.png'; // Image source for lesson 1
+
 
 
 
@@ -36,7 +36,8 @@ export default function Page1() {
          
         </>
       ),
-      video: Bullet1, // MP4 video source
+      mediaType: 'image',
+            image: Bullet1, // MP4 video source
     }
   ];
 
