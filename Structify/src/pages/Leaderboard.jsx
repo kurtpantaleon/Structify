@@ -64,7 +64,7 @@ function Leaderboard() {
       <Header />
       
       {/* 🔙 Exit Button */}
-      <div className="flex justify-end m-7">
+      <div className="flex justify-end m-8">
         <button
             onClick={() => navigate(-1)}
             className="z-10"
