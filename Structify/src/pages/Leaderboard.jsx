@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, orderBy, onSnapshot, getDocs } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom'; 
 import { db } from '../services/firebaseConfig';
 import Header from '../components/AdminHeader';
 import Goldrank from '../assets/images/Gold Rank.png';
 import fire from '../assets/images/fire.png';
 import profile from '../assets/images/sample profile.png';
+import exit from '../assets/images/X Icon.png';
 
 function Leaderboard() {
   const [students, setStudents] = useState([]);
   const [sections, setSections] = useState([]);
   const [selectedSection, setSelectedSection] = useState('');
+  const navigate = useNavigate(); // 🆕 Initialize navigate
 
   // 🔄 Fetch unique sections on initial load
   useEffect(() => {
@@ -60,6 +63,15 @@ function Leaderboard() {
     <div className="bg-[#0e1344] min-h-screen text-white">
       <Header />
       
+      {/* 🔙 Exit Button */}
+      <div className="flex justify-end m-7">
+        <button
+            onClick={() => navigate(-1)}
+            className="z-10"
+          >
+            <img src={exit} alt="Close" className="w-6 h-6 cursor-pointer" />
+        </button>
+      </div>
 
       {/* 🔽 Section Selector */}
       <div className="flex justify-center mt-6">
