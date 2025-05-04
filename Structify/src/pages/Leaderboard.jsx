@@ -94,9 +94,9 @@ function Leaderboard() {
           <div key={index} className="relative w-36 text-center">
             <img src={Goldrank} alt="gold badge" className="w-full" />
             <div className="absolute inset-0 flex flex-col items-center justify-start pt-4">
-              <img src={profile} alt="profile" className="w-12 h-11 rounded-full mb-1" />
-              <p className="font-bold text-white text-sm">{student.name}</p>
-              <div className="flex items-center gap-1 text-sm text-red-500">
+              <img src={profile} alt="profile" className="w-12 h-11 rounded-full mb-2" />
+              <p className="font-bold text-black text-sm mb-2">{student.name}</p>
+              <div className="flex items-center gap-1 text-sm font-bold text-red-500">
                 <img src={fire} alt="fire icon" className="w-4 h-4" />
                 {student.rankPoints}
               </div>
