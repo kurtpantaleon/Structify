@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
+import Actbox from "../../../assets/asset/ActBox.png";
 // import { doc, setDoc } from "firebase/firestore";
 // import { db } from "../../../services/firebaseConfig";
 
@@ -30,16 +31,25 @@ const correctAnswers = {
   "Student Record System": "Hash Table"
 };
 
-function DraggableItem({ id, label }) {
+function DraggableItem({ id, label, fitContainer = false }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
-  const style = transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : {};
+
+  const style = {
+    backgroundImage: `url(${Actbox})`,
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined
+  };
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...listeners}
       {...attributes}
-      className="p-2 sm:p-3 bg-blue-900 border border-white text-white rounded text-center uppercase text-sm sm:text-base md:text-lg font-bold cursor-pointer w-36 sm:w-44 md:w-48 hover:bg-blue-800 transition-colors"
+      className={`flex items-center justify-center text-white rounded text-center uppercase text-sm sm:text-base md:text-lg font-bold cursor-pointer hover:scale-105 
+        ${fitContainer ? 'w-full h-full p-0' : 'w-36 sm:w-44 md:w-48 p-2 sm:p-3'}`}
     >
       {label}
     </div>
@@ -49,15 +59,24 @@ function DraggableItem({ id, label }) {
 function DroppableArea({ id, answer }) {
   const { setNodeRef, isOver } = useDroppable({ id });
   const answerLabel = options.find((option) => option.id === answer)?.label || "";
+
+
+    const style = {
+      backgroundImage: `url(${Actbox})`,
+      backgroundSize: 'contain',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+    };
+
   return (
     <div
       ref={setNodeRef}
-      className={`w-full sm:w-80 md:w-96 h-12 sm:h-14 md:h-16 bg-gradient-to-r from-blue-900 to-blue-1000 rounded-lg border ${
-        isOver ? "border-white" : "border-white/100"
+      style={style}
+      className={`w-full sm:w-80 md:w-96 h-12 sm:h-14 md:h-16 bg-gradient-to-r from-blue-900 to-blue-1000 rounded-lg "
       } font-bold flex items-center justify-center text-white text-sm sm:text-base md:text-xl transition-colors`}
     >
-      {answer ? (
-        <DraggableItem id={answer} label={answerLabel}>{answerLabel}</DraggableItem>
+       {answer ? (
+        <DraggableItem id={answer} label={answerLabel} fitContainer />
       ) : (
         <span className="text-white/50">Drop here</span>
       )}
