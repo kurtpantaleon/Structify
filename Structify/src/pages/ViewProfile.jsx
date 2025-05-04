@@ -3,9 +3,9 @@ import { getAuth, signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/authContext';
 import Header from '../components/AdminHeader'; // For students; replace with AdminHeader if role is 'admin'
+import exit from '../assets/images/X Icon.png'; // Exit icon
 
 function ViewProfile() {
-  const [isNavOpen, setIsNavOpen] = useState(false);
   const { currentUser, role } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -23,6 +23,15 @@ function ViewProfile() {
   return (
     <div className="min-h-screen bg-gray-200 relative">
       <Header />
+      {/* 🔙 Exit Button */}
+      <div className="flex justify-end m-8">
+        <button
+            onClick={() => navigate(-1)}
+            className="z-10"
+          >
+            <img src={exit} alt="Close" className="w-6 h-6 cursor-pointer filter invert" />
+        </button>
+      </div>
 
       <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded-lg shadow-md text-center">
         <h2 className="text-2xl font-bold mb-4">
