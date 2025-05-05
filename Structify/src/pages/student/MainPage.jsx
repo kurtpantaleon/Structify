@@ -16,7 +16,10 @@ import Computer from "../../assets/clip/Computer.mp4";
 import Type from "../../assets/clip/types.mp4";
 import Challenges from "../../assets/clip/challenge.mp4";
 
+import { useLessonProgress } from '../../context/lessonProgressContext';
+
 function MainPage() {
+  const { completedLessons } = useLessonProgress();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isLearningPathOpen, setIsLearningPathOpen] = useState(false);
 
@@ -110,7 +113,7 @@ function MainPage() {
                 <WeekButton 
                   title="Lesson 1" 
                   status="LEARN" 
-                  icon={CheckIcon} 
+                  icon={completedLessons.includes('lesson1') ? CheckIcon : UncheckIcon} 
                   iconType={StudyIcon} 
                   path="/page1"
                 />

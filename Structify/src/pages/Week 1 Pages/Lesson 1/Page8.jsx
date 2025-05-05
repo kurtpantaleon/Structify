@@ -9,15 +9,12 @@ import Bullet1 from '../../../assets/image/Lesson1.1/image18.png';
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 
-
-
-
-
 import React, { useState } from 'react'; // React and useState hook
 import { useNavigate } from 'react-router-dom'; // For navigation between pages
+import { useLessonProgress } from '../../../context/lessonProgressContext';
 
 export default  function Page8() {
-
+   const { markLessonComplete } = useLessonProgress();
    const navigate = useNavigate(); // Hook to trigger route changes
    const [currentIndex, setCurrentIndex] = useState(0); // Track current lesson index
 
@@ -82,12 +79,14 @@ return (
         rightIcon={BigRightNextIcon}
       />
     </div>
-
           {/* Conditionally render the footer button when at last lesson */}
           {currentIndex === lessons.length - 1 && (
         <LessonFooter
           buttonText="Continue"
-          onClick={() => navigate('/l2page1')}
+          onClick={() => {
+            markLessonComplete('lesson1');
+            navigate('/l2page1');
+          }}
           className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
         />
       )}
