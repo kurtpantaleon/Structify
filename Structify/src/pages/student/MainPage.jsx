@@ -120,14 +120,14 @@ function MainPage() {
                 <WeekButton 
                   title="Lesson 2" 
                   status="LEARN" 
-                  icon={UncheckIcon} 
+                  icon={completedLessons.includes("lesson2") ? CheckIcon : UncheckIcon}
                   iconType={StudyIcon} 
                   path="/l2page1"
                 />
                 <WeekButton 
                   title="Lesson 3" 
                   status="LEARN" 
-                  icon={UncheckIcon} 
+                  icon={completedLessons.includes("lesson3") ? CheckIcon : UncheckIcon}
                   iconType={StudyIcon} 
                   path="/l3page1"
                 />

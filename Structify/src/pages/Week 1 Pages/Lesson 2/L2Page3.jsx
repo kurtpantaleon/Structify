@@ -3,7 +3,6 @@ import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 import LessonFooter from '../../../components/LessonFooter';
 
-
 import Bullet1 from '../../../assets/image/Lesson2.1/image7.png';
 import Bullet2 from '../../../assets/image/Lesson2.1/image8.png';
 import Bullet3 from '../../../assets/image/Lesson2.1/image9.png';
@@ -11,16 +10,14 @@ import Bullet3 from '../../../assets/image/Lesson2.1/image9.png';
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 
-
-
 import React, { useState } from 'react'; // React and useState hook
 import { useNavigate } from 'react-router-dom'; // For navigation between pages
+import { useLessonProgress } from '../../../context/lessonProgressContext'; // Importing the lesson progress context
 
 export default  function L2Page3() {
-
+   const { markLessonComplete } = useLessonProgress(); // declaring the markLessonComplete function from the context
    const navigate = useNavigate(); // Hook to trigger route changes
    const [currentIndex, setCurrentIndex] = useState(0); // Track current lesson index
-
 
   // Lesson content stored in an array
   const lessons = [
@@ -115,12 +112,20 @@ return (
    {currentIndex === lessons.length - 1 && (
         <LessonFooter
           buttonText="Continue"
-          onClick={() => navigate('/l3page1')}
+          onClick={() => {
+            markLessonComplete('lesson2'); // Mark the lesson as complete when button is clicked
+            navigate('/l3page1');
+          }}
           className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
         />
       )}
   </div>
 );
+
+/// Function to handle marking the lesson as complete
+const handleComplete = () => {
+  markLessonComplete("lesson2");
+};
 }
 
  

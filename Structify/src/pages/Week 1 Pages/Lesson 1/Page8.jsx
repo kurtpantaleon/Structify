@@ -11,10 +11,10 @@ import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 
 import React, { useState } from 'react'; // React and useState hook
 import { useNavigate } from 'react-router-dom'; // For navigation between pages
-import { useLessonProgress } from '../../../context/lessonProgressContext';
+import { useLessonProgress } from '../../../context/lessonProgressContext'; // Importing the lesson progress context
 
 export default  function Page8() {
-   const { markLessonComplete } = useLessonProgress();
+   const { markLessonComplete } = useLessonProgress(); // declaring the markLessonComplete function from the context
    const navigate = useNavigate(); // Hook to trigger route changes
    const [currentIndex, setCurrentIndex] = useState(0); // Track current lesson index
 
@@ -84,7 +84,7 @@ return (
         <LessonFooter
           buttonText="Continue"
           onClick={() => {
-            markLessonComplete('lesson1');
+            markLessonComplete('lesson1'); // Mark the lesson as complete when button is clicked
             navigate('/l2page1');
           }}
           className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
@@ -93,6 +93,7 @@ return (
   </div>
 );
 
+// Function to handle marking the lesson as complete
 const handleComplete = () => {
   markLessonComplete("lesson1");
 };
