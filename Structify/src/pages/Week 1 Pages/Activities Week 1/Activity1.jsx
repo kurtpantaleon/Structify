@@ -103,7 +103,7 @@ export default function Activity1() {
     }
     const calculatedScore = correctCount * 20;
     setScore(calculatedScore);
-    setFeedback(calculatedScore === 100 ? "🎉 Correct! You nailed it!" : `💡 You scored ${calculatedScore}/100. Try again!`);
+    setFeedback(calculatedScore === 100 ? "🎉 Correct! You nailed it!" : ` You scored ${calculatedScore}/100. Try again!`);
 
     setTimeout(() => {
       navigate("/week1activity2");

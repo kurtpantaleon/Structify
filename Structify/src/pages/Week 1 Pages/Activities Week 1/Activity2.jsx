@@ -106,8 +106,7 @@ export default function Activity2() {
     setScore(calculatedScore);
     setFeedback(
       calculatedScore === 100
-        ? "Correct! Well done."
-        : `You scored ${calculatedScore}/100. Try again!`
+        ? "🎉 Correct! You nailed it!" : ` You scored ${calculatedScore}/100. Try again!`
     );
 
     // try {

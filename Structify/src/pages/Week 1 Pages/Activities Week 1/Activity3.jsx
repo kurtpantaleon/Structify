@@ -118,9 +118,7 @@ export default function Activity3() {
     setScore(calculatedScore);
     setFeedback(
       calculatedScore === 100
-        ? "Correct! Well done."
-        : `You scored ${calculatedScore}/100. Try again!`
-    );
+        ?  "🎉 Correct! You nailed it!" : ` You scored ${calculatedScore}/100. Try again!`);
 
     // try {
     //   const scoreData = {
@@ -206,7 +204,7 @@ export default function Activity3() {
           />
         ))}
       <Header />
-      <div className="flex justify-between items-center p-3 sm:p-4 md:p-6 bg-[#1c2452] border-b border-[#2a3366]">
+      <div className="flex justify-between items-center p-4 border-b border-blue-500/40 backdrop-blur-md bg-white/10">
         <button onClick={() => navigate("/week2Page")} className="text-white">
           <svg
             xmlns="http://www.w3.org/2000/svg"
