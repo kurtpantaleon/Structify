@@ -92,5 +92,9 @@ return (
       )}
   </div>
 );
+
+const handleComplete = () => {
+  markLessonComplete("lesson1");
+};
 }
 

@@ -113,7 +113,7 @@ function MainPage() {
                 <WeekButton 
                   title="Lesson 1" 
                   status="LEARN" 
-                  icon={completedLessons.includes('lesson1') ? CheckIcon : UncheckIcon} 
+                  icon={completedLessons.includes("lesson1") ? CheckIcon : UncheckIcon}
                   iconType={StudyIcon} 
                   path="/page1"
                 />
