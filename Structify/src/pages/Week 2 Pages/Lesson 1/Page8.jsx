@@ -27,7 +27,6 @@ export default  function Page8() {
               <span className="font-extrabold text-yellow-400 animate-pulse">
                essential for building efficient and scalable 
               </span>{' '}applications.
-             
              </>
           ),
        mediaType: 'image',
@@ -95,10 +94,5 @@ return (
       )}
   </div>
 );
-
-// Function to handle marking the lesson as complete
-const handleComplete = () => {
-  markLessonComplete("lesson1");
-};
 }
 
