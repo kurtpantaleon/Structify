@@ -145,15 +145,15 @@ function MainPage() {
                 />
                 <WeekButton 
                   title="Activity 2" 
-                  status="PRACTICE" 
-                  icon={UncheckIcon} 
+                  status={`SCORE: ${activityScores["activity2"] ?? "-"}`}
+                  icon={completedActivities.includes("activity2") ? CheckIcon : UncheckIcon}
                   iconType={PracticeIcon} 
                   path="/Week1Activity2"
                 />
                 <WeekButton 
                   title="Activity 3" 
-                  status="PRACTICE" 
-                  icon={UncheckIcon} 
+                  status={`SCORE: ${activityScores["activity3"] ?? "-"}`}
+                  icon={completedActivities.includes("activity3") ? CheckIcon : UncheckIcon}
                   iconType={PracticeIcon} 
                   path="/Week1Activity3"
                 />

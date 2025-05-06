@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
 import Actbox from "../../../assets/asset/ActBox.png";
-// import { doc, setDoc } from "firebase/firestore";
-// import { db } from "../../../services/firebaseConfig";
+import { useLessonProgress } from "../../../context/lessonProgressContext"; // Importing the lesson progress context
 
 const options = [
   { id: "Queue-1", label: "Queue" },
@@ -85,10 +84,19 @@ function DroppableArea({ id, answer }) {
 }
 
 export default function Activity3() {
+  const { activityScores, markActivityComplete } = useLessonProgress(); // declaring the context
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState("");
   const [score, setScore] = useState(null);
+
+  //added useEffect to get the score from the context
+  useEffect(() => {
+    if (activityScores && activityScores["activity3"] !== undefined) {
+      setScore(activityScores["activity3"]);
+      setFeedback(`Your previous score: ${activityScores["activity3"]}/100`);
+    }
+  }, [activityScores]);
 
   const handleDrop = (event) => {
     const { active, over } = event;
@@ -106,35 +114,21 @@ export default function Activity3() {
   };
 
   const handleSubmit = async () => {
-    setFeedback("Checking answers...");
+    setFeedback("Checking answers..."); 
     let correctCount = 0;
     for (let desc in correctAnswers) {
-      const answerLabel = options.find((option) => option.id === answers[desc])?.label;
-      if (answerLabel === correctAnswers[desc]) {
+      if (answers[desc] === correctAnswers[desc]) {
         correctCount++;
       }
     }
     const calculatedScore = correctCount * 20;
     setScore(calculatedScore);
-    setFeedback(
-      calculatedScore === 100
-        ?  "🎉 Correct! You nailed it!" : ` You scored ${calculatedScore}/100. Try again!`);
-
-    // try {
-    //   const scoreData = {
-    //     userId: "user1", // Replace with actual user ID
-    //     activityId: "activity3",
-    //     score: calculatedScore,
-    //     timestamp: new Date().toISOString()
-    //   };
-    //   await setDoc(doc(db, "activityScores", `${scoreData.userId}_${scoreData.timestamp}`), scoreData);
-    // } catch (error) {
-    //   console.error("Error saving score:", error);
-    //   setFeedback("Error saving score. Please try again.");
-    // }
-
+    setFeedback(calculatedScore === 100 ? "🎉 Correct! You nailed it!" : `You scored ${calculatedScore}/100. Try again!`);
+  
+    await markActivityComplete("activity3", calculatedScore); // Save the score in the context
+  
     setTimeout(() => {
-      navigate("/quizWeek1"); // Replace with your desired action after the delay
+      navigate("/quizWeek1");
     }, 3000);
   };
 

@@ -4,7 +4,7 @@ import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import Actbox from "../../../assets/asset/ActBox.png";
-import { useLessonProgress } from "../../../context/lessonProgressContext";
+import { useLessonProgress } from "../../../context/lessonProgressContext"; // Importing the lesson progress context
 
 const options = ["LINKED LIST", "ARRAY", "STACK", "QUEUE", "HASH TABLE"];
 const descriptions = [
@@ -74,12 +74,13 @@ function DroppableArea({ id, answer }) {
 }
 
 export default function Activity1() {
-  const { activityScores, markActivityComplete } = useLessonProgress();
+  const { activityScores, markActivityComplete } = useLessonProgress(); // declaring the context
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState("");
   const [score, setScore] = useState(null);
 
+  //added useEffect to get the score from the context
   useEffect(() => {
     if (activityScores && activityScores["activity1"] !== undefined) {
       setScore(activityScores["activity1"]);
@@ -103,7 +104,7 @@ export default function Activity1() {
   };
 
   const handleSubmit = async () => {
-    setFeedback("Checking answers...");
+    setFeedback("Checking answers..."); //added feedback message for scores
     let correctCount = 0;
     for (let desc in correctAnswers) {
       if (answers[desc] === correctAnswers[desc]) {
@@ -114,14 +115,13 @@ export default function Activity1() {
     setScore(calculatedScore);
     setFeedback(calculatedScore === 100 ? "🎉 Correct! You nailed it!" : `You scored ${calculatedScore}/100. Try again!`);
   
-    await markActivityComplete("activity1", calculatedScore);
+    await markActivityComplete("activity1", calculatedScore); // Save the score in the context
   
     setTimeout(() => {
       navigate("/week1activity2");
     }, 3000);
   };
   
-
   return (
     <>
       <style>{`
