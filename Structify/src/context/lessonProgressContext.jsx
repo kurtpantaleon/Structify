@@ -1,10 +1,8 @@
-// src/context/LessonProgressContext.jsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
-import { useAuthState } from "react-firebase-hooks/auth"; // ✅ Not from firebase/auth
-import { auth } from "../services/firebaseConfig"; // ✅ Correct
-
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../services/firebaseConfig";
 
 const LessonProgressContext = createContext();
 
@@ -13,18 +11,23 @@ export const useLessonProgress = () => useContext(LessonProgressContext);
 export const LessonProgressProvider = ({ children }) => {
   const [user] = useAuthState(auth);
   const [completedLessons, setCompletedLessons] = useState([]);
+  const [completedActivities, setCompletedActivities] = useState([]);
+  const [activityScores, setActivityScores] = useState({});
 
   useEffect(() => {
-    const fetchLessons = async () => {
+    const fetchProgress = async () => {
       if (user) {
         const userRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
-          setCompletedLessons(docSnap.data().completedLessons || []);
+          const data = docSnap.data();
+          setCompletedLessons(data.completedLessons || []);
+          setCompletedActivities(data.completedActivities || []);
+          setActivityScores(data.activityScores || {});
         }
       }
     };
-    fetchLessons();
+    fetchProgress();
   }, [user]);
 
   const markLessonComplete = async (lessonId) => {
@@ -36,8 +39,36 @@ export const LessonProgressProvider = ({ children }) => {
     setCompletedLessons((prev) => [...new Set([...prev, lessonId])]);
   };
 
+  const markActivityComplete = async (activityId, score = null) => {
+    if (!user) return;
+    const userRef = doc(db, "users", user.uid);
+
+    const updateData = {
+      completedActivities: arrayUnion(activityId)
+    };
+
+    if (score !== null) {
+      updateData[`activityScores.${activityId}`] = score;
+    }
+
+    await updateDoc(userRef, updateData);
+
+    setCompletedActivities((prev) => [...new Set([...prev, activityId])]);
+    if (score !== null) {
+      setActivityScores((prev) => ({ ...prev, [activityId]: score }));
+    }
+  };
+
   return (
-    <LessonProgressContext.Provider value={{ completedLessons, markLessonComplete }}>
+    <LessonProgressContext.Provider
+      value={{
+        completedLessons,
+        markLessonComplete,
+        completedActivities,
+        activityScores,
+        markActivityComplete
+      }}
+    >
       {children}
     </LessonProgressContext.Provider>
   );

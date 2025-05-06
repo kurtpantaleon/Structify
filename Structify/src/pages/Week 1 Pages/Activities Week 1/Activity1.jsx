@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import Actbox from "../../../assets/asset/ActBox.png";
+import { useLessonProgress } from "../../../context/lessonProgressContext";
 
 const options = ["LINKED LIST", "ARRAY", "STACK", "QUEUE", "HASH TABLE"];
 const descriptions = [
@@ -73,10 +74,18 @@ function DroppableArea({ id, answer }) {
 }
 
 export default function Activity1() {
+  const { activityScores, markActivityComplete } = useLessonProgress();
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState("");
   const [score, setScore] = useState(null);
+
+  useEffect(() => {
+    if (activityScores && activityScores["activity1"] !== undefined) {
+      setScore(activityScores["activity1"]);
+      setFeedback(`Your previous score: ${activityScores["activity1"]}/100`);
+    }
+  }, [activityScores]);
 
   const handleDrop = (event) => {
     const { active, over } = event;
@@ -103,12 +112,15 @@ export default function Activity1() {
     }
     const calculatedScore = correctCount * 20;
     setScore(calculatedScore);
-    setFeedback(calculatedScore === 100 ? "🎉 Correct! You nailed it!" : ` You scored ${calculatedScore}/100. Try again!`);
-
+    setFeedback(calculatedScore === 100 ? "🎉 Correct! You nailed it!" : `You scored ${calculatedScore}/100. Try again!`);
+  
+    await markActivityComplete("activity1", calculatedScore);
+  
     setTimeout(() => {
       navigate("/week1activity2");
     }, 3000);
   };
+  
 
   return (
     <>
@@ -237,4 +249,8 @@ export default function Activity1() {
       </div>
     </>
   );
+  // Function to handle marking the lesson as complete
+  const handleComplete = () => {
+    markLessonComplete("lesson1");
+  };
 }

@@ -19,7 +19,7 @@ import Challenges from "../../assets/clip/challenge.mp4";
 import { useLessonProgress } from '../../context/lessonProgressContext';
 
 function MainPage() {
-  const { completedLessons } = useLessonProgress();
+  const { completedLessons, completedActivities, activityScores } = useLessonProgress();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isLearningPathOpen, setIsLearningPathOpen] = useState(false);
 
@@ -138,8 +138,8 @@ function MainPage() {
                 <h3 className="text-base sm:text-lg font-semibold text-yellow-300">Activities</h3>
                 <WeekButton 
                   title="Activity 1" 
-                  status="PRACTICE" 
-                  icon={UncheckIcon} 
+                  status={`SCORE: ${activityScores["activity1"] ?? "-"}`}
+                  icon={completedActivities.includes("activity1") ? CheckIcon : UncheckIcon}
                   iconType={PracticeIcon} 
                   path="/Week1Activity1"
                 />
