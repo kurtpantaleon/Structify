@@ -274,13 +274,7 @@ export default function Activity3() {
             >
               Submit Answers
             </button>
-          <button
-            className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm sm:text-base md:text-lg w-full sm:w-auto font-semibold shadow-md hover:scale-105 transition-transform"
-            onClick={() => navigate("/quizWeek1")}
-          >
-            Go to Quiz
-            
-          </button>
+          
         </div>
       </div>
     </div>
