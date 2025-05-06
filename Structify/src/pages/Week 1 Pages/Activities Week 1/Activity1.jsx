@@ -191,7 +191,9 @@ export default function Activity1() {
 
         <div className="flex-1 p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center">
           <DndContext onDragEnd={handleDrop}>
+            
             <div className="rounded-xl border-4 animate-[pulseBorder_3s_ease-in-out_infinite] shadow-inner shadow-indigo-500/20">
+
               <div className="flex flex-row items-center justify-center rounded-xl p-4 sm:p-6 w-200 bg-[#141a35]/80 backdrop-blur-md">
                 <div className="flex flex-col gap-2">
                   {[1, 2, 3, 4, 5].map((num, index) => (

@@ -16,11 +16,11 @@ const options = [
 ];
 
 const descriptions = [
-  "1. Train Line",
-  "2. Browser Back Button",
-  "3. Contacts List on Phone",
-  "4. People Standing in Line",
-  "5. Student Record System"
+  " Train Line",
+  " Browser Back Button",
+  " Contacts List on Phone",
+  " People Standing in Line",
+  " Student Record System"
 ];
 
 const correctAnswers = {
@@ -142,6 +142,69 @@ export default function Activity3() {
 
   return (
     <div className="bg-[#1c2452] min-h-screen flex flex-col">
+      <style>{`
+        @keyframes pulseBorder {
+          0% { border-color: #4f46e5; }
+          25% { border-color: #9333ea; }
+          50% { border-color: #f43f5e; }
+          75% { border-color: #9333ea; }
+          100% { border-color: #4f46e5; }
+        }
+
+       @keyframes fall {
+          0% { 
+            transform: translateY(-10%); 
+            opacity: 1; 
+            background-color: #f43f5e; /* Initial Color (Red) */
+          }
+          25% { 
+            background-color: #9333ea; /* Purple */
+          }
+          50% { 
+            transform: translateY(50vh); 
+            opacity: 0.6; 
+            background-color: #4f46e5; /* Blue */
+          }
+          75% { 
+            background-color: #ffcc00; /* Yellow */
+          }
+          100% { 
+            transform: translateY(110vh); 
+            opacity: 0; 
+            background-color: #ffffff; /* White (Final Color) */
+          }
+        }
+
+        .particle {
+          position: fixed;
+          top: -10px;
+          width: 8px; /* Larger particles */
+          height: 8px; 
+          background: white;
+          border-radius: 50%;
+          opacity: 0.8;
+          box-shadow: 0 0 15px rgba(255, 255, 255, 0.9); /* Glowing effect */
+          animation: fall 4s linear infinite;
+          pointer-events: none;
+          z-index: 0;
+          animation-delay: calc(Math.random() * 5s);
+          animation-duration: calc(3 + Math.random() * 2)s;
+          transform: scale(calc(0.8 + Math.random() * 0.5));  /* Randomize size */
+        }
+
+      `}</style>
+
+        {Array.from({ length: 30 }).map((_, i) => (
+          <div
+            key={i}
+            className="particle"
+            style={{
+              left: `${Math.random() * 100}vw`,
+              animationDelay: `${Math.random() * 10}s`,
+              animationDuration: `${3 + Math.random() * 20}s`
+            }}
+          />
+        ))}
       <Header />
       <div className="flex justify-between items-center p-3 sm:p-4 md:p-6 bg-[#1c2452] border-b border-[#2a3366]">
         <button onClick={() => navigate("/week2Page")} className="text-white">
@@ -163,23 +226,25 @@ export default function Activity3() {
 
       <div className="flex-1 p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center">
         <DndContext onDragEnd={handleDrop}>
-          <div className="flex flex-col md:flex-row gap-4 sm:gap-6 md:gap-8 justify-center w-full max-w-5xl">
-            <div className="flex flex-col gap-2 sm:gap-3 md:gap-4 border-r border-white/20 rounded-xl p-4 sm:p-6 w-full md:w-1/2 bg-[#141a35]">
-              {[1, 2, 3, 4, 5].map((num, index) => (
-                <div key={num} className="flex items-center gap-2 sm:gap-3 md:gap-4 mb-2 sm:mb-3 md:mb-4">
-                  <span className="text-white font-medium w-5 sm:w-6">{num}.</span>
-                  <DroppableArea id={descriptions[index]} answer={answers[descriptions[index]]} />
+        <div className="rounded-xl border-4  animate-[pulseBorder_3s_ease-in-out_infinite] shadow-inner shadow-indigo-500/20">
+
+                <div className="flex flex-row items-center justify-center rounded-xl p-4 sm:p-6 w-200 bg-[#141a35]/80 backdrop-blur-md">
+                  <div className="flex flex-col gap-2">
+                    {[1, 2, 3, 4, 5 ].map((num, index) => (
+                      <div key={num} className="flex items-center gap-2 sm:gap-3 md:gap-4 mb-2 sm:mb-3 md:mb-4">
+                        <span className="text-white font-semibold w-5 sm:w-6">{num}.</span>
+                        <DroppableArea id={descriptions[index]} answer={answers[descriptions[index]]} />
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="p-4 sm:p-6 w-full md:w-1/2 flex flex-col gap-6 sm:gap-8 md:gap-10">
+                    {descriptions.map((desc, index) => (
+                      <p key={index} className="text-white/90 text-xs sm:text-sm md:text-base lg:text-lg font-light">{desc}</p>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
-            <div className="rounded p-4 sm:p-6 w-full md:w-1/2 flex flex-col gap-6 sm:gap-8 md:gap-10 rounded-xl bg-[#141a35]">
-              {descriptions.map((desc, index) => (
-                <p key={index} className="text-white text-xs sm:text-sm md:text-base lg:text-lg">
-                  {desc}
-                </p>
-              ))}
-            </div>
-          </div>
+                </div>
           <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 mt-4 sm:mt-6 md:mt-8 justify-center w-full max-w-5xl">
             {options.map(
               (opt) =>
@@ -198,46 +263,25 @@ export default function Activity3() {
 
         <div className="flex flex-col sm:flex-row justify-between items-center w-full px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 md:pb-8 mt-4 sm:mt-6">
           <button
-            className="px-6 py-3 sm:px-8 sm:py-4 bg-blue-600 text-white rounded text-sm sm:text-base md:text-lg flex items-center w-full sm:w-auto mb-2 sm:mb-0"
+            className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm sm:text-base md:text-lg w-full sm:w-auto font-semibold shadow-md hover:scale-105 transition-transform"
             onClick={() => navigate("/week1activity2")}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 sm:h-5 sm:w-5 mr-1"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
+            
+            
             Previous Activity
           </button>
+          <button 
+              className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm sm:text-base md:text-lg w-full sm:w-auto font-semibold shadow-md hover:scale-105 transition-transform"
+              onClick={handleSubmit}
+            >
+              Submit Answers
+            </button>
           <button
-            className="px-6 py-3 sm:px-8 sm:py-4 bg-blue-600 text-white rounded text-sm sm:text-base md:text-lg w-full sm:w-auto mb-2 sm:mb-0"
-            onClick={handleSubmit}
-          >
-            Submit
-          </button>
-          <button
-            className="px-6 py-3 sm:px-8 sm:py-4 bg-blue-600 text-white rounded text-sm sm:text-base md:text-lg flex items-center w-full sm:w-auto"
+            className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm sm:text-base md:text-lg w-full sm:w-auto font-semibold shadow-md hover:scale-105 transition-transform"
             onClick={() => navigate("/quizWeek1")}
           >
             Go to Quiz
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 sm:h-5 sm:w-5 ml-1"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
+            
           </button>
         </div>
       </div>
