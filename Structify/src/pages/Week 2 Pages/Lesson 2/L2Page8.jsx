@@ -8,9 +8,6 @@ import LessonPages from '../../../components/LessonPages';
 
 import Bullet1 from '../../../assets/image/Lesson2.2/image16.png';
 
-
-
-
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
@@ -24,12 +21,9 @@ export default function Page1() {
     {
       description: (
         <>
-      
         <span className="font-extrabold text-green-400 animate-pulse">
         Optimizing algorithms saves time, memory, and computing power
           </span>{' '}
-          
-         
         </>
       ),
       mediaType: 'image',

@@ -9,15 +9,12 @@ import Bullet1 from '../../../assets/image/Lesson1.2/image21.png'; // Image sour
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 
-
-
-
-
 import React, { useState } from 'react'; // React and useState hook
 import { useNavigate } from 'react-router-dom'; // For navigation between pages
+import { useLessonProgress } from '../../../context/lessonProgressContext'; // Importing the lesson progress context
 
 export default  function Page8() {
-
+   const { markLessonComplete } = useLessonProgress(); // declaring the markLessonComplete function from the context
    const navigate = useNavigate(); // Hook to trigger route changes
    const [currentIndex, setCurrentIndex] = useState(0); // Track current lesson index
 
@@ -88,11 +85,20 @@ return (
           {currentIndex === lessons.length - 1 && (
         <LessonFooter
           buttonText="Continue"
-          onClick={() => navigate('/week2L2Page1')}
+          onClick={() => {
+            markLessonComplete('Week2lesson1'); // Mark the lesson as complete when button is clicked
+            navigate('/week2L2Page1');
+          
+          }}
           className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
         />
       )}
   </div>
 );
+
+// Function to handle marking the lesson as complete
+const handleComplete = () => {
+  markLessonComplete("lesson1");
+};
 }
 

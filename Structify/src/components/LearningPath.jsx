@@ -25,8 +25,8 @@ function LearningPath({ isOpen, toggleLearningPath }) {
       week: "Week 2",
       topic: "Algorithms & Complexity",
       path: "/week2Page",
-      expectedActivities: [],
-      expectedLessons: []
+      expectedActivities: ["Week2activity1", "Week2activity2", "Week2activity3"],
+      expectedLessons: ["Week2lesson1", "Week2lesson2", "Week2lesson3"]
     },
     {
       week: "Week 3",
