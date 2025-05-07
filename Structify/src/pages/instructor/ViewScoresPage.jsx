@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom'; // ✅ Import useNavigate
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../../components/AdminHeader';
-import AdminSubHeading from '../../components/SubHeading';
+import AdminSubHeading from '../../components/AdminSubHeading';
 import AdminNavigationBar from '../../components/InstructorNavigationBar';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../services/firebaseConfig';
 
 const weekLabels = [
   '1st Week',
@@ -25,8 +27,48 @@ const mockData = weekLabels.map((week) => ({
 function ViewScoresPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate(); // ✅ Initialize navigate
+  const navigate = useNavigate();
   const sectionName = location.state?.section;
+
+  // Modal and student state
+  const [showModal, setShowModal] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [studentsAnswered, setStudentsAnswered] = useState([]);
+  const [studentsNotAnswered, setStudentsNotAnswered] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch students for the selected activity
+  const fetchStudentsForActivity = async (activity) => {
+    setLoading(true);
+    setStudentsAnswered([]);
+    setStudentsNotAnswered([]);
+    try {
+      const q = query(
+        collection(db, 'users'),
+        where('section', '==', sectionName),
+        where('role', '==', 'student')
+      );
+      const querySnapshot = await getDocs(q);
+      const answered = [];
+      const notAnswered = [];
+      const activityKey = activity.toLowerCase().replace(/ /g, '');
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.completedActivities && data.completedActivities.includes(activityKey)) {
+          answered.push({ id: doc.id, ...data });
+        } else {
+          notAnswered.push({ id: doc.id, ...data });
+        }
+      });
+      setStudentsAnswered(answered);
+      setStudentsNotAnswered(notAnswered);
+    } catch (err) {
+      // handle error
+      setStudentsAnswered([]);
+      setStudentsNotAnswered([]);
+    }
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-200">
@@ -60,7 +102,14 @@ function ViewScoresPage() {
                   className="flex items-center justify-between py-2 border-b last:border-none"
                 >
                   <span className="text-md text-[#141a35]">{activity}</span>
-                  <button className="text-sm font-medium text-blue-700 hover:underline cursor-pointer">
+                  <button
+                    className="text-sm font-medium text-blue-700 hover:underline cursor-pointer"
+                    onClick={() => {
+                      setSelectedActivity(activity);
+                      setShowModal(true);
+                      fetchStudentsForActivity(activity);
+                    }}
+                  >
                     View Scores
                   </button>
                 </div>
@@ -69,6 +118,52 @@ function ViewScoresPage() {
           ))}
         </div>
       </div>
+
+      {/* Modal for students who answered the activity */}
+      {showModal && (
+        <div className="fixed inset-0 bg-transparent bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-xs sm:max-w-sm">
+            <h3 className="text-lg font-bold mb-3">Students who answered {selectedActivity}</h3>
+            {loading ? (
+              <div>Loading...</div>
+            ) : (
+              <div className="max-h-60 overflow-y-auto">
+                <h4 className="font-semibold mb-2">Answered:</h4>
+                <ul>
+                  {studentsAnswered.length === 0 ? (
+                    <li>No students found.</li>
+                  ) : (
+                    studentsAnswered.map((student) => (
+                      <li key={student.id} className="py-1 border-b border-gray-200">
+                        {student.name} — Score: {student.activityScores?.[selectedActivity.toLowerCase().replace(/ /g, '')] ?? 'N/A'}
+                      </li>
+                    ))
+                  )}
+                </ul>
+                <hr className="my-3" />
+                <h4 className="font-semibold mb-2">Did not answer:</h4>
+                <ul>
+                  {studentsNotAnswered.length === 0 ? (
+                    <li>All students answered.</li>
+                  ) : (
+                    studentsNotAnswered.map((student) => (
+                      <li key={student.id} className="py-1 border-b border-gray-200">
+                        {student.name}
+                      </li>
+                    ))
+                  )}
+                </ul>
+              </div>
+            )}
+            <button
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded w-full"
+              onClick={() => setShowModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

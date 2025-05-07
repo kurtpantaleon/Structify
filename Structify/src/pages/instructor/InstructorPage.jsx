@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { db } from '../../services/firebaseConfig';
 import { useAuth } from '../../context/authContextProvider'; // You must have an auth context set up
 import Header from '../../components/AdminHeader';
-import AdminSubHeading from '../../components/SubHeading';
+import AdminSubHeading from '../../components/AdminSubHeading';
 import AdminNavigationBar from '../../components/InstructorNavigationBar';
 import SectionCard from '../../components/AdminSectionCard'; // Reusing SectionCard
 
@@ -17,7 +17,7 @@ function InstructorPage() {
   useEffect(() => {
     const fetchInstructorSections = async () => {
       if (!currentUser) return;
-  
+    
       try {
         const docRef = doc(db, 'users', currentUser.uid); // fixed
         const docSnap = await getDoc(docRef);

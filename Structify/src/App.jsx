@@ -1,7 +1,9 @@
 import './App.css'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import StartPage from './pages/Start'
 import Login from './pages/Login'
+import { useContext } from 'react'
+import { AuthContext } from './context/authContext'
 
 /*WEEK 1 */
 import MainPage from './pages/student/MainPage'
@@ -271,11 +273,24 @@ import ViewStudentLists from './pages/instructor/ViewStudentLists'
 import Leaderboard from './pages/Leaderboard'
  
 function App() {
+  const { currentUser, role } = useContext(AuthContext);
+
   return (
     <Routes>
       <Route path="/login" element={<Login/>} />
-      <Route path="/" element={<StartPage/>} />
-      <Route path="/mainPage" element={<ProtectedRoute allowedRoles={['student']}><MainPage/></ProtectedRoute>} />
+      <Route path="/" element={
+        currentUser ? (
+          role === 'admin' ? <Navigate to="/AdminPage" replace /> :
+          role === 'student' ? <Navigate to="/MainPage" replace /> :
+          role === 'instructor' ? <Navigate to="/InstructorPage" replace /> :
+          <StartPage/>
+        ) : <StartPage/>
+      } />
+
+      {/* Main Pages */}
+      <Route path="/MainPage" element={<ProtectedRoute allowedRoles={['student']}><MainPage/></ProtectedRoute>} />
+      <Route path="/AdminPage" element={<ProtectedRoute allowedRoles={['admin']}><AdminPage /></ProtectedRoute>} />
+      <Route path="/InstructorPage" element={<ProtectedRoute allowedRoles={['instructor']}><InstructorPage /></ProtectedRoute>} />
 
       {/* Week 1 lesson 1 pages */}
       <Route path="/page1" element={<ProtectedRoute allowedRoles={['student']}><Page1 /></ProtectedRoute>} />
@@ -520,13 +535,11 @@ function App() {
       <Route path="/codePlayground" element={<ProtectedRoute allowedRoles={['student']}><CodePlayground /></ProtectedRoute>} />
 
       {/* Admin Page */}
-      <Route path="/AdminPage" element={<ProtectedRoute allowedRoles={['admin']}><AdminPage /></ProtectedRoute>} />
       <Route path="/ViewInstructorPage" element={<ProtectedRoute allowedRoles={['admin']}><ViewInstructorPage /></ProtectedRoute>} />
       <Route path="/ViewStudentsPage" element={<ProtectedRoute allowedRoles={['admin']}><ViewStudentsPage /></ProtectedRoute>} />
       <Route path="/ViewClassPage" element={<ProtectedRoute allowedRoles={['admin']}><ViewClassPage/></ProtectedRoute>} />
 
       {/*Instructor Page */}
-      <Route path="/InstructorPage" element={<ProtectedRoute allowedRoles={['instructor']}><InstructorPage /></ProtectedRoute>} />
       <Route path="/ViewScoresPage" element={<ProtectedRoute allowedRoles={['instructor']}><ViewScoresPage /></ProtectedRoute>} />
       <Route path="/ViewStudentLists" element={<ProtectedRoute allowedRoles={['instructor']}><ViewStudentLists /></ProtectedRoute>} />
 
