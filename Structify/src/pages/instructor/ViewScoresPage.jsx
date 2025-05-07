@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // ✅ Import useNavigate
 import Header from '../../components/AdminHeader';
-import AdminSubHeading from '../../components/SubHeading';
+import AdminSubHeading from '../../components/AdminSubHeading';
 import AdminNavigationBar from '../../components/InstructorNavigationBar';
 
 const weekLabels = [
