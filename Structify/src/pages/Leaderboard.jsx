@@ -47,7 +47,7 @@ function Leaderboard() {
           ...docData,
           rankPoints: docData.rankPoints ?? 0,
         };
-      });
+      }); 
       setStudents(data);
     }, (error) => {
       console.error('Error fetching leaderboard:', error);
@@ -58,6 +58,13 @@ function Leaderboard() {
 
   const topThree = students.slice(0, 3);
   const others = students.slice(3);
+
+  // Function to determine background color class based on points
+  const getRankBgClass = (points) => {
+    if (points >= 501) return 'bg-yellow-400'; // Gold
+    if (points >= 301) return 'bg-gray-300 text-black'; // Silver
+    return 'bg-[#8C7851]'; // Bronze
+  };
 
   return (
     <div className="bg-[#0e1344] min-h-screen text-white">
@@ -109,7 +116,7 @@ function Leaderboard() {
       {/* Leaderboard List */}
       <div className="max-w-md mx-auto mt-10 space-y-4">
         {others.map((student, idx) => (
-          <div key={idx} className="flex justify-between items-center bg-blue-900 px-4 py-2 rounded-lg shadow">
+          <div key={idx} className={`flex justify-between items-center px-4 py-2 rounded-lg shadow ${getRankBgClass(student.rankPoints)}`}>
             <div className="flex items-center gap-3">
               <span className="font-bold w-5 text-white text-right">{idx + 4}</span>
               <img src={profile} alt="profile" className="w-8 h-8 rounded-full" />
