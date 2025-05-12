@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, addDoc, serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/AdminHeader';
@@ -20,6 +20,9 @@ const Forum = () => {
     const [menuOpenId, setMenuOpenId] = useState(null);
     const [editPostId, setEditPostId] = useState(null);
     const [postToDelete, setPostToDelete] = useState(null);
+    const [commentInputs, setCommentInputs] = useState({});
+    const [commentMenuOpen, setCommentMenuOpen] = useState({ postId: null, commentIdx: null });
+    const [editCommentData, setEditCommentData] = useState({ postId: null, commentIdx: null, text: '' });
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -43,38 +46,44 @@ const Forum = () => {
     const handleAddPost = async (e) => {
         e.preventDefault();
         if (!currentUser) return;
-        if (editPostId) {
-            // Edit mode
-            const postRef = doc(db, "posts", editPostId);
-            await updateDoc(postRef, {
-                type: postType,
-                title,
-                description,
-            });
-        } else {
-            // Add mode
-            await addDoc(collection(db, "posts"), {
-                type: postType,
-                title,
-                description,
-                user: {
-                    uid: currentUser.uid,
-                    name: currentUser.name,
-                    email: currentUser.email,
-                },
-                createdAt: serverTimestamp(),
-            });
+        try {
+            if (editPostId) {
+                // Edit mode
+                const postRef = doc(db, "posts", editPostId);
+                await updateDoc(postRef, {
+                    type: postType,
+                    title,
+                    description,
+                });
+            } else {
+                // Add mode
+                await addDoc(collection(db, "posts"), {
+                    type: postType,
+                    title,
+                    description,
+                    user: {
+                        uid: currentUser.uid,
+                        name: currentUser.name,
+                        email: currentUser.email,
+                    },
+                    createdAt: serverTimestamp(),
+                    comments: [] // Initialize empty comments array
+                });
+            }
+            setShowModal(false);
+            setPostType('Posts');
+            setTitle('');
+            setDescription('');
+            setEditPostId(null);
+            // Refetch posts after add/edit
+            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setPosts(postsData);
+        } catch (error) {
+            console.error("Error saving post:", error);
+            alert("Failed to save post. Please try again.");
         }
-        setShowModal(false);
-        setPostType('Question');
-        setTitle('');
-        setDescription('');
-        setEditPostId(null);
-        // Refetch posts after add/edit
-        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
-        const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setPosts(postsData);
     };
 
     const handleDeletePost = async (postId) => {
@@ -86,6 +95,135 @@ const Forum = () => {
         const querySnapshot = await getDocs(q);
         const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setPosts(postsData);
+    };
+
+    const handleAddComment = async (postId) => {
+        try {
+            if (!currentUser || !commentInputs[postId] || commentInputs[postId].trim() === '') return;
+            
+            const postRef = doc(db, "posts", postId);
+            const newComment = {
+                user: {
+                    uid: currentUser.uid,
+                    name: currentUser.name,
+                    email: currentUser.email,
+                },
+                comment: commentInputs[postId],
+                date: new Date().toISOString(),
+            };
+            
+            // Get the current post to check if comments array exists
+            const postSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
+            const currentPost = postSnap.docs.find(doc => doc.id === postId)?.data() || {};
+            
+            // If comments array doesn't exist yet, create it
+            if (!Array.isArray(currentPost.comments)) {
+                await updateDoc(postRef, {
+                    comments: [newComment]
+                });
+            } else {
+                // Otherwise use arrayUnion to add to existing array
+                await updateDoc(postRef, {
+                    comments: arrayUnion(newComment)
+                });
+            }
+            
+            console.log("Comment added successfully!");
+            
+            // Clear the input
+            setCommentInputs(inputs => ({ ...inputs, [postId]: '' }));
+            
+            // Refetch posts to update UI
+            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setPosts(postsData);
+        } catch (error) {
+            console.error("Error adding comment:", error);
+            alert("Failed to add comment. Please try again.");
+        }
+    };
+
+    const handleEditComment = async (postId, commentIdx, newText) => {
+        try {
+            const postRef = doc(db, "posts", postId);
+            
+            // Get the current post data
+            const postSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
+            const currentPost = postSnap.docs.find(doc => doc.id === postId);
+            
+            if (!currentPost) {
+                console.error("Post not found");
+                return;
+            }
+            
+            const postData = currentPost.data();
+            const updatedComments = [...postData.comments];
+            
+            // Update the specific comment
+            if (updatedComments[commentIdx]) {
+                updatedComments[commentIdx] = {
+                    ...updatedComments[commentIdx],
+                    comment: newText,
+                    edited: true
+                };
+                
+                // Update the post with the modified comments array
+                await updateDoc(postRef, {
+                    comments: updatedComments
+                });
+                
+                // Refresh posts
+                const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setPosts(postsData);
+                
+                // Reset edit state
+                setEditCommentData({ postId: null, commentIdx: null, text: '' });
+            }
+        } catch (error) {
+            console.error("Error editing comment:", error);
+            alert("Failed to edit comment. Please try again.");
+        }
+    };
+    
+    const handleDeleteComment = async (postId, commentIdx) => {
+        try {
+            const postRef = doc(db, "posts", postId);
+            
+            // Get the current post data
+            const postSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
+            const currentPost = postSnap.docs.find(doc => doc.id === postId);
+            
+            if (!currentPost) {
+                console.error("Post not found");
+                return;
+            }
+            
+            const postData = currentPost.data();
+            const updatedComments = [...postData.comments];
+            
+            // Remove the specific comment
+            updatedComments.splice(commentIdx, 1);
+            
+            // Update the post with the modified comments array
+            await updateDoc(postRef, {
+                comments: updatedComments
+            });
+            
+            // Refresh posts
+            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setPosts(postsData);
+            
+            // Reset menu state
+            setCommentMenuOpen({ postId: null, commentIdx: null });
+        } catch (error) {
+            console.error("Error deleting comment:", error);
+            alert("Failed to delete comment. Please try again.");
+        }
     };
 
     return(
@@ -218,9 +356,94 @@ const Forum = () => {
                                 type="text"
                                 placeholder="Add class comment..."
                                 className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm bg-white"
+                                value={commentInputs[post.id] || ''}
+                                onChange={e => setCommentInputs(inputs => ({ ...inputs, [post.id]: e.target.value }))}
                             />
-                            <img src={UploadIcon} alt="upload" className="w-6 h-6 cursor-pointer ml-2 filter invert opacity-30" />
+                            <img src={UploadIcon} alt="upload" className="w-6 h-6 cursor-pointer ml-2 filter invert opacity-30" onClick={() => handleAddComment(post.id)} />
                         </div>
+                        {/* Display Comments */}
+                        {Array.isArray(post.comments) && post.comments.length > 0 && (
+                            <div className="px-4 pb-2">
+                                {post.comments.map((c, idx) => (
+                                    <div key={idx} className="flex items-center mb-2 text-sm relative">
+                                        <div className="flex-1">
+                                            {editCommentData.postId === post.id && editCommentData.commentIdx === idx ? (
+                                                <div className="flex items-center">
+                                                    <input 
+                                                        type="text" 
+                                                        className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm mr-2" 
+                                                        value={editCommentData.text} 
+                                                        onChange={(e) => setEditCommentData({...editCommentData, text: e.target.value})}
+                                                    />
+                                                    <button 
+                                                        className="text-blue-600 text-xs mr-2"
+                                                        onClick={() => handleEditComment(post.id, idx, editCommentData.text)}
+                                                    >
+                                                        Save
+                                                    </button>
+                                                    <button 
+                                                        className="text-gray-500 text-xs"
+                                                        onClick={() => setEditCommentData({ postId: null, commentIdx: null, text: '' })}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <span className="font-semibold text-slate-800 mr-2">{c.user?.name}:</span>
+                                                    <span className="text-slate-700 mr-2">{c.comment}</span>
+                                                    <span className="text-slate-400 text-xs">
+                                                        {c.date ? new Date(c.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
+                                                        {c.edited && <span className="ml-1">(edited)</span>}
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
+                                        
+                                        {/* Only show options for the user's own comments */}
+                                        {currentUser && c.user?.uid === currentUser.uid && !editCommentData.postId && (
+                                            <div className="relative">
+                                                <button 
+                                                    className="ml-2 text-gray-400 hover:text-gray-600"
+                                                    onClick={() => setCommentMenuOpen(
+                                                        commentMenuOpen.postId === post.id && commentMenuOpen.commentIdx === idx
+                                                        ? { postId: null, commentIdx: null }
+                                                        : { postId: post.id, commentIdx: idx }
+                                                    )}
+                                                >
+                                                    <img src={ThreeDots} alt="menu" className="w-1 h-4 filter invert opacity-40 cursor-pointer" />
+                                                </button>
+                                                
+                                                {/* Comment Options Menu */}
+                                                {commentMenuOpen.postId === post.id && commentMenuOpen.commentIdx === idx && (
+                                                    <div className="absolute right-0 top-6 bg-white border border-slate-200 rounded shadow-lg z-30 w-20">
+                                                        <button 
+                                                            className="block w-full text-left px-3 py-1 hover:bg-gray-100 text-xs"
+                                                            onClick={() => {
+                                                                setEditCommentData({ 
+                                                                    postId: post.id, 
+                                                                    commentIdx: idx, 
+                                                                    text: c.comment 
+                                                                });
+                                                                setCommentMenuOpen({ postId: null, commentIdx: null });
+                                                            }}
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button 
+                                                            className="block w-full text-left px-3 py-1 hover:bg-gray-100 text-red-600 text-xs"
+                                                            onClick={() => handleDeleteComment(post.id, idx)}
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
