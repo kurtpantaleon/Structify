@@ -7,9 +7,9 @@ import ForumIcon from "../assets/images/Forum Icon.png";
 
 const InstructorNavigationBar = () => {
   return (
-    <div className="fixed bg-[#1F274D] h-screen w-22 flex flex-col items-center py-8 space-y-8 px-1 border-gray-200">
+    <div className="fixed bg-[#1F274D] h-screen w-22 flex flex-col items-center py-8 px-1 border-gray-200">
       {/* Navigation Icons */}
-      <nav className="flex flex-col space-y-8">
+      <nav className="flex flex-col space-y-8 gap-y-3">
         <NavItem to="/InstructorPage" icon={HomeIcon} label="Home" />
         <NavItem to="/Leaderboard" icon={Leaderboard} label="Leaderboard" />
         <NavItem to="" icon={PvPIcon} label="PvP" /> 
