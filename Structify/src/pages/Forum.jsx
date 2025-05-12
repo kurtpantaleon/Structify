@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, addDoc, serverTimestamp, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, addDoc, serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/AdminHeader';
@@ -7,6 +7,7 @@ import exit from '../assets/images/X Icon.png';
 import profile from '../assets/images/sample profile.png';
 import UploadIcon from '../assets/images/Upload Icon.png';
 import { useAuth } from '../context/authContextProvider';
+import ThreeDots from '../assets/images/Threedot Icon.png';
 
 const Forum = () => {
     const navigate = useNavigate();
@@ -16,6 +17,9 @@ const Forum = () => {
     const [description, setDescription] = useState('');
     const { currentUser } = useAuth();
     const [posts, setPosts] = useState([]);
+    const [menuOpenId, setMenuOpenId] = useState(null);
+    const [editPostId, setEditPostId] = useState(null);
+    const [postToDelete, setPostToDelete] = useState(null);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -27,25 +31,57 @@ const Forum = () => {
         fetchPosts();
     }, []);
 
+    const openEditModal = (post) => {
+        setEditPostId(post.id);
+        setPostType(post.type);
+        setTitle(post.title);
+        setDescription(post.description);
+        setShowModal(true);
+        setMenuOpenId(null);
+    };
+
     const handleAddPost = async (e) => {
         e.preventDefault();
         if (!currentUser) return;
-        await addDoc(collection(db, "posts"), {
-            type: postType,
-            title,
-            description,
-            user: {
-                uid: currentUser.uid,
-                name: currentUser.name,
-                email: currentUser.email,
-            },
-            createdAt: serverTimestamp(),
-        });
+        if (editPostId) {
+            // Edit mode
+            const postRef = doc(db, "posts", editPostId);
+            await updateDoc(postRef, {
+                type: postType,
+                title,
+                description,
+            });
+        } else {
+            // Add mode
+            await addDoc(collection(db, "posts"), {
+                type: postType,
+                title,
+                description,
+                user: {
+                    uid: currentUser.uid,
+                    name: currentUser.name,
+                    email: currentUser.email,
+                },
+                createdAt: serverTimestamp(),
+            });
+        }
         setShowModal(false);
         setPostType('Question');
         setTitle('');
         setDescription('');
-        // Refetch posts after adding
+        setEditPostId(null);
+        // Refetch posts after add/edit
+        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setPosts(postsData);
+    };
+
+    const handleDeletePost = async (postId) => {
+        await deleteDoc(doc(db, "posts", postId));
+        setMenuOpenId(null);
+        setPostToDelete(null);
+        // Refetch posts after delete
         const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
         const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -67,7 +103,13 @@ const Forum = () => {
             <div className="flex justify-end mb-4">
                 <button
                     className="bg-[#141a35] text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-[#1f274d] transition"
-                    onClick={() => setShowModal(true)}
+                    onClick={() => {
+                        setEditPostId(null);
+                        setPostType('Posts');
+                        setTitle('');
+                        setDescription('');
+                        setShowModal(true);
+                    }}
                 >
                     Add Post
                 </button>
@@ -76,8 +118,8 @@ const Forum = () => {
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
                     <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
-                        <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={() => setShowModal(false)}>&times;</button>
-                        <h2 className="text-lg font-semibold mb-4">Add New Post</h2>
+                        <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={() => { setShowModal(false); setEditPostId(null); }}>&times;</button>
+                        <h2 className="text-lg font-semibold mb-4">{editPostId ? 'Edit Post' : 'Add New Post'}</h2>
                         <form onSubmit={handleAddPost} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium mb-1">Type of Post</label>
@@ -87,7 +129,7 @@ const Forum = () => {
                                     onChange={e => setPostType(e.target.value)}
                                     required
                                 >
-                                    <option value="Ideas">Posts</option>
+                                    <option value="Posts">Posts</option>
                                     <option value="Question">Question</option>
                                     <option value="Announcement">Announcement</option>
                                 </select>
@@ -113,8 +155,8 @@ const Forum = () => {
                                 />
                             </div>
                             <div className="flex justify-end gap-2">
-                                <button type="button" className="px-4 py-2 rounded bg-gray-200 text-gray-700" onClick={() => setShowModal(false)}>Cancel</button>
-                                <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Submit</button>
+                                <button type="button" className="px-4 py-2 rounded bg-gray-200 text-gray-700" onClick={() => { setShowModal(false); setEditPostId(null); }}>Cancel</button>
+                                <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">{editPostId ? 'Save Changes' : 'Submit'}</button>
                             </div>
                         </form>
                     </div>
@@ -123,6 +165,20 @@ const Forum = () => {
             <div className="flex flex-wrap justify-center gap-4">
                 {posts.map(post => (
                     <div key={post.id} className="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96">
+                        {/* Three-dot menu icon */}
+                        <button
+                            className="absolute top-3 right-3 z-20"
+                            onClick={() => setMenuOpenId(menuOpenId === post.id ? null : post.id)}
+                        >
+                            <img src={ThreeDots} alt="menu" className="w-1 h-4 filter invert opacity-40 cursor-pointer" />
+                        </button>
+                        {/* Dropdown menu */}
+                        {menuOpenId === post.id && (
+                            <div className="absolute top-10 right-3 bg-white border border-slate-200 rounded shadow-lg z-30 w-28">
+                                <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => openEditModal(post)}>Edit</button>
+                                <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 cursor-pointer" onClick={() => setPostToDelete(post.id)}>Delete</button>
+                            </div>
+                        )}
                         {/* Content */}
                         <div className="p-4">
                             {/* Type of Post */}
@@ -168,6 +224,19 @@ const Forum = () => {
                     </div>
                 ))}
             </div>
+            {/* Delete Confirmation Modal */}
+            {postToDelete && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+                    <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm relative">
+                        <h2 className="text-lg font-semibold mb-4">Delete Post</h2>
+                        <p className="mb-6">Are you sure you want to delete this post? This action cannot be undone.</p>
+                        <div className="flex justify-end gap-2">
+                            <button className="px-4 py-2 rounded bg-gray-200 text-gray-700 cursor-pointer" onClick={() => setPostToDelete(null)}>Cancel</button>
+                            <button className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 cursor-pointer" onClick={() => handleDeletePost(postToDelete)}>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     </div>
     );
