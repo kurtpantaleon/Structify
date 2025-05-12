@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, addDoc, serverTimestamp, query, orderBy } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/AdminHeader';
 import exit from '../assets/images/X Icon.png';
 import profile from '../assets/images/sample profile.png';
 import UploadIcon from '../assets/images/Upload Icon.png';
+import { useAuth } from '../context/authContextProvider';
 
 const Forum = () => {
     const navigate = useNavigate();
@@ -13,14 +14,42 @@ const Forum = () => {
     const [postType, setPostType] = useState('Question');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const { currentUser } = useAuth();
+    const [posts, setPosts] = useState([]);
 
-    const handleAddPost = (e) => {
+    useEffect(() => {
+        const fetchPosts = async () => {
+            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setPosts(postsData);
+        };
+        fetchPosts();
+    }, []);
+
+    const handleAddPost = async (e) => {
         e.preventDefault();
-        // Here you would handle the post submission (e.g., send to Firestore)
+        if (!currentUser) return;
+        await addDoc(collection(db, "posts"), {
+            type: postType,
+            title,
+            description,
+            user: {
+                uid: currentUser.uid,
+                name: currentUser.name,
+                email: currentUser.email,
+            },
+            createdAt: serverTimestamp(),
+        });
         setShowModal(false);
         setPostType('Question');
         setTitle('');
         setDescription('');
+        // Refetch posts after adding
+        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setPosts(postsData);
     };
 
     return(
@@ -58,7 +87,7 @@ const Forum = () => {
                                     onChange={e => setPostType(e.target.value)}
                                     required
                                 >
-                                    <option value="Ideas">Ideas</option>
+                                    <option value="Ideas">Posts</option>
                                     <option value="Question">Question</option>
                                     <option value="Announcement">Announcement</option>
                                 </select>
@@ -92,52 +121,52 @@ const Forum = () => {
                 </div>
             )}
             <div className="flex flex-wrap justify-center gap-4">
-                <div class="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96">
-                    {/* Content */}
-                    <div className="p-4">
-                        {/* Type of Post */}
-                        <div className="mb-4 rounded-full bg-cyan-600 py-0.5 px-2.5 border border-transparent text-xs text-white transition-all shadow-sm w-20 text-center">
-                            QUESTION
+                {posts.map(post => (
+                    <div key={post.id} className="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96">
+                        {/* Content */}
+                        <div className="p-4">
+                            {/* Type of Post */}
+                            <div className="mb-4 rounded-full bg-cyan-600 py-0.5 px-2.5 border border-transparent text-xs text-white transition-all shadow-sm w-20 text-center">
+                                {post.type?.toUpperCase()}
+                            </div>
+                            {/* Title */}
+                            <h6 className="mb-2 text-slate-800 text-xl font-semibold">
+                                {post.title}
+                            </h6>
+                            {/* Description */}
+                            <p className="text-slate-600 leading-normal font-light">
+                                {post.description}
+                            </p>
                         </div>
-                        {/* Title */}
-                        <h6 className="mb-2 text-slate-800 text-xl font-semibold">
-                            Website Review Check
-                        </h6>
-                        {/* Description */}
-                        <p className="text-slate-600 leading-normal font-light">
-                            The place is close to Barceloneta Beach and bus stop just 2 min by walk
-                            and near to &quot;Naviglio&quot; where you can enjoy the main night life in
-                            Barcelona.
-                        </p>
-                    </div>
-                    {/* User Info */}
-                    <div className="flex items-center justify-between p-4">
-                        <div className="flex items-center">
-                            {/* Profile Picture */}
-                            <img
-                            alt="Tania Andrew"
-                            src={profile}
-                            className="relative inline-block h-8 w-8 rounded-full"
-                            />
-                            {/* User Info */}
-                            <div className="flex flex-col ml-3 text-sm">
-                                <span className="text-slate-800 font-semibold">Lewis Daniel</span>
-                                <span className="text-slate-600">
-                                    January 10, 2024
-                                </span>
+                        {/* User Info */}
+                        <div className="flex items-center justify-between p-4">
+                            <div className="flex items-center">
+                                {/* Profile Picture */}
+                                <img
+                                    alt={post.user?.name || "User"}
+                                    src={profile}
+                                    className="relative inline-block h-8 w-8 rounded-full"
+                                />
+                                {/* User Info */}
+                                <div className="flex flex-col ml-3 text-sm">
+                                    <span className="text-slate-800 font-semibold">{post.user?.name}</span>
+                                    <span className="text-slate-600">
+                                        {post.createdAt?.toDate ? post.createdAt.toDate().toLocaleString([], { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
+                                    </span>
+                                </div>
                             </div>
                         </div>
+                        {/* Comment Section */}
+                        <div className="px-4 pb-4 flex items-center">
+                            <input
+                                type="text"
+                                placeholder="Add class comment..."
+                                className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm bg-white"
+                            />
+                            <img src={UploadIcon} alt="upload" className="w-6 h-6 cursor-pointer ml-2 filter invert opacity-30" />
+                        </div>
                     </div>
-                    {/* Comment Section */}
-                    <div className="px-4 pb-4 flex items-center">
-                        <input
-                            type="text"
-                            placeholder="Add class comment..."
-                            className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm bg-white"
-                        />
-                        <img src={UploadIcon} alt="upload" className="w-6 h-6 cursor-pointer ml-2 filter invert opacity-30" />
-                    </div>
-                </div> 
+                ))}
             </div>
         </div>
     </div>
