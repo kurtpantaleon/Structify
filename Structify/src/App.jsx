@@ -271,6 +271,7 @@ import ViewScoresPage from './pages/instructor/ViewScoresPage'
 import ViewStudentLists from './pages/instructor/ViewStudentLists'
 
 import Leaderboard from './pages/Leaderboard'
+import Forum from './pages/Forum'
  
 function App() {
   const { currentUser, role } = useContext(AuthContext);
@@ -543,13 +544,11 @@ function App() {
       <Route path="/ViewScoresPage" element={<ProtectedRoute allowedRoles={['instructor']}><ViewScoresPage /></ProtectedRoute>} />
       <Route path="/ViewStudentLists" element={<ProtectedRoute allowedRoles={['instructor']}><ViewStudentLists /></ProtectedRoute>} />
 
-      {/* Unauthorized Page */}
+      {/* Generic Pages */}
       <Route path="/unauthorized" element={<Unauthorized />} />
-
-      {/*View Profile Page */}
       <Route path="/ViewProfile" element={<ViewProfile />} />
-
       <Route path="/Leaderboard" element={<Leaderboard />} />      
+      <Route path="/Forum" element={<Forum />} />
     </Routes> 
   )
 }

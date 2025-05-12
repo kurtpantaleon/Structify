@@ -13,7 +13,7 @@ const InstructorNavigationBar = () => {
         <NavItem to="/InstructorPage" icon={HomeIcon} label="Home" />
         <NavItem to="/Leaderboard" icon={Leaderboard} label="Leaderboard" />
         <NavItem to="" icon={PvPIcon} label="PvP" /> 
-        <NavItem to="" icon={ForumIcon} label="Forum" />
+        <NavItem to="/Forum" icon={ForumIcon} label="Forum" />
       </nav>
     </div>
   );
