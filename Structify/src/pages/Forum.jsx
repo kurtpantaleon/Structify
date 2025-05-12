@@ -1,20 +1,144 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
-import CommentIcon from "../assets/images/Comment Icon.png";
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/AdminHeader';
 import exit from '../assets/images/X Icon.png';
+import profile from '../assets/images/sample profile.png';
+import UploadIcon from '../assets/images/Upload Icon.png';
 
 const Forum = () => {
+    const navigate = useNavigate();
+    const [showModal, setShowModal] = useState(false);
+    const [postType, setPostType] = useState('Question');
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+
+    const handleAddPost = (e) => {
+        e.preventDefault();
+        // Here you would handle the post submission (e.g., send to Firestore)
+        setShowModal(false);
+        setPostType('Question');
+        setTitle('');
+        setDescription('');
+    };
+
     return(
-    <div className='bg-blue-100 min-h-screen'>
+    <div className="bg-[#0e1344] min-h-screen">
         <Header />
 
         {/* 🔙 Exit Button */}
         <div className="flex justify-end m-8">
             <button onClick={() => navigate(-1)} className="z-10">
-                <img src={exit} alt="Close" className="w-6 h-6 cursor-pointer filter invert" />
+                <img src={exit} alt="Close" className="w-6 h-6 cursor-pointer" />
             </button>
+        </div>
+
+        <div className="max-w-7xl mx-auto mt-6 p-6 rounded-lg shadow h-[75vh] overflow-y-auto bg-gray-200">
+            <div className="flex justify-end mb-4">
+                <button
+                    className="bg-[#141a35] text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-[#1f274d] transition"
+                    onClick={() => setShowModal(true)}
+                >
+                    Add Post
+                </button>
+            </div>
+            {/* Modal */}
+            {showModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+                    <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+                        <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={() => setShowModal(false)}>&times;</button>
+                        <h2 className="text-lg font-semibold mb-4">Add New Post</h2>
+                        <form onSubmit={handleAddPost} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Type of Post</label>
+                                <select
+                                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                    value={postType}
+                                    onChange={e => setPostType(e.target.value)}
+                                    required
+                                >
+                                    <option value="Ideas">Ideas</option>
+                                    <option value="Question">Question</option>
+                                    <option value="Announcement">Announcement</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Title</label>
+                                <input
+                                    type="text"
+                                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                    value={title}
+                                    onChange={e => setTitle(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Description</label>
+                                <textarea
+                                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                    value={description}
+                                    onChange={e => setDescription(e.target.value)}
+                                    rows={4}
+                                    required
+                                />
+                            </div>
+                            <div className="flex justify-end gap-2">
+                                <button type="button" className="px-4 py-2 rounded bg-gray-200 text-gray-700" onClick={() => setShowModal(false)}>Cancel</button>
+                                <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+            <div className="flex flex-wrap justify-center gap-4">
+                <div class="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96">
+                    {/* Content */}
+                    <div className="p-4">
+                        {/* Type of Post */}
+                        <div className="mb-4 rounded-full bg-cyan-600 py-0.5 px-2.5 border border-transparent text-xs text-white transition-all shadow-sm w-20 text-center">
+                            QUESTION
+                        </div>
+                        {/* Title */}
+                        <h6 className="mb-2 text-slate-800 text-xl font-semibold">
+                            Website Review Check
+                        </h6>
+                        {/* Description */}
+                        <p className="text-slate-600 leading-normal font-light">
+                            The place is close to Barceloneta Beach and bus stop just 2 min by walk
+                            and near to &quot;Naviglio&quot; where you can enjoy the main night life in
+                            Barcelona.
+                        </p>
+                    </div>
+                    {/* User Info */}
+                    <div className="flex items-center justify-between p-4">
+                        <div className="flex items-center">
+                            {/* Profile Picture */}
+                            <img
+                            alt="Tania Andrew"
+                            src={profile}
+                            className="relative inline-block h-8 w-8 rounded-full"
+                            />
+                            {/* User Info */}
+                            <div className="flex flex-col ml-3 text-sm">
+                                <span className="text-slate-800 font-semibold">Lewis Daniel</span>
+                                <span className="text-slate-600">
+                                    January 10, 2024
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Comment Section */}
+                    <div className="px-4 pb-4 flex items-center">
+                        <input
+                            type="text"
+                            placeholder="Add class comment..."
+                            className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm bg-white"
+                        />
+                        <img src={UploadIcon} alt="upload" className="w-6 h-6 cursor-pointer ml-2 filter invert opacity-30" />
+                    </div>
+                </div> 
+            </div>
         </div>
     </div>
     );
