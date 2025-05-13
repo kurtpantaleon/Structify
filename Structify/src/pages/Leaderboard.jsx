@@ -83,9 +83,10 @@ function Leaderboard() {
       {/* 🔽 Section Selector */}
       <div className="flex justify-center mt-6">
         <select
-          className="bg-[#141a35] text-white px-4 py-2 rounded border border-white"
+          className="bg-[#141a35] text-white p-2 rounded border border-white appearance-none pr-8 relative"
           value={selectedSection}
           onChange={(e) => setSelectedSection(e.target.value)}
+          style={{ textAlignLast: 'center' }}
         >
           {sections.map((section, idx) => (
             <option key={idx} value={section}>
@@ -93,6 +94,11 @@ function Leaderboard() {
             </option>
           ))}
         </select>
+        <div className="relative right-6 pointer-events-none">
+          <svg className="w-4 h-4 text-white mt-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
       </div>
 
       {/* Top 3 Podium */}
