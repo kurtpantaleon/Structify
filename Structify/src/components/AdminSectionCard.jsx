@@ -31,7 +31,7 @@ function SectionCard({ sectionName, instructor, studentCount, onClick, onEdit, o
         {!hideMenu && (
           <div className="absolute top-4 right-4">
             <button onClick={handleMenuClick}>
-              <img className="h-5 w-1.5 cursor-pointer hover:scale-120 transition duration-150" src={Menu} alt="Menu" />
+              <img className="h-4 w-1 cursor-pointer hover:scale-120 transition duration-150" src={Menu} alt="Menu" />
             </button>
 
             {showMenu && (
