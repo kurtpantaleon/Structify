@@ -1,4 +1,3 @@
-// Service for managing DSA code snippets locally
 export const snippetService = {
   saveSnippet: async (snippet) => {
     try {
