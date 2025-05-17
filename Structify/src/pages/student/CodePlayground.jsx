@@ -59,12 +59,19 @@ function CodePlayground() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("date");
+  const [creditInfo, setCreditInfo] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   // Load saved snippets on component mount
   useEffect(() => {
     loadSavedSnippets();
   }, [selectedCategory, searchQuery, sortBy]);
+
+  // Add useEffect to fetch credit info
+  useEffect(() => {
+    updateCreditInfo();
+  }, []);
 
   async function loadSavedSnippets() {
     let snippets;
@@ -97,6 +104,11 @@ function CodePlayground() {
 
     setSavedSnippets(snippets);
   }
+
+  const updateCreditInfo = () => {
+    const usage = openai.getCreditUsage();
+    setCreditInfo(usage);
+  };
 
   // Store editor instance
   function handleEditorDidMount(editor) {
@@ -136,26 +148,25 @@ function CodePlayground() {
     if (!aiPrompt) return;
     
     setIsLoading(true);
+    setError(null);
+    
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: `You are a comprehensive AI assistant specializing in data structures and algorithms. 
-            Provide detailed responses in the following format:
-            1) For ALL questions: Give a clear, conceptual explanation first
-            2) For code-related questions: Include relevant JavaScript code examples
-            3) For algorithm questions: Include time and space complexity analysis
-            4) For general questions: Provide real-world examples and applications
-            Always aim to be educational and engaging in your responses.`
-          },
-          {
-            role: "user",
-            content: aiPrompt
-          }
-        ]
-      }); 
+      const response = await openai.createCompletion([
+        {
+          role: "system",
+          content: `You are a comprehensive AI assistant specializing in data structures and algorithms. 
+          Provide detailed responses in the following format:
+          1) For ALL questions: Give a clear, conceptual explanation first
+          2) For code-related questions: Include relevant JavaScript code examples
+          3) For algorithm questions: Include time and space complexity analysis
+          4) For general questions: Provide real-world examples and applications
+          Always aim to be educational and engaging in your responses.`
+        },
+        {
+          role: "user",
+          content: aiPrompt
+        }
+      ]);
 
       const aiText = response.choices[0].message.content;
       
@@ -185,20 +196,23 @@ function CodePlayground() {
           algorithm: inferAlgorithmType(aiPrompt)
         });
       } else {
-        // For non-code questions, put the entire response in the general answer
         setGeneralAnswer(aiText);
         setAiResponse("");
         setExplanation("");
       }
 
+      // Update credit info after successful request
+      updateCreditInfo();
       await loadSavedSnippets();
 
     } catch (error) {
-      console.error("Error calling OpenAI:", error);
-      setAiResponse("Sorry, there was an error processing your request. Please try again.");
+      console.error("Error:", error);
+      setError(error.message);
+      setAiResponse("");
       setGeneralAnswer("");
       setExplanation("");
     }
+    
     setIsLoading(false);
   }
 
@@ -257,6 +271,20 @@ function CodePlayground() {
 
   return (
     <div className="flex h-screen bg-[#0A1F4D] text-white">
+      {/* Error Display */}
+      {error && (
+        <div className="fixed top-4 left-4 bg-red-600 text-white p-3 rounded-lg text-sm z-50 shadow-lg animate-fade-in flex items-center space-x-2 max-w-md">
+          <i className="far fa-exclamation-circle"></i>
+          <span>{error}</span>
+          <button 
+            onClick={() => setError(null)} 
+            className="ml-2 text-white hover:text-red-200"
+          >
+            <i className="far fa-times"></i>
+          </button>
+        </div>
+      )}
+
       {/* AI Assistant Sidebar */}
       <div className="w-96 bg-[#152238] p-4 overflow-y-auto border-r border-gray-700 flex flex-col">
         <h3 className="text-xl font-bold mb-4 text-cyan-400 flex items-center">
