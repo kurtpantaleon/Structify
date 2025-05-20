@@ -83,9 +83,9 @@ export default function Activity1() {
 
   //added useEffect to get the score from the context
   useEffect(() => {
-    if (activityScores && activityScores["activity1"] !== undefined) {
-      setScore(activityScores["activity1"]);
-      setFeedback(`Your previous score: ${activityScores["activity1"]}/100`);
+    if (activityScores && activityScores["Week2activity3"] !== undefined) {
+      setScore(activityScores["Week2activity3"]);
+      setFeedback(`Your previous score: ${activityScores["Week2activity3"]}/100`);
     }
   }, [activityScores]);
 
@@ -233,7 +233,6 @@ export default function Activity1() {
               ))}
             </div>
           </DndContext>
-
           {feedback && (
             <p className="mt-4 sm:mt-6 text-white font-medium text-base sm:text-lg md:text-xl animate-bounce">{feedback}</p>
           )}
@@ -243,8 +242,6 @@ export default function Activity1() {
             className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm sm:text-base md:text-lg w-full sm:w-auto font-semibold shadow-md hover:scale-105 transition-transform"
             onClick={() => navigate("/week2activity2")}
           >
-            
-            
             Previous Activity
           </button>
           <button 
@@ -253,14 +250,9 @@ export default function Activity1() {
             >
               Submit Answers
             </button>
-        
         </div>
         </div>
       </div>
     </>
   );
-  // Function to handle marking the lesson as complete
-  const handleComplete = () => {
-    markLessonComplete("lesson1");
-  };
 }

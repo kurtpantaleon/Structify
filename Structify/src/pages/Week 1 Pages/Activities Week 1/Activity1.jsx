@@ -249,8 +249,4 @@ export default function Activity1() {
       </div>
     </>
   );
-  // Function to handle marking the lesson as complete
-  const handleComplete = () => {
-    markLessonComplete("lesson1");
-  };
 }

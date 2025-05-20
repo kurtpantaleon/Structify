@@ -389,7 +389,7 @@ function App() {
       <Route path="/week3Activity1" element={<ProtectedRoute allowedRoles={['student']}><Week3Activity1 /></ProtectedRoute>} />
       <Route path="/week3Activity2" element={<ProtectedRoute allowedRoles={['student']}><Week3Activity2 /></ProtectedRoute>} />
       <Route path="/week3Activity3" element={<ProtectedRoute allowedRoles={['student']}><Week3Activity3 /></ProtectedRoute>} />
-
+ 
       {/* Week 4&5 */}
       <Route path="/week4Page" element={<ProtectedRoute allowedRoles={['student']}><Week4 /></ProtectedRoute>} />
       <Route path='/quizWeek4-5' element={<ProtectedRoute allowedRoles={['student']}><QuizWeek4 /></ProtectedRoute>} />

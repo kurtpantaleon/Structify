@@ -8,12 +8,14 @@ import LessonPages from '../../../components/LessonPages';
 
 import Bullet1 from '../../../assets/image/Lesson3.3/image10.png'; // Image source for lesson 1
 
-
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
 
+import { useLessonProgress } from '../../../context/lessonProgressContext'; // Importing the lesson progress context
+
 export default function Page1() {
+  const { markLessonComplete } = useLessonProgress(); // declaring the markLessonComplete function from the context
   const navigate = useNavigate(); // Hook to trigger route changes
   const [currentIndex, setCurrentIndex] = useState(0); // Track current lesson index
 
@@ -83,7 +85,10 @@ export default function Page1() {
       {currentIndex === lessons.length - 1 && (
         <LessonFooter
           buttonText="Continue"
-          onClick={() => navigate('/week3Activity1')}
+          onClick={() => {
+            markLessonComplete('Week3lesson3');
+            navigate('/week3Activity1')
+          }}
           className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-lg font-bold py-3 px-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
         />
       )}

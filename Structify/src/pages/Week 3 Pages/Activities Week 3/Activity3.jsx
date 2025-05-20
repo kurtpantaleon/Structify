@@ -4,6 +4,7 @@ import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import Actbox from "../../../assets/asset/ActBox.png";
+import { useLessonProgress } from "../../../context/lessonProgressContext"; // Importing the lesson progress context
 
 const options = [
   '"hello".toUpperCase()',
@@ -76,11 +77,20 @@ function DroppableArea({ id, answer }) {
   );
 }
 
-export default function Activity1() {
+export default function Activity3() {
+  const { activityScores, markActivityComplete } = useLessonProgress(); // declaring the context
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState("");
   const [score, setScore] = useState(null);
+
+  //added useEffect to get the score from the context
+  useEffect(() => {
+    if (activityScores && activityScores["Week3activity3"] !== undefined) {
+      setScore(activityScores["Week3activity3"]);
+      setFeedback(`Your previous score: ${activityScores["Week3activity3"]}/100`);
+    }
+  }, [activityScores]);
 
   const handleDrop = (event) => {
     const { active, over } = event;
@@ -108,6 +118,8 @@ export default function Activity1() {
     const calculatedScore = correctCount * 20;
     setScore(calculatedScore);
     setFeedback(calculatedScore === 100 ? "🎉 Correct! You nailed it!" : ` You scored ${calculatedScore}/100. Try again!`);
+
+    await markActivityComplete("Week3activity3", calculatedScore); // Save the score in the context
 
     setTimeout(() => {
       navigate("/quizWeek3");

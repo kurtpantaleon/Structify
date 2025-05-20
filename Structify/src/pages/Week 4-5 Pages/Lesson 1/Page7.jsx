@@ -8,10 +8,6 @@ import LessonPages from '../../../components/LessonPages';
 
 import Bullet1 from '../../../assets/clip/clip1.mp4';
 
-
-
-
-
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
