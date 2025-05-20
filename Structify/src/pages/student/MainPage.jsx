@@ -11,11 +11,7 @@ import UncheckIcon from '../../assets/images/Uncheck Icon.png';
 import PracticeIcon from '../../assets/images/Practice Icon.png';
 import StudyIcon from '../../assets/images/Study Icon.png';
 
-import Data from "../../assets/clip/data.mp4";
-import Computer from "../../assets/clip/Computer.mp4";
-import Type from "../../assets/clip/types.mp4";
-import Challenges from "../../assets/clip/challenge.mp4";
-
+import RankStats from '../../components/RankStats';
 import { useLessonProgress } from '../../context/lessonProgressContext';
 
 function MainPage() {
@@ -64,44 +60,7 @@ function MainPage() {
         <main className="flex-1 px-4 sm:px-8 md:px-12 py-6 md:py-8">
           <div className="flex flex-col lg:flex-row items-start gap-6 md:gap-8">
             {/* Left Section */}
-            <div className="w-full lg:w-1/2 flex-shrink-0">
-              <h2 className="text-xl sm:text-2xl font-extrabold tracking-wide mb-2">SECTION</h2>
-              <div className="border-t border-white/50 w-full mb-4 sm:mb-5"></div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                <CardSection 
-                  title="Introduction to Data Structures" 
-                  subtitle="Lesson 1" 
-                  progress={12.5} 
-                  path="/page1"  
-                  mediaSrc={Data} 
-                  mediaType="video"
-                />
-                <CardSection 
-                  title="Computers and Data Structures" 
-                  subtitle="Lesson 2" 
-                  progress={0} 
-                  path="/l2page1" 
-                  mediaSrc={Computer} 
-                  mediaType="video"
-                />
-                <CardSection 
-                  title="Types of Data Structures?" 
-                  subtitle="Lesson 3" 
-                  progress={0} 
-                  path="/l3page1" 
-                  mediaSrc={Type} 
-                  mediaType="video"
-                />
-                <CardSection 
-                  title="Create a Mini Library" 
-                  subtitle="Challenge" 
-                  progress={0} 
-                  path="/quizWeek1" 
-                  mediaSrc={Challenges} 
-                  mediaType="video"
-                />
-              </div>
-            </div>
+            <RankStats/>
 
             {/* Right Section */}
             <div className="w-full lg:w-1/2 flex-shrink-0 bg-[#141a35] p-4 sm:p-6 rounded-xl shadow-xl mt-6 lg:mt-0">

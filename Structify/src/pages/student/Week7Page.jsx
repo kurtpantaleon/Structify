@@ -10,12 +10,7 @@ import CheckIcon from '../../assets/images/Check Icon.png';
 import UncheckIcon from '../../assets/images/Uncheck Icon.png';
 import PracticeIcon from '../../assets/images/Practice Icon.png';
 import StudyIcon from '../../assets/images/Study Icon.png';
-
-import card1 from "../../assets/clip/string.mp4"
-import card2 from "../../assets/clip/operation.mp4"
-import card3 from "../../assets/clip/process.mp4"
-import Challenges from "../../assets/clip/challenge.mp4"
-
+import RankStats from '../../components/RankStats';
 
 export default function Week7Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY PASTE LANG
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -62,19 +57,7 @@ export default function Week7Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY 
         <main className=" flex-1 px-12 py-8 ">
           <div className=" flex items-start gap-8 ">
             {/* Left Section */}
-            <div className="w-6/12 flex-shrink-0">
-              <h2 className="text-2xl font-extrabold tracking-wide mb-2">SECTION</h2>
-              <div className="border-t border-white/50 w-full mb-5"></div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-
-                                                                                  {/*YUNG PATH LALAGYAN TO !!!!!!!*/}
-                <CardSection title="What is a Stack?" subtitle="Lesson 1" progress={12.5} path="/week7Page1"  mediaSrc={card1} mediaType="video"/>
-                <CardSection title=" What is a Queue?" subtitle="Lesson 2" progress={0} path="/week7L2Page1" mediaSrc={card2} mediaType="video"/>
-                <CardSection title="Understanding Recursion" subtitle="Lesson 3" progress={0} path="/week7L3Page1" mediaSrc={card3} mediaType="video" />
-                <CardSection title=" Build a Mini Task Manager" subtitle="Challenge" progress={0} path="/quizWeek7" mediaSrc={Challenges} mediaType="video"/>
-              </div>
-            </div>
+            <RankStats/>
 
             {/* Right Section */}
             <div className=" w-6/12 flex-shrink-0 bg-[#141a35] p-4 rounded-xl shadow-xl">

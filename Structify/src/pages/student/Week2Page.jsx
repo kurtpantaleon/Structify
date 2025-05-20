@@ -11,12 +11,8 @@ import UncheckIcon from '../../assets/images/Uncheck Icon.png';
 import PracticeIcon from '../../assets/images/Practice Icon.png';
 import StudyIcon from '../../assets/images/Study Icon.png';
 
-import card1 from "../../assets/clip/Algorithm.mp4";
-import card2 from "../../assets/clip/time.mp4";
-import card3 from "../../assets/clip/simple.mp4";
-import Challenges from "../../assets/clip/challenge.mp4";
-
 import { useLessonProgress } from '../../context/lessonProgressContext';
+import RankStats from '../../components/RankStats';
 
 export default function Week2Page() {
   const { completedLessons, completedActivities, activityScores } = useLessonProgress();
@@ -65,44 +61,7 @@ export default function Week2Page() {
         <main className="flex-1 px-4 sm:px-8 md:px-12 py-6 md:py-8">
           <div className="flex flex-col lg:flex-row items-start gap-6 md:gap-8">
             {/* Left Section */}
-            <div className="w-full lg:w-1/2 flex-shrink-0">
-              <h2 className="text-xl sm:text-2xl font-extrabold tracking-wide mb-2">SECTION</h2>
-              <div className="border-t border-white/50 w-full mb-4 sm:mb-5"></div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                <CardSection
-                  title="What is an Algorithm?"
-                  subtitle="Lesson 1"
-                  progress={12.5}
-                  path="/week2Page1"
-                  mediaSrc={card1}
-                  mediaType="video"
-                />
-                <CardSection
-                  title="Time & Space Complexity (Efficiency)"
-                  subtitle="Lesson 2"
-                  progress={0}
-                  path="/week2L2Page1"
-                  mediaSrc={card2}
-                  mediaType="video"
-                />
-                <CardSection
-                  title="Writing a Simple Algorithm"
-                  subtitle="Lesson 3"
-                  progress={0}
-                  path="/week2L3Page1"
-                  mediaSrc={card3}
-                  mediaType="video"
-                />
-                <CardSection
-                  title="Create Your Own Sorting Algorithm"
-                  subtitle="Challenge"
-                  progress={0}
-                  path="/quizWeek2"
-                  mediaSrc={Challenges}
-                  mediaType="video"
-                />
-              </div>
-            </div>
+             <RankStats/>
 
             {/* Right Section */}
             <div className="w-full lg:w-1/2 flex-shrink-0 bg-[#141a35] p-4 sm:p-6 rounded-xl shadow-xl mt-6 lg:mt-0">

@@ -1,2 +1,14 @@
 @import "tailwindcss";
 
+@keyframes shine {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+}
+
+.animate-shine {
+  animation: shine 2.5s linear infinite;
+}
