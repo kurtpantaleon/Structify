@@ -26,10 +26,54 @@ const weeks = [
   {
     week: 'Week 3',
     topic: 'String Processing',
+    expectedActivities: ['Week3activity1', 'Week3activity2', 'Week3activity3'],
+    expectedLessons: ['Week3lesson1', 'Week3lesson2', 'Week3lesson3']
+  },
+  {
+    week: 'Week 4 and 5',
+    topic: 'Arrays, Records, and Pointers',
+    expectedActivities: ['Week4activity1', 'Week4activity2', 'Week4activity3'],
+    expectedLessons: ['Week4lesson1', 'Week4lesson2', 'Week4lesson3']
+  },
+  {
+    week: 'Week 6',
+    topic: 'Linked Lists',
+    expectedActivities: ['Week6activity1', 'Week6activity2', 'Week6activity3'],
+    expectedLessons: ['Week6lesson1', 'Week6lesson2', 'Week6lesson3']
+  },
+  {
+    week: 'Week 7 and 8',
+    topic: 'Stacks, Queues, and Recursion',
+    expectedActivities: ['Week7activity1', 'Week7activity2', 'Week7activity3'],
+    expectedLessons: ['Week7lesson1', 'Week7lesson2', 'Week7lesson3']
+  },
+  {
+    week: 'Week 10',
+    topic: 'Trees',
+    expectedActivities: ['Week10activity1', 'Week10activity2', 'Week10activity3'],
+    expectedLessons: ['Week10lesson1', 'Week10lesson2', 'Week10lesson3']
+  },
+  {
+    week: "Week 12 and 13",
+    topic: "Graph Algorithms",
+    path: " ",
     expectedActivities: [],
     expectedLessons: []
   },
-  // Add more weeks as needed
+  {
+    week: "Week 14 and 16",
+    topic: "Sorting and Searching",
+    path: "",
+    expectedActivities: [],
+    expectedLessons: []
+  },
+  {
+    week: "Week 17",
+    topic: "Hashing",
+    path: "",
+    expectedActivities: [],
+    expectedLessons: []
+  }
 ];
 
 // Reusable styles
