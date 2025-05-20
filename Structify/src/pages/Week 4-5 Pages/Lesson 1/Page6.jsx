@@ -7,7 +7,7 @@ import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
 import Bullet1 from '../../../assets/image/Lesson4.1/image10.png'; // Image source for lesson 1
-import Bullet2 from '../../../assets/image/Lesson4.1/image1.png';
+import Bullet2 from '../../../assets/image/Example/4.2.png';
 
 
 
