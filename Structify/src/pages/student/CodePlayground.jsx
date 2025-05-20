@@ -426,10 +426,10 @@ function CodePlayground() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-[#0A1F4D] text-white">
+    <div className="flex flex-col lg:flex-row h-screen bg-[#0A1F4D] text-white overflow-hidden">
       {/* Error Display */}      
       {error && (
-        <div className="fixed top-4 left-4 bg-red-600 text-white p-4 rounded-lg text-sm z-50 shadow-xl animate-fade-in flex items-center space-x-3 max-w-md border-l-4 border-red-800">
+        <div className="fixed top-4 left-4 right-4 lg:right-auto bg-red-600 text-white p-4 rounded-lg text-sm z-50 shadow-xl animate-fade-in flex items-center space-x-3 max-w-md border-l-4 border-red-800">
           <div className="flex-shrink-0">
             <i className="far fa-exclamation-circle text-xl"></i>
           </div>
@@ -446,7 +446,7 @@ function CodePlayground() {
           </button>
         </div>
       )}      {/* AI Assistant Sidebar */}
-      <div className="w-96 bg-[#152238] flex flex-col h-full overflow-hidden">
+      <div className="w-full lg:w-96 bg-[#152238] flex flex-col h-[50vh] lg:h-full overflow-hidden order-2 lg:order-1">
         <div className="p-4 border-b border-gray-700">
           <h3 className="text-xl font-bold text-cyan-400 flex items-center">
             <i className="far fa-robot mr-2"></i>
@@ -509,17 +509,17 @@ function CodePlayground() {
 
             {/* Saved Snippets Section */}
             <div>
-              <div className="mb-4 space-y-2">
-                <div className="flex items-center space-x-2">
+              <div className="mb-2 sm:mb-4 space-y-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:space-x-2">
                   <input
                     type="text"
-                    placeholder="Search saved snippets..."
-                    className="flex-1 px-3 py-2 bg-[#1A2A4B] rounded-lg text-white text-sm"
+                    placeholder="Search snippets..."
+                    className="w-full sm:flex-1 px-3 py-2 bg-[#1A2A4B] rounded-lg text-white text-xs sm:text-sm"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                   <select
-                    className="px-3 py-2 bg-[#1A2A4B] rounded-lg text-white text-sm"
+                    className="w-full sm:w-auto px-3 py-2 bg-[#1A2A4B] rounded-lg text-white text-xs sm:text-sm"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                   >
@@ -528,32 +528,34 @@ function CodePlayground() {
                   </select>
                 </div>
               </div>
-              <div className="space-y-3">
-                {savedSnippets.map((snippet) => (              <div key={snippet.id} className="bg-[#1A2A4B] p-3 rounded-lg relative group hover:transform hover:scale-[1.02] transition-all border border-transparent hover:border-cyan-600">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="text-xs text-gray-400 flex items-center">
+              <div className="space-y-2 sm:space-y-3">
+                {savedSnippets.map((snippet) => (
+                  <div key={snippet.id} className="bg-[#1A2A4B] p-2 sm:p-3 rounded-lg relative group 
+                    hover:transform hover:scale-[1.02] transition-all border border-transparent hover:border-cyan-600">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:mb-2">
+                      <div className="text-[10px] sm:text-xs text-gray-400 flex items-center">
                         <i className="far fa-clock mr-1"></i>
                         {new Date(snippet.timestamp).toLocaleString()}
                       </div>
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => navigator.clipboard.writeText(snippet.code)}
-                          className="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded-md flex items-center"
+                          className="text-[10px] sm:text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded-md flex items-center"
                           title="Copy code"
                         >
                           <i className="far fa-copy"></i>
                         </button>
                         <button
                           onClick={() => deleteSnippet(snippet.id)}
-                          className="text-xs px-2 py-1 bg-red-600 hover:bg-red-700 rounded-md flex items-center"
+                          className="text-[10px] sm:text-xs px-2 py-1 bg-red-600 hover:bg-red-700 rounded-md flex items-center"
                           title="Delete snippet"
                         >
                           <i className="far fa-trash-alt"></i>
                         </button>
                       </div>
                     </div>
-                    <div className="text-sm font-bold mb-2 text-cyan-400">{snippet.prompt}</div>
-                    <div className="grid grid-cols-2 gap-2 mb-2 text-xs">
+                    <div className="text-xs sm:text-sm font-bold mb-2 text-cyan-400">{snippet.prompt}</div>
+                    <div className="grid grid-cols-2 gap-1 sm:gap-2 mb-2 text-[10px] sm:text-xs">
                       <div className="bg-[#0A1F4D] p-2 rounded">
                         <span className="text-gray-400">Category:</span>
                         <span className="ml-1 text-white">{snippet.category}</span>
@@ -634,14 +636,14 @@ function CodePlayground() {
         </div>
 
         {/* AI Prompt Section - Fixed at bottom */}
-        <div className="p-4 bg-[#152238] border-t border-gray-700">
-          <div className="relative flex flex-col gap-3">
+        <div className="p-2 sm:p-4 bg-[#152238] border-t border-gray-700">
+          <div className="relative flex flex-col gap-2 sm:gap-3">
             <div className="relative">
               <textarea
-                className="w-full bg-[#1A2A4B] text-white p-4 rounded-lg resize-none min-h-[100px] 
-               border border-gray-700 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 
-              outline-none transition-all pr-[90px] text-sm placeholder:text-gray-400"
-                placeholder="Ask me about DSA concepts, implementations, or optimizations..."
+                className="w-full bg-[#1A2A4B] text-white p-3 sm:p-4 rounded-lg resize-none min-h-[80px] sm:min-h-[100px] 
+                border border-gray-700 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 
+                outline-none transition-all pr-[80px] sm:pr-[90px] text-sm placeholder:text-gray-400"
+                placeholder="Ask me about DSA concepts..."
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}
                 onKeyDown={handlePromptKeyDown}
@@ -649,8 +651,9 @@ function CodePlayground() {
               <button
                 onClick={askAI}
                 disabled={isLoading}
-                className="absolute bottom-3 right-3 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white 
-                         rounded-lg transition-all duration-300 flex items-center gap-2 text-sm
+                className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 px-3 sm:px-4 py-1.5 sm:py-2 bg-cyan-600 
+                         hover:bg-cyan-700 text-white rounded-lg transition-all duration-300 
+                         flex items-center gap-1 sm:gap-2 text-xs sm:text-sm
                          hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 shadow-lg"
               >
                 {isLoading ? (
@@ -669,14 +672,14 @@ function CodePlayground() {
 
             <div className="text-xs text-gray-400 flex items-center gap-2 px-1">
               <i className="far fa-keyboard"></i>
-              <span>Press Shift + Enter for new line, Enter to send</span>
+              <span className="text-[10px] sm:text-xs">Press Shift + Enter for new line, Enter to send</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col p-4 relative">
+      <div className="flex-1 flex flex-col p-4 relative order-1 lg:order-2 h-[50vh] lg:h-full">
         <button
           onClick={() => navigate('/mainPage')}
           className="absolute top-4 right-4 text-white hover:text-gray-300 transition-all duration-300"
@@ -731,25 +734,25 @@ function CodePlayground() {
           <i className="far fa-play mr-2"></i>
           Run Code
         </button>        {/* Console Output */}
-        <div className="h-40 mt-4 p-3 bg-[#1A2A4B] font-mono overflow-y-auto rounded-lg">
+        <div className="h-32 sm:h-40 mt-2 sm:mt-4 p-2 sm:p-3 bg-[#1A2A4B] font-mono overflow-y-auto rounded-lg">
           <div className="font-bold mb-2 flex items-center justify-between">
             <div className="flex items-center">
               <i className="far fa-terminal mr-2"></i>
-              Console Output:
+              <span className="text-xs sm:text-base">Console Output:</span>
             </div>
             <button
               onClick={() => setConsoleOutput([])}
-              className="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded flex items-center"
+              className="text-[10px] sm:text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded flex items-center"
               title="Clear console"
             >
               <i className="far fa-trash-alt mr-1"></i>
-              Clear
+              <span className="hidden sm:inline">Clear</span>
             </button>
           </div>
           {consoleOutput.map((output, index) => (
             <div 
               key={index} 
-              className={`text-sm font-mono mb-1 ${
+              className={`text-xs sm:text-sm font-mono mb-1 ${
                 output.type === 'error' ? 'text-red-400' :
                 output.type === 'warn' ? 'text-yellow-400' :
                 output.type === 'info' ? 'text-cyan-400' :
@@ -764,7 +767,7 @@ function CodePlayground() {
             </div>
           ))}
           {consoleOutput.length === 0 && (
-            <div className="text-gray-500 text-sm italic">
+            <div className="text-gray-500 text-xs sm:text-sm italic">
               No output yet. Run your code to see results here.
             </div>
           )}
