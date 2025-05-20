@@ -6,11 +6,11 @@ export const snippetService = {
         ...snippet,
         id: Date.now(),
         timestamp: new Date().toISOString(),
-        // Add DSA-specific metadata
-        category: snippet.category || 'general', // e.g., 'array', 'tree', 'graph', 'sorting', etc.
-        timeComplexity: snippet.timeComplexity || 'N/A', // e.g., O(n), O(log n), etc.
+        // DSA-specific metadata needed for the snippet
+        category: snippet.category || 'general', 
+        timeComplexity: snippet.timeComplexity || 'N/A', 
         spaceComplexity: snippet.spaceComplexity || 'N/A',
-        algorithm: snippet.algorithm || 'N/A' // e.g., 'binary search', 'quicksort', etc.
+        algorithm: snippet.algorithm || 'N/A' 
       });
       localStorage.setItem('dsaSnippets', JSON.stringify(snippets));
       return true;
@@ -30,7 +30,6 @@ export const snippetService = {
     }
   },
 
-  // Get snippets by DSA category
   getSnippetsByCategory: async (category) => {
     try {
       const snippets = await snippetService.getSnippets();

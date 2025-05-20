@@ -1,73 +1,59 @@
-const DAILY_CREDIT_LIMIT = 50; // Adjust this value based on your needs
-const STORAGE_KEY = 'openai_credits';
-
 class CreditService {
   constructor() {
-    this.initializeCredits();
-  }
-
-  initializeCredits() {
-    const credits = localStorage.getItem(STORAGE_KEY);
-    if (!credits) {
-      this.resetCredits();
-    }
-  }
-
-  resetCredits() {
-    const creditInfo = {
-      remaining: DAILY_CREDIT_LIMIT,
-      resetAt: this.getNextResetTime(),
-      totalUsed: 0
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(creditInfo));
-    return creditInfo;
-  }
-
-  getCreditInfo() {
-    const credits = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (this.shouldReset(credits.resetAt)) {
-      return this.resetCredits();
-    }
-    return credits;
-  }
-
-  shouldReset(resetTime) {
-    return new Date() >= new Date(resetTime);
-  }
-
-  getNextResetTime() {
-    const now = new Date();
-    const tomorrow = new Date(now);
-    tomorrow.setHours(24, 0, 0, 0); // Reset at midnight
-    return tomorrow.toISOString();
+    this.lastErrorTime = null;
+    this.retryAttempts = 0;
+    this.maxRetries = 3;
   }
 
   async useCredit() {
-    const credits = this.getCreditInfo();
-    
-    if (credits.remaining <= 0) {
-      const resetTime = new Date(credits.resetAt).toLocaleString();
-      throw new Error(`API credit limit reached. Credits will reset at ${resetTime}`);
+    if (this.lastErrorTime) {
+      // Exponential backoff: 2^attempts * 1000ms (1s, 2s, 4s, etc)
+      const waitTime = Math.min(Math.pow(2, this.retryAttempts) * 1000, 8000);
+      const timeElapsed = Date.now() - this.lastErrorTime;
+      
+      if (timeElapsed < waitTime) {
+        const waitSeconds = Math.ceil((waitTime - timeElapsed) / 1000);
+        throw new Error(`API is cooling down. Please wait ${waitSeconds} seconds.`);
+      }
+      
+      // Reset error state after wait time
+      this.lastErrorTime = null;
+      this.retryAttempts = 0;
     }
-
-    credits.remaining -= 1;
-    credits.totalUsed += 1;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(credits));
     
-    return credits;
+    return true;
   }
 
-  getRemainingCredits() {
-    return this.getCreditInfo().remaining;
+  handleApiError(error) {
+    // Check for specific OpenAI API credit/rate limit errors
+    if (error.response?.status === 429 || 
+        error.message?.includes('quota') || 
+        error.message?.includes('rate limit') ||
+        error.message?.includes('capacity')) {
+      
+      this.lastErrorTime = Date.now();
+      this.retryAttempts = Math.min(this.retryAttempts + 1, this.maxRetries);
+
+      const waitTime = Math.pow(2, this.retryAttempts);
+      throw new Error(`API capacity reached. System will automatically retry in ${waitTime} seconds.`);
+    }
+    
+    // Reset retry attempts for non-capacity errors
+    this.retryAttempts = 0;
+    throw error;
   }
 
   getUsageStats() {
-    const credits = this.getCreditInfo();
+    const now = Date.now();
+    const cooldownRemaining = this.lastErrorTime ? 
+      Math.pow(2, this.retryAttempts) * 1000 - (now - this.lastErrorTime) : 
+      0;
+
     return {
-      remaining: credits.remaining,
-      total: DAILY_CREDIT_LIMIT,
-      used: credits.totalUsed,
-      resetAt: credits.resetAt
+      hasRecentError: !!this.lastErrorTime,
+      canMakeRequests: !this.lastErrorTime || cooldownRemaining <= 0,
+      cooldownSeconds: Math.max(0, Math.ceil(cooldownRemaining / 1000)),
+      retryAttempt: this.retryAttempts
     };
   }
 }
