@@ -67,7 +67,6 @@ const QuizWeek1 = () => {
     }
 
     setAnswerFeedback(isCorrect);
-    setShowConfetti(isCorrect);
 
     setTimeout(() => {
       if (currentQuestionIndex < questions.length - 1) {
@@ -75,11 +74,11 @@ const QuizWeek1 = () => {
         setSelectedAnswer(null);
         setTextAnswer('');
         setAnswerFeedback(null);
-        setShowConfetti(false);
       } else {
         const finalScore = Math.round(((isCorrect ? score + 1 : score) / questions.length) * 100);
         markActivityComplete("quiz1", finalScore);
         markQuizComplete("quiz1");
+        setShowConfetti(true);
         setShowResults(true);
       }
     }, 1000);
@@ -126,7 +125,6 @@ const QuizWeek1 = () => {
 
   return (
     <div className="bg-gradient-to-br from-slate-900 to-blue-950 min-h-screen text-white">
-      {showConfetti && <Confetti />}
       <Header />
       <div className="p-4">
         <div className="flex items-center">

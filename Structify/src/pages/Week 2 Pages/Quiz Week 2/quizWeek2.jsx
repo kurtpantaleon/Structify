@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Header';
 import { useNavigate } from 'react-router-dom';
+import { useLessonProgress } from '../../../context/lessonProgressContext';
 import { CheckCircle, XCircle } from 'lucide-react';
 import Confetti from 'react-confetti';
 
@@ -58,7 +59,6 @@ const QuizWeek2 = () => {
     }
 
     setAnswerFeedback(isCorrect);
-    setShowConfetti(isCorrect);
 
     setTimeout(() => {
       if (currentQuestionIndex < questions.length - 1) {
@@ -66,8 +66,8 @@ const QuizWeek2 = () => {
         setSelectedAnswer(null);
         setTextAnswer('');
         setAnswerFeedback(null);
-        setShowConfetti(false);
       } else {
+        setShowConfetti(true);
         setShowResults(true);
       }
     }, 1000);
@@ -113,7 +113,6 @@ const QuizWeek2 = () => {
 
   return (
     <div className="bg-gradient-to-br from-slate-900 to-blue-950 min-h-screen text-white">
-      {showConfetti && <Confetti />}
       <Header />
       <div className="p-4">
         <div className="flex items-center">
