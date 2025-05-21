@@ -57,7 +57,7 @@ export default function Week4Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY 
           <div className=" flex items-start gap-8 ">
             {/* Left Section */}
            <RankStats/>       
-
+ 
             {/* Right Section */}
             <div className=" w-6/12 flex-shrink-0 bg-[#141a35] p-4 rounded-xl shadow-xl">
               <h2 className="text-2xl font-extrabold tracking-wide mb-2"> WEEK 4&5 GOALS</h2>{/*YUNG WEEK NUMBER LANG */}
@@ -65,19 +65,49 @@ export default function Week4Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY 
 
               {/* Lessons */}
               <div className="space-y-4">
-                                                                                     {/*YUNG PATH LALAGYAN TO !!!!!!! */}
-                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/week4Page1"  />
-                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week4L2Page1"/>
-                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week4L3Page1" />
+                                                                                    {/*YUNG PATH LALAGYAN TO !!!!!!! */}
+                <WeekButton 
+                  title="Lesson 1" 
+                  status="LEARN" 
+                  icon={completedLessons.includes("Week4lesson1") ? CheckIcon : UncheckIcon} 
+                  iconType={StudyIcon} 
+                  path="/week4Page1"  />
+                <WeekButton 
+                  title="Lesson 2" 
+                  status="LEARN" 
+                  icon={completedLessons.includes("Week4lesson2") ? CheckIcon : UncheckIcon} 
+                  iconType={StudyIcon} 
+                  path="/week4L2Page1"/>
+                <WeekButton 
+                  title="Lesson 3" 
+                  status="LEARN" 
+                  icon={completedLessons.includes("Week4lesson3") ? CheckIcon : UncheckIcon} 
+                  iconType={StudyIcon} 
+                  path="/week4L3Page1" />
               </div>
 
               {/* Activities */}
               <div className="mt-6 space-y-4">
                 <h3 className="text-lg font-semibold text-yellow-300"> Activities</h3>
                                                                                                             {/*YUNG PATH LALAGYAN TO !!!!!!!!*/}
-                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week4Activity1"/>
-                <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week4Activity2"/>
-                <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week4Activity3"/>
+                <WeekButton 
+                  title="Activity 1" 
+                  status={`SCORE: ${activityScores["Week4activity1"] ?? "-"}`}
+                  icon={completedActivities.includes("Week4activity1") ? CheckIcon : UncheckIcon} 
+                  iconType={PracticeIcon} 
+                  path="/Week4Activity1"/>
+                <WeekButton 
+                  title="Activity 2" 
+                  status={`SCORE: ${activityScores["Week4activity2"] ?? "-"}`}
+                  icon={completedActivities.includes("Week4activity2") ? CheckIcon : UncheckIcon} 
+                  iconType={PracticeIcon} 
+                  path="/Week4Activity2"/>
+                <WeekButton 
+                  title="Activity 3" 
+                  status={`SCORE: ${activityScores["Week4activity3"] ?? "-"}`}
+                  icon={completedActivities.includes("Week4activity3") ? CheckIcon : UncheckIcon} 
+                  iconType={PracticeIcon} 
+                  path="/Week4Activity3"/>
               </div>
             </div>
           </div>
