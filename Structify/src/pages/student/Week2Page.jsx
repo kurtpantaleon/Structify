@@ -92,14 +92,14 @@ export default function Week2Page() {
                     status="LEARN" 
                     icon={completedLessons.includes("Week2lesson2") ? CheckIcon : UncheckIcon}
                     iconType={StudyIcon} 
-                    path="/week2Page2"
+                    path="/week2L2Page1"
                   />
                   <WeekButton 
                     title="Lesson 3" 
                     status="LEARN" 
                     icon={completedLessons.includes("Week2lesson3") ? CheckIcon : UncheckIcon}
                     iconType={StudyIcon} 
-                    path="/week2Page3"
+                    path="/week2L3Page1"
                   />
                 </div>
 
