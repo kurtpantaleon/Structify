@@ -133,7 +133,7 @@ function MainPage() {
 
           </div>
         </main>
-        <BackgroundSound />
+        
 
         {/* Learning Path: Full width on mobile */}
         <LearningPath 
