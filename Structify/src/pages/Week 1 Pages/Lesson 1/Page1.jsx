@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-import Bullet1 from '../../../assets/clip/clip1.mp4';
-import Bullet2 from '../../../assets/clip/clip2.mp4';
-import Bullet3 from '../../../assets/clip/clip3.mp4';
+import Bullet1 from '../../../assets/image/Additional1.1/image1.png';
+import Bullet2 from '../../../assets/image/Additional1.1/image2.png';
+import Bullet3 from '../../../assets/image/Additional1.1/image3.png';
 import BigLeftNextIcon from '../../../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../../../assets/images/Big Right Next Icon.png';
 import LessonFooter from '../../../components/LessonFooter';
@@ -25,8 +25,8 @@ export default function Page1() {
           so that it can be used effectively.
         </>
       ),
-      mediaType: 'video',
-      video: Bullet1, // MP4 video source
+      mediaType: 'image',
+                  image: Bullet1,
     },
     {
       description: (
@@ -38,8 +38,8 @@ export default function Page1() {
           , so efficient organization is essential.
         </>
       ),
-      mediaType: 'video',
-      video: Bullet2,
+      mediaType: 'image',
+                  image: Bullet2,
     },
     {
       description: (
@@ -51,8 +51,8 @@ export default function Page1() {
           .
         </>
       ),
-      mediaType: 'video',
-      video: Bullet3,
+    mediaType: 'image',
+                image: Bullet3,
     },
   ];
 
