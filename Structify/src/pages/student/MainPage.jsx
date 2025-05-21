@@ -13,6 +13,7 @@ import StudyIcon from '../../assets/images/Study Icon.png';
 
 import RankStats from '../../components/RankStats';
 import { useLessonProgress } from '../../context/lessonProgressContext';
+import BackgroundSound from '../../components/BackgroundSound';
 
 function MainPage() {
   const { completedLessons, completedActivities, activityScores } = useLessonProgress();
@@ -132,6 +133,7 @@ function MainPage() {
 
           </div>
         </main>
+        <BackgroundSound />
 
         {/* Learning Path: Full width on mobile */}
         <LearningPath 
@@ -140,6 +142,7 @@ function MainPage() {
         />
       </div>
     </div>
+    
   );
 }
 
