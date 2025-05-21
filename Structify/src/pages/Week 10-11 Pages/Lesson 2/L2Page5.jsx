@@ -6,7 +6,7 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/image/Lesson10.2/image5.png';
+import Bullet1 from '../../../assets/image/Example/7.2.png';
 
 
 
@@ -25,12 +25,8 @@ export default function Page1() {
     {
       description: (
         <>
-          A {' '}
-          <span className="font-extrabold text-yellow-400 animate-pulse">
-          binary tree
-          </span>{' '}
-          is a tree where each node has at most two children.
-          
+          Code Example
+         
           
         </>
       ),

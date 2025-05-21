@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom'; // For navigation between pages
 import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
-
-import Bullet1 from '../../../assets/clip/clip1.mp4';
+  
+import Bullet1 from '../../../assets/image/Example/5.5.png';
 
 
 
@@ -28,7 +28,8 @@ export default function Page1() {
          Code Example : Time Complexity
         </>
       ),
-      video: Bullet1, // MP4 video source
+      mediaType: 'image',
+                                    image: Bullet1, // MP4 video source
     }
   ];
 

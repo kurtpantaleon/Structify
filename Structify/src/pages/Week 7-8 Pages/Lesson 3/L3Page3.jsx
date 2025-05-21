@@ -6,7 +6,7 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/image/Lesson7.3/image3.png';
+import Bullet1 from '../../../assets/image/Example/6.3.png';
 
 
 

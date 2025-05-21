@@ -6,7 +6,7 @@ import hint from "../../../assets/images/hint.png";
 import Actbox from "../../../assets/asset/ActBox.png";
 // import { doc, setDoc } from "firebase/firestore";
 // import { db } from "../../../services/firebaseConfig";
-
+import { useLessonProgress } from "../../../context/lessonProgressContext"; // Importing the lesson progress context
 
 const options = ["toUpperCase()", "split()", "replace()", "trim()", "length"];
 
@@ -75,10 +75,19 @@ function DroppableArea({ id, answer }) {
 }
 
 export default function Activity2() {
+  const { activityScores, markActivityComplete } = useLessonProgress(); // declaring the context
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState("");
   const [score, setScore] = useState(null);
+
+  //added useEffect to get the score from the context
+  useEffect(() => {
+    if (activityScores && activityScores["Week3activity2"] !== undefined) {
+      setScore(activityScores["Week3activity2"]);
+      setFeedback(`Your previous score: ${activityScores["Week3activity2"]}/100`);
+    }
+  }, [activityScores]);
 
   const handleDrop = (event) => {
     const { active, over } = event;
@@ -110,18 +119,7 @@ export default function Activity2() {
         ? "🎉 Correct! You nailed it!" : ` You scored ${calculatedScore}/100. Try again!`
     );
 
-    // try {
-    //   const scoreData = {
-    //     userId: "user1", // Replace with actual user ID
-    //     activityId: "activity2",
-    //     score: calculatedScore,
-    //     timestamp: new Date().toISOString()
-    //   };
-    //   await setDoc(doc(db, "activityScores", `${scoreData.userId}_${scoreData.timestamp}`), scoreData);
-    // } catch (error) {
-    //   console.error("Error saving score:", error);
-    //   setFeedback("Error saving score. Please try again.");
-    // }
+    await markActivityComplete("Week3activity2", calculatedScore); // Save the score in the context
 
     setTimeout(() => {
       navigate("/week3activity3"); // Replace with your desired action after the delay
