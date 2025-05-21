@@ -130,6 +130,7 @@ export default function Week3Page() {
                 </div>
               </div>
             </div>
+            {/* Right Section */}
           </div>
         </main>
 
