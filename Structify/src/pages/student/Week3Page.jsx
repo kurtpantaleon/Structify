@@ -66,25 +66,25 @@ export default function Week3Page() {
               <div className="border-t border-white/50 w-full mb-4 sm:mb-5"></div>
 
               {/* Lessons */}
-              <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-3 sm:space-y-4"> 
                 <WeekButton
                   title="Lesson 1"
                   status="LEARN"
-                  icon={CheckIcon}
+                  icon={completedLessons.includes("Week3lesson1") ? CheckIcon : UncheckIcon}
                   iconType={StudyIcon}
                   path="/week3Page1"
                 />
                 <WeekButton
                   title="Lesson 2"
                   status="LEARN"
-                  icon={UncheckIcon}
+                  icon={completedLessons.includes("Week3lesson2") ? CheckIcon : UncheckIcon}
                   iconType={StudyIcon}
                   path="/week3L2Page1"
                 />
                 <WeekButton
                   title="Lesson 3"
                   status="LEARN"
-                  icon={UncheckIcon}
+                  icon={completedLessons.includes("Week3lesson3") ? CheckIcon : UncheckIcon}
                   iconType={StudyIcon}
                   path="/week3L3Page1"
                 />
@@ -95,22 +95,22 @@ export default function Week3Page() {
                 <h3 className="text-base sm:text-lg font-semibold text-yellow-300">Activities</h3>
                 <WeekButton
                   title="Activity 1"
-                  status="PRACTICE"
-                  icon={UncheckIcon}
+                  status={`SCORE: ${activityScores["Week3activity1"] ?? "-"}`}
+                  icon={completedActivities.includes("Week3activity1") ? CheckIcon : UncheckIcon}
                   iconType={PracticeIcon}
                   path="/Week3Activity1"
                 />
                 <WeekButton
                   title="Activity 2"
-                  status="PRACTICE"
-                  icon={UncheckIcon}
+                  status={`SCORE: ${activityScores["Week3activity2"] ?? "-"}`}
+                  icon={completedActivities.includes("Week3activity2") ? CheckIcon : UncheckIcon}
                   iconType={PracticeIcon}
                   path="/Week3Activity2"
                 />
                 <WeekButton
                   title="Activity 3"
-                  status="PRACTICE"
-                  icon={UncheckIcon}
+                  status={`SCORE: ${activityScores["Week3activity3"] ?? "-"}`}
+                  icon={completedActivities.includes("Week3activity3") ? CheckIcon : UncheckIcon}
                   iconType={PracticeIcon}
                   path="/Week3Activity3"
                 />
