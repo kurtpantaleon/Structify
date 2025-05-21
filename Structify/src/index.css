@@ -29,6 +29,21 @@
   animation: move-slow 8s ease-in-out infinite;
 }
 
+@keyframes move-slow {
+  0% {
+    transform: translateX(0%) translateY(0%);
+  }
+  50% {
+    transform: translateX(25%) translateY(-10%);
+  }
+  100% {
+    transform: translateX(0%) translateY(0%);
+  }
+}
+
+.animate-move-slow {
+  animation: move-slow 8s ease-in-out infinite;
+}
 
 /* Custom Scrollbar Styles */
 .custom-scrollbar {
