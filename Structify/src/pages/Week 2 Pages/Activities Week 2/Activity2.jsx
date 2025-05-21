@@ -9,11 +9,11 @@ import { useLessonProgress } from "../../../context/lessonProgressContext"; // I
 const options = ["Algorithm", "Efficiency", "Big-O Notation", "Space", "Time"];
 
 const questions = [
-  "An ________is a set of instructions to solve a problem.",
-  "________ tells us how quickly an algorithm runs.",
-  "The ________ notation helps analyze performance.",
-  "________ complexity measures the memory used by an algorithm.",
-  "A slow algorithm takes too much ________to complete a task."
+  "An ______ is a set of instructions to solve a problem.",
+  "______ tells us how quickly an algorithm runs.",
+  "The ______ notation helps analyze performance.",
+  "______ complexity measures the memory used by an algorithm.",
+  "A slow algorithm takes too much ______ to complete a task."
 ];
 
 const correctAnswers = {
