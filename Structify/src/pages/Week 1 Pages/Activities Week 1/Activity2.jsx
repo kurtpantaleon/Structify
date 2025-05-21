@@ -20,7 +20,7 @@ const correctAnswers = {
   "Arrays use an ________ to access their elements.": "INDEX",
   "A ________ follows LIFO, meaning the last element added is the first to be removed.": "STACK",
   "A ________ follows FIFO, meaning the first element added is the first to be removed.": "QUEUE",
-  "A queue is similar to a ________ of people waiting for a bus.": "QUEUE",
+  "A queue is similar to a ________ of people waiting for a bus.": "ARRAY",
   "A ________ is a key-value data structure for fast lookups.": "HASH TABLE"
 };
 function DraggableItem({ id, children, fitContainer = false  }) {
