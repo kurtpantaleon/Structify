@@ -75,7 +75,7 @@ export default function Week2Page() {
 
               {/* Content wrapper with z-index */}
               <div className="relative z-10">
-                <h2 className="text-xl sm:text-2xl font-extrabold tracking-wide mb-2 text-white">WEEK 1 GOALS</h2>
+                <h2 className="text-xl sm:text-2xl font-extrabold tracking-wide mb-2 text-white">WEEK 2 GOALS</h2>
                 <div className="border-t border-white/50 w-full mb-4 sm:mb-5"></div>
 
                 {/* Lessons */}
@@ -83,23 +83,23 @@ export default function Week2Page() {
                   <WeekButton 
                     title="Lesson 1" 
                     status="LEARN" 
-                    icon={completedLessons.includes("lesson1") ? CheckIcon : UncheckIcon}
+                    icon={completedLessons.includes("Week2lesson1") ? CheckIcon : UncheckIcon}
                     iconType={StudyIcon} 
-                    path="/page1"
+                    path="/week2Page1"
                   />
                   <WeekButton 
                     title="Lesson 2" 
                     status="LEARN" 
-                    icon={completedLessons.includes("lesson2") ? CheckIcon : UncheckIcon}
+                    icon={completedLessons.includes("Week2lesson2") ? CheckIcon : UncheckIcon}
                     iconType={StudyIcon} 
-                    path="/l2page1"
+                    path="/week2Page2"
                   />
                   <WeekButton 
                     title="Lesson 3" 
                     status="LEARN" 
-                    icon={completedLessons.includes("lesson3") ? CheckIcon : UncheckIcon}
+                    icon={completedLessons.includes("week2lesson3") ? CheckIcon : UncheckIcon}
                     iconType={StudyIcon} 
-                    path="/l3page1"
+                    path="/week2Page3"
                   />
                 </div>
 
@@ -108,24 +108,24 @@ export default function Week2Page() {
                   <h3 className="text-base sm:text-lg font-semibold text-yellow-300">Activities</h3>
                   <WeekButton 
                     title="Activity 1" 
-                    status={`SCORE: ${activityScores["activity1"] ?? "-"}`}
-                    icon={completedActivities.includes("activity1") ? CheckIcon : UncheckIcon}
+                    status={`SCORE: ${activityScores["Week2activity1"] ?? "-"}`}
+                    icon={completedActivities.includes("Week2activity1") ? CheckIcon : UncheckIcon}
                     iconType={PracticeIcon} 
-                    path="/Week1Activity1"
+                    path="/Week2Activity1"
                   />
                   <WeekButton 
                     title="Activity 2" 
-                    status={`SCORE: ${activityScores["activity2"] ?? "-"}`}
-                    icon={completedActivities.includes("activity2") ? CheckIcon : UncheckIcon}
+                    status={`SCORE: ${activityScores["Week2activity2"] ?? "-"}`}
+                    icon={completedActivities.includes("Week2activity2") ? CheckIcon : UncheckIcon}
                     iconType={PracticeIcon} 
-                    path="/Week1Activity2"
+                    path="/Week2Activity2"
                   />
                   <WeekButton 
                     title="Activity 3" 
-                    status={`SCORE: ${activityScores["activity3"] ?? "-"}`}
-                    icon={completedActivities.includes("activity3") ? CheckIcon : UncheckIcon}
+                    status={`SCORE: ${activityScores["Week2activity3"] ?? "-"}`}
+                    icon={completedActivities.includes("Week2activity3") ? CheckIcon : UncheckIcon}
                     iconType={PracticeIcon} 
-                    path="/Week1Activity3"
+                    path="/Week2Activity3"
                   />
                 </div>
               </div>
