@@ -8,11 +8,11 @@ import { useLessonProgress } from "../../../context/lessonProgressContext"; // I
 
 const options = ["Algorithm", "Efficiency", "Big-O Notation", "Input", "Output"];
 const descriptions = [
-  " A step-by-step process to solve a problem.",
-  " Measures time complexity.",
-  " How fast an algorithm runs.",
-  " The data an algorithm receives.",
-  " The final result after processing."
+  "A step-by-step process to solve a problem.",
+  "Measures time complexity.",
+  "How fast an algorithm runs.",
+  "The data an algorithm receives.",
+  "The final result after processing."
 ];
 
 const correctAnswers = {
@@ -84,7 +84,7 @@ export default function Activity1() {
   useEffect(() => {
     if (activityScores && activityScores["Week2activity1"] !== undefined) {
       setScore(activityScores["Week2activity1"]);
-      setFeedback(`Your previous score: ${activityScores["Week2activity1"]}/100`);
+      setFeedback(`Previous attempt score: ${activityScores["Week2activity1"]}/100`);
     }
   }, [activityScores]);
 
