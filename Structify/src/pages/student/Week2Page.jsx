@@ -5,7 +5,7 @@ import Header from '../../components/Header';
 import CardSection from '../../components/CardSection';
 import WeekButton from '../../components/WeekButton';
 import LearningPath from '../../components/LearningPath';
-
+ 
 import CheckIcon from '../../assets/images/Check Icon.png';
 import UncheckIcon from '../../assets/images/Uncheck Icon.png';
 import PracticeIcon from '../../assets/images/Practice Icon.png';
@@ -97,7 +97,7 @@ export default function Week2Page() {
                   <WeekButton 
                     title="Lesson 3" 
                     status="LEARN" 
-                    icon={completedLessons.includes("week2lesson3") ? CheckIcon : UncheckIcon}
+                    icon={completedLessons.includes("Week2lesson3") ? CheckIcon : UncheckIcon}
                     iconType={StudyIcon} 
                     path="/week2Page3"
                   />

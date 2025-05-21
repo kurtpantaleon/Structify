@@ -21,8 +21,16 @@ const weekLabels = [
 
 const mockData = weekLabels.map((week) => ({
   week,
-  activities: ['Activity 1', 'Activity 2', 'Activity 3', 'Quiz'],
+  activities: ['Activity 1', 'Activity 2', 'Activity 3', 'Quiz']
 }));
+
+const getActivityKey = (activity, weekIdx) => {
+  const base = activity.toLowerCase().replace(/ /g, '');
+  if (base === 'quiz') {
+    return `quiz${weekIdx + 1}`; // weekIdx is 0-based
+  }
+  return base;
+};
 
 function ViewScoresPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -38,7 +46,7 @@ function ViewScoresPage() {
   const [loading, setLoading] = useState(false);
 
   // Fetch students for the selected activity
-  const fetchStudentsForActivity = async (activity) => {
+  const fetchStudentsForActivity = async (activity, weekIdx) => {
     setLoading(true);
     setStudentsAnswered([]);
     setStudentsNotAnswered([]);
@@ -51,10 +59,14 @@ function ViewScoresPage() {
       const querySnapshot = await getDocs(q);
       const answered = [];
       const notAnswered = [];
-      const activityKey = activity.toLowerCase().replace(/ /g, '');
+      const activityKey = getActivityKey(activity, weekIdx);
+      const isQuiz = activityKey.includes('quiz');
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        if (data.completedActivities && data.completedActivities.includes(activityKey)) {
+        if (
+          (isQuiz && data.completedQuizzes && data.completedQuizzes.includes(activityKey)) ||
+          (!isQuiz && data.completedActivities && data.completedActivities.includes(activityKey))
+        ) {
           answered.push({ id: doc.id, ...data });
         } else {
           notAnswered.push({ id: doc.id, ...data });
@@ -107,7 +119,7 @@ function ViewScoresPage() {
                     onClick={() => {
                       setSelectedActivity(activity);
                       setShowModal(true);
-                      fetchStudentsForActivity(activity);
+                      fetchStudentsForActivity(activity, idx);
                     }}
                   >
                     View Scores
@@ -135,7 +147,7 @@ function ViewScoresPage() {
                   ) : (
                     studentsAnswered.map((student) => (
                       <li key={student.id} className="py-1 border-b border-gray-200">
-                        {student.name} — Score: {student.activityScores?.[selectedActivity.toLowerCase().replace(/ /g, '')] ?? 'N/A'}
+                        {student.name} — Score: {student.activityScores?.[getActivityKey(selectedActivity, 0)] ?? 'N/A'}
                       </li>
                     ))
                   )}

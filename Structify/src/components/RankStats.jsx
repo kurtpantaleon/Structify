@@ -192,8 +192,8 @@ const RankStats = () => {
           {/* Rank Display Section */}
           <div className="grid grid-cols-2 gap-2 text-center">
             {/* Current Rank */}
-            <div className="mt-4">
-              <p className="text-md font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] mb-1">Current Rank</p>
+            <div className="mt-3">
+              <p className="text-md font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">Current Rank</p>
               <div
                 className={styles.rankDisplay}
                 style={{
@@ -201,15 +201,15 @@ const RankStats = () => {
                   backgroundSize: 'contain'
                 }}
               >
-                <p className="text-lg font-bold flex items-center gap-x-1">
+                <p className="text-lg font-bold flex items-center gap-x-1 mb-1">
                   <img src={FireIcon} alt="fire" className="w-5 h-5" /> 3000
                 </p>
               </div>
             </div>
 
             {/* Highest Rank */}
-            <div className="mt-4">
-              <p className="text-md font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] mb-1">Highest Rank</p>
+            <div className="mt-3">
+              <p className="text-md font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">Highest Rank</p>
               <div
                 className={styles.rankDisplay}
                 style={{
@@ -217,7 +217,7 @@ const RankStats = () => {
                   backgroundSize: 'contain'
                 }}
               >
-                <p className="text-lg font-bold flex items-center gap-x-1">
+                <p className="text-lg font-bold flex items-center gap-x-1 mb-1">
                   <img src={FireIcon} alt="fire" className="w-5 h-5" /> 10000
                 </p>
               </div>
