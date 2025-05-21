@@ -6,9 +6,9 @@ import SubHeading2 from '../../../components/SubHeading2';
 import Header from '../../../components/Header';
 import LessonPages from '../../../components/LessonPages';
 
-import Bullet1 from '../../../assets/image/Lesson1.3/image4.png'; // Image source for lesson 1
-import Bullet2 from '../../../assets/image/Lesson1.3/image5.png'; // Image source for lesson 2
-import Bullet3 from '../../../assets/image/Lesson3.1/image2.png'; // Image source for lesson 3
+import Bullet1 from '../../../assets/image/Additional3.1/image4.png'; // Image source for lesson 1
+import Bullet2 from '../../../assets/image/Additional3.1/image5.png'; // Image source for lesson 2
+import Bullet3 from '../../../assets/image/Additional3.1/image6.png'; // Image source for lesson 3
 
 
 
