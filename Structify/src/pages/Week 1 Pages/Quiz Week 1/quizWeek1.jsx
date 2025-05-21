@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Header';
 import { useNavigate } from 'react-router-dom';
-
+import { useLessonProgress } from '../../../context/lessonProgressContext';
 
 const QuizWeek1 = () => {
   const navigate = useNavigate();
+  const { activityScores, markActivityComplete, markQuizComplete } = useLessonProgress();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -13,6 +14,7 @@ const QuizWeek1 = () => {
   const [textAnswer, setTextAnswer] = useState('');
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
+  const [previousScore, setPreviousScore] = useState(null);
   
   const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -45,6 +47,13 @@ const QuizWeek1 = () => {
       });
   }, []);
   
+  // Add useEffect to get previous score
+  useEffect(() => {
+    if (activityScores && activityScores["quiz1"] !== undefined) {
+      setPreviousScore(activityScores["quiz1"]);
+    }
+  }, [activityScores]);
+
   const handleNextQuestion = () => {
     const currentQuestion = questions[currentQuestionIndex];
 
@@ -62,6 +71,11 @@ const QuizWeek1 = () => {
       setSelectedAnswer(null);
       setTextAnswer('');
     } else {
+      // Calculate final score as percentage
+      const finalScore = Math.round((score / questions.length) * 100);
+      // Save the score in the context
+      markActivityComplete("quiz1", finalScore);
+      markQuizComplete("quiz1");
       setShowResults(true);
     }
   };
@@ -101,6 +115,11 @@ const QuizWeek1 = () => {
         <div className="bg-indigo-800 p-8 rounded-lg w-full max-w-md">
           <p className="text-2xl mb-4 text-center">Your Score</p>
           <p className="text-4xl text-center mb-6">{score} / {questions.length}</p>
+          {previousScore && (
+            <p className="text-center mb-4 text-yellow-300">
+              Previous Score: {previousScore}%
+            </p>
+          )}
           <p className="text-center mb-8">
             {score === questions.length ? 'Excellent!' : score >= questions.length / 2 ? 'Good job!' : 'Keep practicing!'}
           </p>
