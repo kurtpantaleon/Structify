@@ -266,7 +266,7 @@ const RankStats = () => {
             backgroundPosition: 'center',
           }}
         >
-          Code Challenge
+          Find Match
         </button>
       </div>
     </div>
