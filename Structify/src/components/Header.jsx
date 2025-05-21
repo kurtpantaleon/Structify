@@ -4,16 +4,20 @@ import Logo from '../assets/images/Logo Structify.png';
 import fire from '../assets/images/fire.png';
 import coin from '../assets/images/coin.png';
 import heart from '../assets/images/heart.png';
-import profile from '../assets/images/sample profile.png';
 import hearts from '../assets/images/hearts.png';
 
+import profile from '../assets/images/sample profile.png';
 
 function Header() {
   const navigate = useNavigate();
   const [showHeartShop, setShowHeartShop] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   const handleProfileClick = () => navigate('/viewProfile');
   const handleHeartClick = () => setShowHeartShop((prev) => !prev);
+  const handleQuantityChange = (delta) => {
+    setQuantity((prev) => Math.min(3, Math.max(1, prev + delta)));
+  };
 
   return (
     <header style={{ backgroundColor: '#30418B' }} className="flex items-center justify-between px-6 py-3 shadow-md border-b-1 border-gray-200">
@@ -33,42 +37,22 @@ function Header() {
 
         {showHeartShop && (
           <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-            <div  style={{ backgroundColor: '#6987D5' }} className="backdrop-blur-sm rounded-xl  shadow-xl p-6 w-[550px] h-150">
-              <div className="relative mb-4 text-center">
+            <div style={{ backgroundColor: '#6987D5' }} className="backdrop-blur-lg rounded-2xl  shadow-4xl p-6 w-[420px]">
+                              <button onClick={() => setShowHeartShop(false)} className="absolute right-3 top-0 text-white-600 text-5xl font-bold">&times;</button>
+
+              <div className="relative mb-6 text-center">
                 <h3 className="text-2xl font-bold text-white-600">HEART SHOP</h3>
-                <button onClick={() => setShowHeartShop(false)} className="absolute right-0 top-0 text-gray-600 text-2xl font-bold">&times;</button>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div   style={{ backgroundColor: '#30418B' }} className=" rounded-xl p-4 flex flex-col items-center justify-between shadow">
-                  <img src={hearts} alt="heart pack" className="h-12 mb-2" />
-                  <p className="text-xl font-bold">5 HEARTS</p>
-                  <button className="bg-green-500 text-white rounded mt-2 px-4 py-1 hover:bg-green-600">50 coins</button>
+              <div className="flex flex-col items-center">
+                <img src={hearts} alt="Heart Icon" className="h-20 mb-4" />
+                <div className="flex items-center space-x-4 mb-4">
+                  <button onClick={() => handleQuantityChange(-1)} className="text-2xl px-3 bg-blue-300 rounded">-</button>
+                  <span className="text-xl font-bold w-6 text-center">{quantity}</span>
+                  <button onClick={() => handleQuantityChange(1)} className="text-2xl px-3  bg-blue-300 rounded">+</button>
                 </div>
-                <div  style={{ backgroundColor: '#30418B' }} className="rounded-xl p-4 flex flex-col items-center justify-between shadow">
-                  <img src={hearts} alt="heart pack" className="h-12 mb-2" />
-                  <p className="text-xl font-bold">10 HEARTS</p>
-                  <button className="bg-green-500 text-white rounded mt-2 px-4 py-1 hover:bg-green-600">100 coins</button>
-                </div>
-                <div  style={{ backgroundColor: '#30418B' }} className=" rounded-xl p-4 flex flex-col items-center justify-between shadow relative">
-                  <img src={hearts} alt="heart pack" className="h-12 mb-2" />
-                  <p className="text-xl font-bold">15 HEARTS</p>
-                  <button className="bg-green-500 text-white rounded mt-2 px-4 py-1 hover:bg-green-600">150 coins</button>
-                </div>
-                <div  style={{ backgroundColor: '#30418B' }} className=" rounded-xl p-4 flex flex-col items-center justify-between shadow relative">
-                  <img src={hearts} alt="heart pack" className="h-12 mb-2" />
-                  <p className="text-xl font-bold">20 HEARTS</p>
-                  <button className="bg-green-500 text-white rounded mt-2 px-4 py-1 hover:bg-green-600">250 coins</button>
-                </div>
-                <div  style={{ backgroundColor: '#30418B' }} className="rounded-xl p-4 flex flex-col items-center justify-between shadow relative">
-                  <img src={hearts} alt="heart pack" className="h-12 mb-2" />
-                  <p className="text-xl font-bold">30 HEARTS</p>
-                  <button className="bg-green-500 text-white rounded mt-2 px-4 py-1 hover:bg-green-600">290 coins</button>
-                </div>
-                <div  style={{ backgroundColor: '#30418B' }} className="rounded-xl p-4 flex flex-col items-center justify-between shadow relative">
-                  <img src={hearts} alt="heart pack" className="h-12 mb-2" />
-                  <p className="text-xl font-bold">40 HEARTS</p>
-                  <button className="bg-green-500 text-white rounded mt-2 px-4 py-1 hover:bg-green-600">300 coins</button>
-                </div>
+                <button className="bg-green-500 text-white rounded px-6 py-2 hover:bg-green-600">
+                  Buy {quantity} for {quantity} Coin{quantity > 1 ? 's' : ''}
+                </button>
               </div>
             </div>
           </div>
