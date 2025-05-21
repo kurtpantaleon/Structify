@@ -5,6 +5,7 @@ import Header from '../../components/Header';
 import CardSection from '../../components/CardSection';
 import WeekButton from '../../components/WeekButton';
 import LearningPath from '../../components/LearningPath';
+import { useLessonProgress } from '../../context/lessonProgressContext';
 
 import CheckIcon from '../../assets/images/Check Icon.png';
 import UncheckIcon from '../../assets/images/Uncheck Icon.png';
@@ -15,6 +16,8 @@ import RankStats from '../../components/RankStats';
 export default function Week3Page() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isLearningPathOpen, setIsLearningPathOpen] = useState(false);
+
+  const { completedLessons, completedActivities, activityScores } = useLessonProgress();
 
   const toggleLearningPath = () => {
     setIsLearningPathOpen(!isLearningPathOpen);
