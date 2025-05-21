@@ -67,7 +67,7 @@ export default function Activity1() {
   };
 
   const goToNextActivity = () => {
-    window.location.href = "/quizweek10";
+    window.location.href = "/quizWeek10-11";
   };
   
   const goToPreviousActivity = () => {

@@ -119,7 +119,7 @@ export default function Activity3() {
     await markActivityComplete("Week2activity3", calculatedScore); // Save the score in the context
   
     setTimeout(() => {
-      navigate("/quizWeek3");
+      navigate("/quizWeek2");
     }, 3000);
   };
 
