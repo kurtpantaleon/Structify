@@ -5,6 +5,7 @@ import Header from '../../components/Header';
 import CardSection from '../../components/CardSection';
 import WeekButton from '../../components/WeekButton';
 import LearningPath from '../../components/LearningPath';
+import { useLessonProgress } from '../../context/lessonProgressContext';
 
 import CheckIcon from '../../assets/images/Check Icon.png';
 import UncheckIcon from '../../assets/images/Uncheck Icon.png';
@@ -15,6 +16,7 @@ import RankStats from '../../components/RankStats';
 export default function Week4Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY PASTE LANG
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isLearningPathOpen, setIsLearningPathOpen] = useState(false);
+  const { completedLessons, completedActivities, activityScores } = useLessonProgress();
 
   const toggleLearningPath = () => {
     setIsLearningPathOpen(!isLearningPathOpen);
@@ -64,8 +66,7 @@ export default function Week4Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY 
               <div className="border-t border-white/50 w-full mb-5"></div>
 
               {/* Lessons */}
-              <div className="space-y-4">
-                                                                                    {/*YUNG PATH LALAGYAN TO !!!!!!! */}
+              <div className="space-y-4">                                                                   
                 <WeekButton 
                   title="Lesson 1" 
                   status="LEARN" 

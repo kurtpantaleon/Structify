@@ -5,6 +5,7 @@ import Header from '../../components/Header';
 import CardSection from '../../components/CardSection';
 import WeekButton from '../../components/WeekButton';
 import LearningPath from '../../components/LearningPath';
+import { useLessonProgress } from '../../context/lessonProgressContext';
 
 import CheckIcon from '../../assets/images/Check Icon.png';
 import UncheckIcon from '../../assets/images/Uncheck Icon.png';
@@ -15,6 +16,7 @@ import RankStats from '../../components/RankStats';
 export default function Week6Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY PASTE LANG
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isLearningPathOpen, setIsLearningPathOpen] = useState(false);
+  const { completedLessons, completedActivities, activityScores } = useLessonProgress();
 
   const toggleLearningPath = () => {
     setIsLearningPathOpen(!isLearningPathOpen);
@@ -65,19 +67,47 @@ export default function Week6Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY 
 
               {/* Lessons */}
               <div className="space-y-4">
-                                                                                     {/*YUNG PATH LALAGYAN TO !!!!!!! */}
-                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/week6Page1"  />
-                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week6L2Page1"/>
-                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week6L3Page1" />
+                <WeekButton 
+                  title="Lesson 1" 
+                  status="LEARN" 
+                  icon={completedLessons.includes("Week6lesson1") ? CheckIcon : UncheckIcon} 
+                  iconType={StudyIcon} 
+                  path="/week6Page1"  />
+                <WeekButton 
+                  title="Lesson 2" 
+                  status="LEARN" 
+                  icon={completedLessons.includes("Week6lesson2") ? CheckIcon : UncheckIcon} 
+                  iconType={StudyIcon} 
+                  path="/week6L2Page1"/>
+                <WeekButton 
+                  title="Lesson 3" 
+                  status="LEARN" 
+                  icon={completedLessons.includes("Week6lesson3") ? CheckIcon : UncheckIcon} 
+                  iconType={StudyIcon} 
+                  path="/week6L3Page1" />
               </div>
 
               {/* Activities */}
               <div className="mt-6 space-y-4">
                 <h3 className="text-lg font-semibold text-yellow-300"> Activities</h3>
-                                                                                                            {/*YUNG PATH LALAGYAN TO !!!!!!!!*/}
-                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week6Activity1"/>
-                <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week6Activity2"/>
-                <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week6Activity3"/>
+                <WeekButton 
+                  title="Activity 1" 
+                  status={`SCORE: ${activityScores["Week6activity1"] ?? "-"}`}
+                  icon={completedActivities.includes("Week6activity1") ? CheckIcon : UncheckIcon} 
+                  iconType={PracticeIcon} 
+                  path="/Week6Activity1"/>
+                <WeekButton 
+                  title="Activity 2" 
+                  status={`SCORE: ${activityScores["Week6activity2"] ?? "-"}`}
+                  icon={completedActivities.includes("Week6activity2") ? CheckIcon : UncheckIcon} 
+                  iconType={PracticeIcon} 
+                  path="/Week6Activity2"/>
+                <WeekButton 
+                  title="Activity 3" 
+                  status={`SCORE: ${activityScores["Week6activity3"] ?? "-"}`}
+                  icon={completedActivities.includes("Week6activity3") ? CheckIcon : UncheckIcon} 
+                  iconType={PracticeIcon} 
+                  path="/Week6Activity3"/>
               </div>
             </div>
           </div>

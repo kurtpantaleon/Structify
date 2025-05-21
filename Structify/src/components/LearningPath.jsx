@@ -49,7 +49,7 @@ function LearningPath({ isOpen, toggleLearningPath }) {
       expectedActivities: ['Week6activity1', 'Week6activity2', 'Week6activity3'],
       expectedLessons: ['Week6lesson1', 'Week6lesson2', 'Week6lesson3']
     },
-    {
+    { 
       week: "Week 7 and 8",
       topic: "Stacks, Queues, and Recursion",
       path: "/week7Page",
