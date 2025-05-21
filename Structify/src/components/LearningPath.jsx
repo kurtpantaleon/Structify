@@ -28,7 +28,7 @@ function LearningPath({ isOpen, toggleLearningPath }) {
       expectedActivities: ["Week2activity1", "Week2activity2", "Week2activity3"],
       expectedLessons: ["Week2lesson1", "Week2lesson2", "Week2lesson3"]
     },
-    {
+    { 
       week: "Week 3",
       topic: "String Processing",
       path: "/week3Page",

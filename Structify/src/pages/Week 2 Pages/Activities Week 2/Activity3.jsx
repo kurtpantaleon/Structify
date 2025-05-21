@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
@@ -74,7 +74,7 @@ function DroppableArea({ id, answer }) {
   );
 }
 
-export default function Activity1() {
+export default function Activity3() {
   const { activityScores, markActivityComplete } = useLessonProgress(); // declaring the context
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({});
@@ -83,9 +83,9 @@ export default function Activity1() {
 
   //added useEffect to get the score from the context
   useEffect(() => {
-    if (activityScores && activityScores["Week2activity3"] !== undefined) {
-      setScore(activityScores["Week2activity3"]);
-      setFeedback(`Your previous score: ${activityScores["Week2activity3"]}/100`);
+    if (activityScores && activityScores["Week2activity2"] !== undefined) {
+      setScore(activityScores["Week2activity2"]);
+      setFeedback(`Your previous score: ${activityScores["Week2activity2"]}/100`);
     }
   }, [activityScores]);
 

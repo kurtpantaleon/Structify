@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
@@ -201,7 +201,7 @@ export default function Activity3() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <h1 className="text-xl font-bold text-white tracking-wide"> Activity 1 - Matching Game</h1>
+          <h1 className="text-xl font-bold text-white tracking-wide"> Activity 3 - Matching Game</h1>
           <img src={hint} className="w-8 h-8" alt="Hint Icon" />
         </div>
 
