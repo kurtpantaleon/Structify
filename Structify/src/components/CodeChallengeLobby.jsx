@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import select from '../assets/images/select.png';
 import profile from '../assets/images/sample profile.png';
@@ -6,6 +7,7 @@ import icon from '../assets/images/select-icon.png';
 import ButtonBg from '../assets/images/ButtonBg.png';
 import HistoryBg from '../assets/images/challngeBg.png';
 import fireIcon from '../assets/images/fire.png';
+import { X } from 'lucide-react';
 
 const styles = {
   challengeButton: "w-90 py-3 px-4 rounded-xl text-white font-semibold flex items-center justify-center gap-x-2 shadow-lg shadow-blue-600/40 hover:shadow-blue-600/70 transition duration-300 ease-in-out hover:scale-105 bg-no-repeat"
@@ -39,8 +41,18 @@ const historyMatches = [
 ];
 
 export default function CodeChallengeLobby() {
+  const navigate = useNavigate();
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#0b1444] to-[#1a1f60] text-white p-4 space-y-10">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#0b1444] to-[#1a1f60] text-white p-4 space-y-10 relative">
+      <button
+        className="absolute top-4 right-4 bg-gradient-to-tr from-red-600 to-yellow-500 p-2 rounded-full shadow-xl hover:scale-110 transform transition duration-300 border-2 border-white"
+        aria-label="Close"
+        onClick={() => navigate('/')}
+      >
+        <X className="text-white w-6 h-6" />
+      </button>
+
       <motion.h1 
         initial={{ opacity: 0, y: -30 }} 
         animate={{ opacity: 1, y: 0 }} 
