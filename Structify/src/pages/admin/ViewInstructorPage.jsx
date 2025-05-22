@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, doc, setDoc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { db, auth, secondaryAuth } from '../../services/firebaseConfig';
+import { db, secondaryAuth } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
@@ -24,8 +24,11 @@ function ViewInstructorPage() {
   const [availableSections, setAvailableSections] = useState([]);
   const [selectedSection, setSelectedSection] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [instructorToDelete, setInstructorToDelete] = useState(null);
-  const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
+  const [instructorToDelete, setInstructorToDelete] = useState(null);  const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
+  const [showBulkUploadModal, setShowBulkUploadModal] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [bulkUploadErrors, setBulkUploadErrors] = useState([]);
+  const [isLoadingSections, setIsLoadingSections] = useState(false);
 
   useEffect(() => {
     const fetchInstructors = async () => {
@@ -41,6 +44,38 @@ function ViewInstructorPage() {
 
     fetchInstructors();
   }, []);
+
+  // Load sections when bulk upload modal opens
+  useEffect(() => {
+    if (showBulkUploadModal) {
+      const loadSections = async () => {
+        setIsLoadingSections(true);
+        try {
+          const classesSnapshot = await getDocs(collection(db, 'classes'));
+          const classList = classesSnapshot.docs.map(doc => doc.data().sectionName);
+          
+          // Get sections that are not already assigned to instructors
+          const instructorsSnapshot = await getDocs(
+            query(collection(db, 'users'), where('role', '==', 'instructor'))
+          );
+          const usedSections = instructorsSnapshot.docs.map(doc => doc.data().section);
+          const availableSections = classList.filter(section => !usedSections.includes(section));
+          
+          setAvailableSections(availableSections);
+        } catch (error) {
+          console.error('Error loading sections:', error);
+          setBulkUploadErrors(prev => [...prev, {
+            name: 'System',
+            email: '',
+            error: 'Failed to load available sections. Please try again.'
+          }]);
+        } finally {
+          setIsLoadingSections(false);
+        }
+      };
+      loadSections();
+    }
+  }, [showBulkUploadModal]);
 
   const createInstructor = async (e) => {
     e.preventDefault();
@@ -60,7 +95,7 @@ function ViewInstructorPage() {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-      await secondaryAuth.signOut(); // Prevent session memory bloat
+      await secondaryAuth.signOut(); 
 
       const uid = userCredential.user.uid;
 
@@ -170,6 +205,135 @@ function ViewInstructorPage() {
     }
   };  
 
+  const handleBulkUpload = async (e) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const csvData = event.target.result;
+        const rows = csvData.split('\n').filter(row => row.trim());
+        const total = rows.length - 1; // Exclude header row
+        let success = 0;
+        const errors = [];
+        
+        // Get available sections first
+        const classesSnapshot = await getDocs(collection(db, 'classes'));
+        const existingSections = new Map(
+          classesSnapshot.docs.map(doc => [doc.data().sectionName, doc.id])
+        );
+
+        // Get currently assigned sections
+        const instructorsSnapshot = await getDocs(
+          query(collection(db, 'users'), where('role', '==', 'instructor'))
+        );
+        const usedSections = instructorsSnapshot.docs.map(doc => doc.data().section);
+
+        // Skip header row and process each instructor
+        for (let i = 1; i < rows.length; i++) {          const [name, email, password, section, role] = rows[i].split(',').map(field => field.trim());
+
+          // Validate role
+          if (!role || role.toLowerCase() !== 'instructor') {
+            errors.push({
+              name,
+              email,
+              error: `Invalid role: ${role || 'missing'}. Role must be "instructor"`
+            });
+            continue;
+          }
+
+          // Validate section assignment
+          if (section) {
+            if (!existingSections.has(section)) {
+              errors.push({
+                name,
+                email,
+                error: `Section "${section}" does not exist`
+              });
+              continue;
+            }
+
+            if (usedSections.includes(section)) {
+              errors.push({
+                name,
+                email,
+                error: `Section "${section}" is already assigned to another instructor`
+              });
+              continue;
+            }
+          }
+
+          try {
+            const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+            const uid = userCredential.user.uid;
+
+            await setDoc(doc(db, 'users', uid), {
+              name,
+              email,
+              section: section || '',
+              role: 'instructor',
+            });
+
+            // Update the class document with instructor info if section is provided
+            if (section) {
+              const classId = existingSections.get(section);
+              await setDoc(doc(db, 'classes', classId), {
+                sectionName: section,
+                instructor: name,
+              }, { merge: true });
+              
+              // Add section to used sections to prevent double assignment
+              usedSections.push(section);
+            }
+
+            await secondaryAuth.signOut();
+            success++;
+            setUploadProgress(Math.floor((success / total) * 100));
+
+            setInstructors(prev => [...prev, {
+              id: uid,
+              name,
+              email,
+              section: section || '',
+              role: 'instructor'
+            }]);
+          } catch (error) {
+            errors.push({ name, email, error: error.message });
+          }
+        }
+
+        setBulkUploadErrors(errors);
+        if (errors.length === 0) {
+          setShowBulkUploadModal(false);
+          setShowSuccessModal(true);
+        }
+
+      } catch (error) {
+        console.error('Error processing CSV:', error);
+        setBulkUploadErrors([{ name: 'CSV Processing', email: '', error: error.message }]);
+      } finally {
+        setUploadProgress(0);
+        e.target.value = ''; // Reset file input
+      }
+    };
+
+    reader.readAsText(file);
+  };
+  const downloadCsvTemplate = () => {
+    const template = 'Name,Email,Password,Section,Role\nJohn Smith,john.smith@example.com,password123,Section A,instructor\n';
+    const blob = new Blob([template], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'instructor_template.csv';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
@@ -178,10 +342,15 @@ function ViewInstructorPage() {
         <div className="w-20 border-r border-white/20 bg-[#141a35]">
           <AdminNavigationBar />
         </div>
-      )}
-
-      <div className="max-w-6xl mx-auto mt-7 bg-white p-6 rounded-lg shadow h-[75vh] flex flex-col">
-        <div className="flex justify-end mb-4">
+      )}      <div className="max-w-6xl mx-auto mt-7 bg-white p-6 rounded-lg shadow h-[75vh] flex flex-col">
+        <div className="flex justify-end mb-4 space-x-3">
+          <button
+            onClick={() => setShowBulkUploadModal(true)}
+            className="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-green-700 transition flex items-center"
+          >
+            <i className="far fa-upload mr-2"></i>
+            Bulk Upload
+          </button>
           <button
             onClick={() => setShowModal(true)}
             className="bg-[#141a35] text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-[#1f274d] transition"
@@ -392,6 +561,77 @@ function ViewInstructorPage() {
         </div>
       )}
 
+      {/* Bulk Upload Modal */}
+      {showBulkUploadModal && (
+        <div className="fixed inset-0 z-50 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h2 className="text-lg font-bold mb-4 text-[#141a35]">Bulk Upload Instructors</h2>
+            <div className="space-y-4">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={handleBulkUpload}
+                  className="w-full"
+                />                <p className="text-sm text-gray-500 mt-2">
+                  Upload CSV file with columns: Name, Email, Password, Section (optional), Role (must be 'instructor')
+                </p>
+                <div className="mt-2 text-xs text-gray-600">
+                  {isLoadingSections ? (
+                    <p>Loading available sections...</p>
+                  ) : (
+                    <p>Available Sections: {availableSections.length > 0 ? availableSections.join(', ') : 'No sections available'}</p>
+                  )}
+                </div>
+                <button
+                  onClick={downloadCsvTemplate}
+                  className="mt-2 text-sm text-blue-600 hover:underline"
+                >
+                  Download CSV Template
+                </button>
+              </div>
+
+              {uploadProgress > 0 && (
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-green-600 h-2.5 rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                  <p className="text-sm text-gray-600 text-center mt-1">
+                    Uploading: {uploadProgress}%
+                  </p>
+                </div>
+              )}
+
+              {bulkUploadErrors.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-red-600 font-medium mb-2">Failed Uploads:</h3>
+                  <div className="max-h-32 overflow-y-auto">
+                    {bulkUploadErrors.map((error, index) => (
+                      <p key={index} className="text-sm text-red-500">
+                        {error.name} ({error.email}): {error.error}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => {
+                    setShowBulkUploadModal(false);
+                    setBulkUploadErrors([]);
+                    setUploadProgress(0);
+                  }}
+                  className="text-gray-600 px-4 py-2 rounded-md hover:bg-gray-100"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
