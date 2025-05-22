@@ -450,7 +450,7 @@ export default function CodeChallengeLobby() {
               style={{ backgroundImage: `url(${HistoryBg})` }}
             >
               <div className="absolute inset-0 bg-opacity-50 rounded-xl"></div>
-              <div className="relative z-10 flex justify-between items-center">
+              <div className="relative z-10 flex justify-evenly items-center">
                 <div className="flex items-center space-x-3">
                   <img src={match.player1.avatar} alt={match.player1.name} className="w-10 h-10 rounded-full border-2 border-white" />
                   <span className={`font-bold text-lg ${match.winner === 'player1' ? 'text-yellow-300' : ''}`}>
