@@ -10,6 +10,7 @@ import HistoryBg from '../assets/images/challngeBg.png';
 import fireIcon from '../assets/images/fire.png';
 import select from '../assets/images/select.png';
 import icon from '../assets/images/select-icon.png';
+import Match from '../pages/PvP/Match';
 import { io } from 'socket.io-client';
 
 // Initialize socket connection
@@ -150,9 +151,8 @@ export default function CodeChallengeLobby() {
       console.log('Match found with:', data);
       setIsSearching(false);
       setOpponent(data.opponent);
-      
-      // Navigate to the game page with match data
-      navigate('/pvp/match', { 
+        // Navigate to the game page with match data
+      navigate('/PvP/Match', { 
         state: { 
           matchId: data.matchId,
           opponent: data.opponent,
