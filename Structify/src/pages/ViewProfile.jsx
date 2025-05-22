@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { getAuth, signOut } from 'firebase/auth';
+import { getAuth, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/authContext';
 import Header from '../components/ProfileHeader ';
@@ -11,6 +11,14 @@ function ViewProfile() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    email: '',
+    currentPassword: '',
+    newPassword: ''
+  });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = () => {
     const auth = getAuth();
@@ -23,13 +31,56 @@ function ViewProfile() {
       });
   };
 
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess(false);
+    setIsLoading(true);
+
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      // Create credentials with email and password
+      const credential = EmailAuthProvider.credential(
+        passwordForm.email,
+        passwordForm.currentPassword
+      );
+
+      // Reauthenticate user
+      await reauthenticateWithCredential(user, credential);
+
+      // Update password
+      await updatePassword(user, passwordForm.newPassword);
+
+      setSuccess(true);
+      setPasswordForm({ email: '', currentPassword: '', newPassword: '' });
+      
+      // Close modal after 2 seconds on success
+      setTimeout(() => {
+        setShowPasswordModal(false);
+        setSuccess(false);
+      }, 2000);
+    } catch (err) {
+      setError(
+        err.code === 'auth/wrong-password' 
+          ? 'Current password is incorrect' 
+          : err.code === 'auth/user-mismatch'
+          ? 'Email does not match current user'
+          : 'Failed to change password. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const isStudent = role === 'student';
 
   return (
-    <div className='bg-blue-100 min-h-screen'>
+    <div className="bg-blue-100 min-h-screen">
       <Header />
 
-      {/* 🔙 Exit Button */}
+      {/* Exit Button */}
       <div className="flex justify-end m-8">
         <button onClick={() => navigate(-1)} className="z-10">
           <img src={exit} alt="Close" className="w-6 h-6 cursor-pointer filter invert" />
@@ -79,18 +130,16 @@ function ViewProfile() {
               </div>
             )}
 
-                {/* 👇 Change Password Link */}
-              <div className="pt-4 flex justify-center">
-                <a
-                  href="#"
-                  onClick={() => setShowPasswordModal(true)}
-                  className="text-blue py-2 px-4 hover:underline hover:text-blue-500"
-                >
-                  Change Password
-                </a>
-              </div>
-
-
+            {/* Change Password Link */}
+            <div className="pt-4 flex justify-center">
+              <a
+                href="#"
+                onClick={() => setShowPasswordModal(true)}
+                className="text-blue-600 py-2 px-4 hover:underline"
+              >
+                Change Password
+              </a>
+            </div>
           </div>
         )}
 
@@ -122,54 +171,86 @@ function ViewProfile() {
         </button>
       </div>
 
-      {/* 🔒 Password Modal */}
+      {/* Password Modal */}
       {showPasswordModal && (
-      <div className="fixed inset-0 backdrop-blur-md bg-white/30 flex items-center justify-center z-50">
-
-
+        <div className="fixed inset-0 backdrop-blur-md bg-white/30 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md space-y-4">
             <h2 className="text-xl font-bold text-blue-700">Change Password</h2>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800"
-                placeholder="Enter your email"
-              />
-            </div>
+            {error && (
+              <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Current Password</label>
-              <input
-                type="password"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800"
-                placeholder="Enter current password"
-              />
-            </div>
+            {success && (
+              <div className="bg-green-50 text-green-600 p-3 rounded-lg text-sm">
+                Password updated successfully!
+              </div>
+            )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">New Password</label>
-              <input
-                type="password"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800"
-                placeholder="Enter new password"
-              />
-            </div>
+            <form onSubmit={handlePasswordChange} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <input
+                  type="email"
+                  value={passwordForm.email}
+                  onChange={(e) => setPasswordForm(prev => ({ ...prev, email: e.target.value }))}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800"
+                  placeholder="Confirm your email"
+                  required
+                />
+              </div>
 
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={() => setShowPasswordModal(false)}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded"
-              >
-                Update Password
-              </button>
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Current Password</label>
+                <input
+                  type="password"
+                  value={passwordForm.currentPassword}
+                  onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800"
+                  placeholder="Enter current password"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">New Password</label>
+                <input
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800"
+                  placeholder="Enter new password"
+                  required
+                  minLength={6}
+                />
+              </div>
+
+              <div className="flex justify-between mt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPasswordModal(false);
+                    setError('');
+                    setSuccess(false);
+                    setPasswordForm({ email: '', currentPassword: '', newPassword: '' });
+                  }}
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className={`${
+                    isLoading ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-700'
+                  } text-white py-2 px-4 rounded flex items-center gap-2`}
+                >
+                  {isLoading ? 'Updating...' : 'Update Password'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
