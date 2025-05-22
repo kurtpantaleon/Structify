@@ -118,21 +118,79 @@ function AdminPage() {
     } catch (error) {
       console.error('Error updating section name:', error);
     }
-  };
+  };  const [affectedUsers, setAffectedUsers] = useState({ students: 0, instructor: null });
+  const [deleteStudents, setDeleteStudents] = useState(false);
 
-  const handleDeleteSection = (section) => {
+  const handleDeleteSection = async (section) => {
+    // Get count of affected users
+    try {
+      const studentQuery = query(
+        collection(db, 'users'),
+        where('section', '==', section.sectionName),
+        where('role', '==', 'student')
+      );
+      const instructorQuery = query(
+        collection(db, 'users'),
+        where('section', '==', section.sectionName),
+        where('role', '==', 'instructor')
+      );
+
+      const [studentSnapshot, instructorSnapshot] = await Promise.all([
+        getDocs(studentQuery),
+        getDocs(instructorQuery)
+      ]);
+
+      setAffectedUsers({
+        students: studentSnapshot.size,
+        instructor: instructorSnapshot.docs[0]?.data()?.name || null
+      });
+    } catch (error) {
+      console.error('Error checking affected users:', error);
+    }
+
     setSectionToDelete(section);
     setShowDeleteModal(true);
   };
-  
-  const confirmDeleteSection = async () => {
+    const confirmDeleteSection = async () => {
     if (!sectionToDelete) return;
   
     try {
-      await deleteDoc(doc(db, 'classes', sectionToDelete.id));
+      // 1. Get all users in this section
+      const studentsQuery = query(
+        collection(db, 'users'),
+        where('section', '==', sectionToDelete.sectionName),
+        where('role', '==', 'student')
+      );
+      const instructorsQuery = query(
+        collection(db, 'users'),
+        where('section', '==', sectionToDelete.sectionName),
+        where('role', '==', 'instructor')
+      );
+      
+      const [studentSnapshot, instructorSnapshot] = await Promise.all([
+        getDocs(studentsQuery),
+        getDocs(instructorsQuery)
+      ]);
+
+      // 2. Handle students based on deleteStudents option
+      const studentUpdates = deleteStudents
+        ? studentSnapshot.docs.map(doc => deleteDoc(doc.ref))
+        : studentSnapshot.docs.map(doc => updateDoc(doc.ref, { section: '' }));
+
+      // 3. Always unassign instructors
+      const instructorUpdates = instructorSnapshot.docs.map(doc => 
+        updateDoc(doc.ref, { section: '' })
+      );      // 4. Execute all updates and delete the section
+      await Promise.all([
+        ...studentUpdates,
+        ...instructorUpdates,
+        deleteDoc(doc(db, 'classes', sectionToDelete.id))
+      ]);
+
       setSections((prev) => prev.filter((s) => s.id !== sectionToDelete.id));
       setShowDeleteModal(false);
       setSectionToDelete(null);
+      setAffectedUsers({ students: 0, instructor: null });
     } catch (error) {
       console.error('Error deleting section:', error);
       alert('Failed to delete section.');
@@ -233,18 +291,44 @@ function AdminPage() {
         )}
 
         {/* Delete Section Modal */}
-        {showDeleteModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+        {showDeleteModal && (          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
             <div className="bg-white px-6 py-5 rounded-lg shadow-md w-full max-w-sm text-center">
               <h3 className="text-lg font-semibold text-[#141a35] mb-2">Delete Section</h3>
               <p className="text-gray-700 mb-4">
                 Are you sure you want to delete <span className="font-medium">{sectionToDelete?.sectionName}</span>?
-              </p>
+              </p>              {(affectedUsers.students > 0 || affectedUsers.instructor) && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-4 text-left">
+                  <p className="text-sm text-yellow-800 font-medium mb-1">Warning: This will affect:</p>
+                  <ul className="text-sm text-yellow-700 list-disc list-inside mb-3">
+                    {affectedUsers.students > 0 && (
+                      <li>{affectedUsers.students} student{affectedUsers.students !== 1 ? 's' : ''} will be {deleteStudents ? 'deleted' : 'unassigned'}</li>
+                    )}
+                    {affectedUsers.instructor && (
+                      <li>Instructor {affectedUsers.instructor} will be unassigned</li>
+                    )}
+                  </ul>
+                  {affectedUsers.students > 0 && (
+                    <div className="flex items-center mt-2">
+                      <input
+                        type="checkbox"
+                        id="deleteStudents"
+                        checked={deleteStudents}
+                        onChange={(e) => setDeleteStudents(e.target.checked)}
+                        className="h-4 w-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
+                      />
+                      <label htmlFor="deleteStudents" className="ml-2 text-sm text-red-700">
+                        Also delete student accounts
+                      </label>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="flex justify-center gap-3">
-                <button
-                  onClick={() => {
+                <button                  onClick={() => {
                     setShowDeleteModal(false);
                     setSectionToDelete(null);
+                    setAffectedUsers({ students: 0, instructor: null });
+                    setDeleteStudents(false);
                   }}
                   className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
                 >
