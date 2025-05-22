@@ -108,6 +108,8 @@ function CodePlayground() {
   const [sortBy, setSortBy] = useState("date");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [language, setLanguage] = useState('javascript');
+  const [availableLanguages, setAvailableLanguages] = useState([]);
 
   // Memoized helper functions
   const extractComplexityInfo = useCallback((code) => {
@@ -161,7 +163,8 @@ function CodePlayground() {
   
 
   // Store editor instance
-  const handleEditorDidMount = useCallback((editor) => {
+  const handleEditorDidMount = useCallback((editor, monaco) => {
+    setAvailableLanguages(monaco.languages.getLanguages());
     editorRef.current = editor;
   }, []);
   // Function to execute code
@@ -692,6 +695,25 @@ function CodePlayground() {
           Code Playground
         </h2>
 
+        {/* Responsive Language Selector */}
+        <div className="w-full mb-2 flex flex-col sm:flex-row sm:items-center gap-2">
+          <label htmlFor="language-select" className="text-xs text-gray-300 font-semibold sm:mr-2">
+            Language:
+          </label>
+          <select
+            id="language-select"
+            className="w-full sm:w-auto p-2 rounded bg-[#1A2A4B] text-white"
+            value={language}
+            onChange={e => setLanguage(e.target.value)}
+          >
+            {availableLanguages.map(lang => (
+              <option key={lang.id} value={lang.id}>
+                {lang.id}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Code Editor */}
         <div className="flex-1 border-8 border-solid border-transparent overflow-hidden shadow-2xl mb-4"
              style={{
@@ -702,26 +724,8 @@ function CodePlayground() {
           <Editor
             height="100%"
             theme="vs-dark"
-            defaultLanguage="javascript"
-            defaultValue="// Write your DSA implementation here
-            // Example:
-            function binarySearch(arr, target) {
-              let left = 0;
-              let right = arr.length - 1;
-              
-              while (left <= right) {
-                const mid = Math.floor((left + right) / 2);
-                if (arr[mid] === target) return mid;
-                if (arr[mid] < target) left = mid + 1;
-                else right = mid - 1;
-              }
-              
-              return -1;
-            }
-
-            // Test the implementation
-            const array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-            console.log(binarySearch(array, 5)); // Expected: 4"
+            language={language}
+            defaultValue="// Write your DSA implementation here"
             onMount={handleEditorDidMount}
           />
         </div>
