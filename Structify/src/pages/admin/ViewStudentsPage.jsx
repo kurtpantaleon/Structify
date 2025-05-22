@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, doc, setDoc,} from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { db, auth, secondaryAuth } from '../../services/firebaseConfig';
+import { db, secondaryAuth } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
@@ -19,13 +19,11 @@ function ViewStudentsPage() {
     email: '',
     password: '',
     confirmPassword: '',
-  });
-
-  // Bulk upload states
+  });  // Bulk upload states
   const [showBulkUploadModal, setShowBulkUploadModal] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [bulkUploadErrors, setBulkUploadErrors] = useState([]);
-  const [csvTemplate, setCsvTemplate] = useState(null);
+  const [isLoadingSections, setIsLoadingSections] = useState(false);
 
   const [reassignModalOpen, setReassignModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -34,7 +32,6 @@ function ViewStudentsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
-
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -49,8 +46,30 @@ function ViewStudentsPage() {
     };
 
     fetchStudents();
-    
   }, []);
+  // Load sections when bulk upload modal opens
+  useEffect(() => {
+    if (showBulkUploadModal) {
+      const loadSections = async () => {
+        setIsLoadingSections(true);
+        try {
+          const classesSnapshot = await getDocs(collection(db, 'classes'));
+          const sections = classesSnapshot.docs.map(doc => doc.data().sectionName);
+          setAvailableSections(sections);
+        } catch (error) {
+          console.error('Error loading sections:', error);
+          setBulkUploadErrors(prev => [...prev, {
+            name: 'System',
+            email: '',
+            error: 'Failed to load available sections. Please try again.'
+          }]);
+        } finally {
+          setIsLoadingSections(false);
+        }
+      };
+      loadSections();
+    }
+  }, [showBulkUploadModal]);
 
   const groupedBySection = students.reduce((acc, student) => {
     const section = student.section || 'Unassigned';
@@ -100,20 +119,12 @@ function ViewStudentsPage() {
       alert('Error: ' + error.message);
     }
   };  
-
   const openReassignModal = async (student) => {
     try {
       const classesSnapshot = await getDocs(collection(db, 'classes'));
       const classList = classesSnapshot.docs.map((doc) => doc.data().sectionName);
-
-      const studentsSnapshot = await getDocs(
-        query(collection(db, 'users'), where('role', '==', 'student'))
-      );
-      const usedSections = studentsSnapshot.docs.map((doc) => doc.data().section);
-
-      const available = classList;
-
-      setAvailableSections(available);
+      
+      setAvailableSections(classList);
       setSelectedStudent(student);
       setSelectedSection('');
       setReassignModalOpen(true);
@@ -194,19 +205,61 @@ function ViewStudentsPage() {
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = async (event) => {
+    const reader = new FileReader();    reader.onload = async (event) => {
       try {
         const csvData = event.target.result;
         const rows = csvData.split('\n').filter(row => row.trim());
         const total = rows.length - 1; // Exclude header row
         let success = 0;
         const errors = [];
+        
+        // Get available sections first
+        const classesSnapshot = await getDocs(collection(db, 'classes'));
+        const existingSections = new Map(
+          classesSnapshot.docs.map(doc => [doc.data().sectionName, doc.id])
+        );
 
+        // Create a map to track new sections and their student counts
+        const newSections = new Map();
+        
         // Skip header row and process each student
         for (let i = 1; i < rows.length; i++) {
-          const [name, email, password] = rows[i].split(',').map(field => field.trim());
-          
+          const [name, email, password, section] = rows[i].split(',').map(field => field.trim());
+            // If section provided and doesn't exist, create it
+          if (section && !existingSections.has(section)) {
+            try {
+              // Check if section name is valid
+              if (!section.match(/^[A-Za-z0-9\s-]+$/)) {
+                errors.push({
+                  name,
+                  email,
+                  error: `Invalid section name: ${section}. Only letters, numbers, spaces, and hyphens are allowed.`
+                });
+                continue;
+              }
+
+              // Add new section to Firestore
+              const newSectionRef = doc(collection(db, 'classes'));
+              await setDoc(newSectionRef, {
+                sectionName: section,
+                studentCount: 0,
+                createdAt: new Date().toISOString()
+              });
+              
+              existingSections.set(section, newSectionRef.id);
+              newSections.set(section, 0);
+              console.log(`Created new section: ${section}`);
+            } catch (error) {
+              console.error(`Error creating section ${section}:`, error);
+              errors.push({ 
+                name, 
+                email, 
+                error: `Failed to create new section: ${section}. Error: ${error.message}` 
+              });
+              continue;
+            }
+          }
+
           try {
             const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
             const uid = userCredential.user.uid;
@@ -214,19 +267,41 @@ function ViewStudentsPage() {
             await setDoc(doc(db, 'users', uid), {
               name,
               email,
-              section: '',
+              section: section || '',
               role: 'student',
-            });
+            });            // Update section's student count if section is assigned
+            if (section) {
+              const classId = existingSections.get(section);
+              if (classId) {
+                // Update the count in our tracking map
+                if (newSections.has(section)) {
+                  newSections.set(section, newSections.get(section) + 1);
+                } else {
+                  const studentsQuery = query(
+                    collection(db, 'users'),
+                    where('role', '==', 'student'),
+                    where('section', '==', section)
+                  );
+                  const studentsSnapshot = await getDocs(studentsQuery);
+                  const currentCount = studentsSnapshot.size;
+                  
+                  // Update the class document with new count
+                  await setDoc(doc(db, 'classes', classId), {
+                    sectionName: section,
+                    studentCount: currentCount + 1,
+                  }, { merge: true });
+                }
+              }
+            }
 
             await secondaryAuth.signOut();
             success++;
             setUploadProgress(Math.floor((success / total) * 100));
-            
-            setStudents(prev => [...prev, { 
+              setStudents(prev => [...prev, { 
               id: uid, 
               name, 
               email, 
-              section: '', 
+              section: section || '', 
               role: 'student' 
             }]);
           } catch (error) {
@@ -238,7 +313,17 @@ function ViewStudentsPage() {
         if (errors.length === 0) {
           setShowBulkUploadModal(false);
           setShowSuccessModal(true);
+        }        // Update all new sections with their final counts
+        for (const [section, count] of newSections.entries()) {
+          const classId = existingSections.get(section);
+          if (classId) {
+            await setDoc(doc(db, 'classes', classId), {
+              sectionName: section,
+              studentCount: count,
+            }, { merge: true });
+          }
         }
+
       } catch (error) {
         console.error('Error processing CSV:', error);
         setBulkUploadErrors([{ name: 'CSV Processing', email: '', error: error.message }]);
@@ -250,9 +335,8 @@ function ViewStudentsPage() {
 
     reader.readAsText(file);
   };
-
   const downloadCsvTemplate = () => {
-    const template = 'Name,Email,Password\nJohn Doe,john@example.com,password123\n';
+    const template = 'Name,Email,Password,Section\nJohn Doe,john@example.com,password123,Section A\n';
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -508,10 +592,15 @@ function ViewStudentsPage() {
                   accept=".csv"
                   onChange={handleBulkUpload}
                   className="w-full"
-                />
-                <p className="text-sm text-gray-500 mt-2">
-                  Upload CSV file with columns: Name, Email, Password
-                </p>
+                />                <p className="text-sm text-gray-500 mt-2">
+                  Upload CSV file with columns: Name, Email, Password, Section (optional)
+                </p>                <div className="mt-2 text-xs text-gray-600">
+                  {isLoadingSections ? (
+                    <p>Loading available sections...</p>
+                  ) : (
+                    <p>Available Sections: {availableSections.length > 0 ? availableSections.join(', ') : 'No sections found'}</p>
+                  )}
+                </div>
                 <button
                   onClick={downloadCsvTemplate}
                   className="mt-2 text-sm text-blue-600 hover:underline"
