@@ -19,6 +19,22 @@ const historyMatches = [
   {
     player1: { name: 'Astra', avatar: profile, rank: 512 },
     player2: { name: 'Nova', avatar: profile, rank: 680 }
+  },
+  {
+    player1: { name: 'Astra', avatar: profile, rank: 512 },
+    player2: { name: 'Nova', avatar: profile, rank: 680 }
+  },
+  {
+    player1: { name: 'Astra', avatar: profile, rank: 512 },
+    player2: { name: 'Nova', avatar: profile, rank: 680 }
+  },
+  {
+    player1: { name: 'Astra', avatar: profile, rank: 512 },
+    player2: { name: 'Nova', avatar: profile, rank: 680 }
+  },
+  {
+    player1: { name: 'Astra', avatar: profile, rank: 512 },
+    player2: { name: 'Nova', avatar: profile, rank: 680 }
   }
 ];
 
