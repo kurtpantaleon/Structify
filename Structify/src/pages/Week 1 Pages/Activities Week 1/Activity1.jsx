@@ -111,10 +111,20 @@ export default function Activity1() {
 
   return (
     <div className="bg-[#1c2452] min-h-screen flex flex-col">
+      {/* Exit Button and Header */}
       <Header />
+      <div className="flex justify-between items-center p-4 border-b border-blue-500/40 backdrop-blur-md bg-white/10">
+        <button onClick={() => navigate('/mainPage')} className="text-white hover:text-red-400 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <h2 className="text-xl font-bold text-cyan-400 mb-0">Coding Problem</h2>
+        <div style={{ width: '2.5rem' }} /> {/* Spacer to balance flex */}
+      </div>
+      {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-0 p-4 items-center">
         <div className="w-full max-w-2xl bg-[#141a35] rounded-lg p-6 mb-4">
-          <h2 className="text-xl font-bold text-cyan-400 mb-2">Coding Problem</h2>
           <pre className="text-white whitespace-pre-wrap">{problemDescription}</pre>
         </div>
         <div className="w-full max-w-2xl flex-1 flex flex-col min-h-0">
