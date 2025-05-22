@@ -18,7 +18,7 @@ const NavigationBar = () => {
         <NavItem to="/mainPage" icon={LearnIcon} label="Learn" />
         <NavItem to="/codePlayground" icon={CodeIcon} label="Code" />
         <NavItem to="/Leaderboard" icon={LeaderboardIcon} label="Leaderboard" />
-        <NavItem to="/pvp" icon={PvPIcon} label="PvP" />
+        <NavItem to="/CodeChallengeLobby" icon={PvPIcon} label="PvP" />
         <NavItem to="/Forum" icon={ForumIcon} label="Forum" />
       </nav>
     </div>

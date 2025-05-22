@@ -272,6 +272,7 @@ import ViewStudentLists from './pages/instructor/ViewStudentLists'
 
 import Leaderboard from './pages/Leaderboard'
 import Forum from './pages/Forum'
+import CodeChallengeLobby from './components/CodeChallengeLobby'
  
 function App() {
   const { currentUser, role } = useContext(AuthContext);
@@ -549,6 +550,7 @@ function App() {
       <Route path="/ViewProfile" element={<ViewProfile />} />
       <Route path="/Leaderboard" element={<Leaderboard />} />      
       <Route path="/Forum" element={<Forum />} />
+      <Route path="/CodeChallengeLobby" element={<CodeChallengeLobby />} />
     </Routes> 
   )
 }
