@@ -33,6 +33,53 @@ function ViewStudentsPage() {
   const [studentToDelete, setStudentToDelete] = useState(null);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
 
+//multiple select
+const [selectedStudents, setSelectedStudents] = useState([]);
+const [multiAssignSection, setMultiAssignSection] = useState('');
+const [showMultiAssignModal, setShowMultiAssignModal] = useState(false);
+
+const toggleSelectStudent = (id) => {
+  setSelectedStudents(prev => prev.includes(id)
+    ? prev.filter(sid => sid !== id)
+    : [...prev, id]);
+};
+
+const toggleSelectAll = () => {
+  const allIds = students.map(s => s.id);
+  const isAllSelected = allIds.every(id => selectedStudents.includes(id));
+  setSelectedStudents(isAllSelected ? [] : allIds);
+};
+
+const handleMultiAssign = async () => {
+  const newSection = multiAssignSection === '__unassign__' ? '' : multiAssignSection;
+  const updates = [];
+
+  for (const id of selectedStudents) {
+    const student = students.find(s => s.id === id);
+    if (!student) continue;
+
+    updates.push(setDoc(doc(db, 'users', id), {
+      ...student,
+      section: newSection,
+    }));
+  }
+
+  await Promise.all(updates);
+
+  const updatedStudents = students.map(s =>
+    selectedStudents.includes(s.id)
+      ? { ...s, section: newSection }
+      : s
+  );
+
+  setStudents(updatedStudents);
+  setSelectedStudents([]);
+  setShowMultiAssignModal(false);
+};
+
+//--- end of multiple select
+
+
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -371,28 +418,64 @@ function ViewStudentsPage() {
           >
             Add Student
           </button>
+          {/* multiple button*/}
+          <button
+            onClick={() => setShowMultiAssignModal(true)}
+            disabled={selectedStudents.length === 0}
+            className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50"
+          >
+            Assign Section to Selected
+          </button>
+
         </div>
 
         <div className="overflow-y-scroll pr-2 space-y-6">
           {Object.entries(groupedBySection).sort(([a], [b]) => a.localeCompare(b)).map(([section, studentsInSection], index) => (
             <div key={index} className="mb-2">
               <h3 className="text-2xl font-bold text-[#141a35] mb-2 border-b pb-1">{section}</h3>
+              {/* Section Group Header Row with Select All */}
+<div className="flex items-center justify-between py-2 border-b font-semibold text-[#141a35] bg-gray-100">
+  <input
+    type="checkbox"
+    onChange={toggleSelectAll}
+    checked={students.length > 0 && selectedStudents.length === students.length}
+    className="mr-2"
+  />
+  <span className="flex-1">Name</span>
+  <span className="w-32 text-right">Actions</span>
+</div>
+
+              {/* Student Rows */}
               {studentsInSection.map((student, idx) => (
-                <div key={idx} className="flex items-center justify-between py-2 border-b last:border-b-0">
-                  <span className="text-[#141a35] text-base">{student.name}</span>
-                  <div className="flex items-center gap-3">
+                <div
+                  key={idx}
+                  className={`flex items-center justify-between py-2 border-b last:border-b-0 ${selectedStudents.includes(student.id) ? 'bg-gray-100' : ''}`}
+                >
+                  <div className="flex items-center gap-2 flex-1">
+                    <input
+                      type="checkbox"
+                      checked={selectedStudents.includes(student.id)}
+                      onChange={() => toggleSelectStudent(student.id)}
+                    />
+                    <span className="text-[#141a35] text-base">{student.name}</span>
+                  </div>
+                  <div className="flex items-center gap-3 w-32 justify-end">
                     <button
                       className="text-sm font-medium text-blue-700 hover:underline cursor-pointer"
                       onClick={() => openReassignModal(student)}
                     >
                       {student.section === '' ? 'Assign Section' : 'Re-assign Section'}
                     </button>
-                    <button className="text-sm font-medium text-red-500 hover:underline cursor-pointer" onClick={() => { setStudentToDelete(student); setShowDeleteModal(true); }}>
+                    <button
+                      className="text-sm font-medium text-red-500 hover:underline cursor-pointer"
+                      onClick={() => { setStudentToDelete(student); setShowDeleteModal(true); }}
+                    >
                       Delete Account
                     </button>
                   </div>
                 </div>
               ))}
+
             </div>
           ))}
         </div>
@@ -404,6 +487,7 @@ function ViewStudentsPage() {
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
             <h2 className="text-lg font-bold mb-4 text-[#141a35]">Add New Student</h2>
             <form onSubmit={createStudent} className="space-y-4">
+
               <input
                 type="text"
                 name="name"
@@ -534,6 +618,46 @@ function ViewStudentsPage() {
           </div>
         </div>
       )}
+
+{/*Multi select*/}
+      {showMultiAssignModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+    <div className="bg-white p-6 rounded-lg shadow w-full max-w-sm">
+      <h3 className="text-lg font-bold text-[#141a35] mb-3">Assign Section</h3>
+     <select
+  value={multiAssignSection}
+  onChange={(e) => setMultiAssignSection(e.target.value)}
+  className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
+>
+  <option value="">-- Select Section --</option>
+  {availableSections.map((section, idx) => (
+    <option key={idx} value={section}>
+      {section}
+    </option>
+  ))}
+  <option value="__unassign__" className="text-red-600">
+    Unassign
+  </option>
+</select>
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setShowMultiAssignModal(false)}
+          className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleMultiAssign}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Assign
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
