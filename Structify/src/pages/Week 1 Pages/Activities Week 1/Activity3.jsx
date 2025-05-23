@@ -5,6 +5,7 @@ import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
 import Actbox from "../../../assets/asset/ActBox.png";
 import { useLessonProgress } from "../../../context/lessonProgressContext"; // Importing the lesson progress context
+import { useGameStats } from "../../../context/gameStatsContext";
 
 const options = [
   { id: "Queue-1", label: "Queue" },
@@ -85,6 +86,7 @@ function DroppableArea({ id, answer }) {
 
 export default function Activity3() {
   const { activityScores, markActivityComplete } = useLessonProgress(); // declaring the context
+  const { deductHeart } = useGameStats();
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState("");
@@ -126,7 +128,9 @@ export default function Activity3() {
     setFeedback(calculatedScore === 100 ? "🎉 Correct! You nailed it!" : `You scored ${calculatedScore}/100. Try again!`);
   
     await markActivityComplete("activity3", calculatedScore); // Save the score in the context
-  
+    if (calculatedScore < 50) {
+      await deductHeart();
+    }
     setTimeout(() => {
       navigate("/quizWeek1");
     }, 3000);

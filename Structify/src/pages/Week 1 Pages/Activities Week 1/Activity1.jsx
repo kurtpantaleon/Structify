@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import Header from "../../../components/Header";
 import { useNavigate } from "react-router-dom";
+import { useGameStats } from "../../../context/gameStatsContext";
 
 const problemDescription = `
 Write a function that takes a string as input and prints the reversed string.
@@ -57,7 +58,9 @@ export default function Activity1() {
   ]);
   const [feedback, setFeedback] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
+  const [hasRunCode, setHasRunCode] = useState(false);
   const navigate = useNavigate();
+  const { deductHeart } = useGameStats();
 
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;
@@ -67,8 +70,7 @@ export default function Activity1() {
 
   // Simulate code execution for supported languages (JS only in-browser)
   const runCode = () => {
-    if (!editorRef.current) return;
-    const code = editorRef.current.getValue();
+    setHasRunCode(true);
     setConsoleOutput("");
     setFeedback("");
     setIsCorrect(false);
@@ -88,10 +90,12 @@ export default function Activity1() {
           setIsCorrect(true);
         } else {
           setFeedback("❌ Output does not match expected result.");
+          setIsCorrect(false);
         }
       } catch (err) {
         setConsoleOutput(`Error: ${err.message}`);
         setFeedback("");
+        setIsCorrect(false);
       }
     } else {
       setConsoleOutput(
@@ -100,12 +104,17 @@ export default function Activity1() {
       setFeedback(
         "(Manual Check) If your output is 'olleh', you are correct!"
       );
+      setIsCorrect(false);
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!hasRunCode) return; // Prevent submit if code hasn't been run
     if (isCorrect) {
       navigate("/week1activity2");
+    } else {
+      await deductHeart();
+      setFeedback("❌ Output does not match expected result. 1 heart has been deducted.");
     }
   };
 
@@ -168,8 +177,8 @@ export default function Activity1() {
           </button>
           <button
             onClick={handleSubmit}
-            className={`w-full mt-2 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transform transition-all duration-300 flex items-center justify-center ${!isCorrect ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={!isCorrect}
+            className={`w-full mt-2 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transform transition-all duration-300 flex items-center justify-center ${!hasRunCode ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!hasRunCode}
           >
             <i className="far fa-check-circle mr-2"></i>
             Submit

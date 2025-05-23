@@ -5,9 +5,10 @@ import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
 import Actbox from "../../../assets/asset/ActBox.png";
 import { useLessonProgress } from "../../../context/lessonProgressContext"; // Importing the lesson progress context
+import { useGameStats } from "../../../context/gameStatsContext";
 
 const options = ["INDEX", "ARRAY", "STACK", "QUEUE", "HASH TABLE"];
-
+ 
 const questions = [
   "Arrays use an ________ to access their elements.",
   "A ________ follows LIFO, meaning the last element added is the first to be removed.",
@@ -74,6 +75,7 @@ function DroppableArea({ id, answer }) {
 
 export default function Activity2() {
   const { activityScores, markActivityComplete } = useLessonProgress(); // declaring the context
+  const { deductHeart } = useGameStats();
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState("");
@@ -115,7 +117,9 @@ export default function Activity2() {
     setFeedback(calculatedScore === 100 ? "🎉 Correct! You nailed it!" : `You scored ${calculatedScore}/100. Try again!`);
   
     await markActivityComplete("activity2", calculatedScore); // Save the score in the context
-  
+    if (calculatedScore < 50) {
+      await deductHeart();
+    }
     setTimeout(() => {
       navigate("/week1activity3");
     }, 3000);

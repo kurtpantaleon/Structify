@@ -153,6 +153,9 @@ const handleMultiAssign = async () => {
         email,
         section: '',
         role: 'student',
+        hearts: 3,
+        coins: 100,
+        rankPoints: 0,
       });
   
       await secondaryAuth.signOut(); // 🧼 Clean up secondary session
@@ -316,6 +319,9 @@ const handleMultiAssign = async () => {
               email,
               section: section || '',
               role: 'student',
+              hearts: 3,
+              coins: 100,
+              rankPoints: 0,
             });            // Update section's student count if section is assigned
             if (section) {
               const classId = existingSections.get(section);

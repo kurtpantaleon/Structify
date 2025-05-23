@@ -5,13 +5,14 @@ import fire from '../assets/images/fire.png';
 import coin from '../assets/images/coin.png';
 import heart from '../assets/images/heart.png';
 import hearts from '../assets/images/hearts.png';
-
 import profile from '../assets/images/sample profile.png';
+import { useGameStats } from '../context/gameStatsContext';
 
 function Header() {
   const navigate = useNavigate();
   const [showHeartShop, setShowHeartShop] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const { hearts, coins, rankPoints } = useGameStats();
 
   const handleProfileClick = () => navigate('/viewProfile');
   const handleHeartClick = () => setShowHeartShop((prev) => !prev);
@@ -32,7 +33,7 @@ function Header() {
           className="flex items-center text-white px-3 py-1 rounded-lg cursor-pointer"
         >
           <img src={heart} alt="Heart Icon" className="h-7 w-7" />
-          <span className="ml-1 text-lg">3</span>
+          <span className="ml-1 text-lg">{hearts}</span>
         </div>
 
         {showHeartShop && (
@@ -60,12 +61,12 @@ function Header() {
 
         <div style={{ backgroundColor: '#97BAEC' }} className="flex items-center text-white px-3 py-1 rounded-lg">
           <img src={coin} alt="Coin Icon" className="h-7 w-7" />
-          <span className="ml-1 text-lg">100</span>
+          <span className="ml-1 text-lg">{coins}</span>
         </div>
 
         <div style={{ backgroundColor: '#97BAEC' }} className="flex items-center text-white px-3 py-1 rounded-lg">
           <img src={fire} alt="Fire Icon" className="h-7 w-7" />
-          <span className="ml-1 text-lg">1000</span>
+          <span className="ml-1 text-lg">{rankPoints}</span>
         </div>
 
         <div
