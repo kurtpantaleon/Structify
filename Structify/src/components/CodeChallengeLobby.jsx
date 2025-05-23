@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { db } from '../services/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
@@ -11,14 +11,7 @@ import fireIcon from '../assets/images/fire.png';
 import select from '../assets/images/select.png';
 import icon from '../assets/images/select-icon.png';
 import Match from '../pages/PvP/Match';
-import { io } from 'socket.io-client';
-
-// Initialize socket connection
-const socket = io('http://localhost:3001', {
-  reconnection: true,
-  reconnectionAttempts: 5,
-  timeout: 10000,
-});
+import { getSocket, reconnectSocket } from '../services/socketService';
 
 const styles = {
   challengeButton: "w-90 py-3 px-4 rounded-xl text-white font-semibold flex items-center justify-center gap-x-2 shadow-lg shadow-blue-600/40 hover:shadow-blue-600/70 transition duration-300 ease-in-out bg-no-repeat"
@@ -47,12 +40,31 @@ export default function CodeChallengeLobby() {
   const [searchTime, setSearchTime] = useState(0);
   const [opponent, setOpponent] = useState(null);
   const [userStats, setUserStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [matchHistory, setMatchHistory] = useState([]);
-  const [historyLoading, setHistoryLoading] = useState(false);
-  const navigate = useNavigate();
   const { currentUser: user } = useAuth();
-  // Fetch user stats and match history
+  const [loading, setLoading] = useState(true);
+  const [showTestPanel, setShowTestPanel] = useState(process.env.NODE_ENV !== 'production');
+  const [matchHistory, setMatchHistory] = useState([]);
+  const [winMessage, setWinMessage] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation(); // Add useLocation hook
+  const { state } = navigate?.location || {}; // Access navigation state if available
+  const [historyLoading, setHistoryLoading] = useState(false);
+  
+  // Check for win message in navigation state
+  useEffect(() => {
+    if (location?.state?.message && location?.state?.win) {
+      setWinMessage(location.state.message);
+      // Clear the message after 5 seconds
+      const timer = setTimeout(() => {
+        setWinMessage(null);
+        // Also clear the navigation state
+        navigate(location.pathname, { replace: true });
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [location, navigate]);
+    // Fetch user stats and match history
   useEffect(() => {
     const fetchUserStats = async () => {
       if (user?.uid) {
@@ -80,21 +92,70 @@ export default function CodeChallengeLobby() {
             });
           }
           
-          // Try to fetch match history
+          // Fetch real match history
           setHistoryLoading(true);
           try {
-            // In a real implementation, you would fetch match history from Firestore
-            // For now, we'll use the default matches with the user's name
-            const userDisplayName = userDoc.exists() ? 
-              userDoc.data().name || user.email?.split('@')[0] :
-              user.email?.split('@')[0] || 'User';
+            // Import the getUserMatchHistory function
+            const { getUserMatchHistory } = await import('../utils/challengeStats.js');
             
-            setMatchHistory(defaultMatches.map(match => ({
-              ...match,
-              player1: match.player1.name === 'Bretana' ? 
-                { ...match.player1, name: userDisplayName, avatar: userDoc.exists() ? userDoc.data().avatar || profile : profile } : 
-                match.player1
-            })));
+            // Get real match history from Firestore through our utility function
+            const userHistory = await getUserMatchHistory(user.uid, 5);
+            
+            if (userHistory && userHistory.length > 0) {
+              // Transform the raw match data into the expected format for display
+              const formattedHistory = await Promise.all(userHistory.map(async (match) => {
+                // Try to get opponent info
+                let opponentName = match.opponentName || 'Unknown Player';
+                let opponentAvatar = profile;
+                let opponentRank = 0;
+                
+                try {
+                  if (match.opponentId) {
+                    const opponentDoc = await getDoc(doc(db, 'users', match.opponentId));
+                    if (opponentDoc.exists()) {
+                      const opponentData = opponentDoc.data();
+                      opponentName = opponentData.name || match.opponentName || 'Unknown Player';
+                      opponentAvatar = opponentData.avatar || profile;
+                      opponentRank = opponentData.rank || 0;
+                    }
+                  }
+                } catch (err) {
+                  console.error('Error fetching opponent data:', err);
+                }
+                
+                // Create the formatted match object
+                return {
+                  player1: { 
+                    name: userStats?.name || 'You', 
+                    avatar: userStats?.avatar || profile, 
+                    rank: userStats?.rank || 0 
+                  },
+                  player2: { 
+                    name: opponentName, 
+                    avatar: opponentAvatar, 
+                    rank: opponentRank 
+                  },
+                  winner: match.isWinner ? 'player1' : 'player2',
+                  date: match.timestamp ? match.timestamp.toDate().toISOString() : new Date().toISOString(),
+                  challengeTitle: match.challengeTitle,
+                  challengeDifficulty: match.challengeDifficulty
+                };
+              }));
+              
+              setMatchHistory(formattedHistory);
+            } else {
+              // If there's no history yet, use default matches
+              const userDisplayName = userDoc.exists() ? 
+                userDoc.data().name || user.email?.split('@')[0] :
+                user.email?.split('@')[0] || 'User';
+              
+              setMatchHistory(defaultMatches.map(match => ({
+                ...match,
+                player1: match.player1.name === 'Bretana' ? 
+                  { ...match.player1, name: userDisplayName, avatar: userDoc.exists() ? userDoc.data().avatar || profile : profile } : 
+                  match.player1
+              })));
+            }
           } catch (historyError) {
             console.error('Error fetching match history:', historyError);
             // Fall back to default matches if history fetch fails
@@ -116,8 +177,13 @@ export default function CodeChallengeLobby() {
     };
 
     fetchUserStats();
-  }, [user]);  // Socket connection and events handling
+  }, [user]);  
+
+  // Socket connection and events handling  
   useEffect(() => {
+    // Get or create socket connection
+    const socket = getSocket();
+    
     // Connection event handlers
     const handleConnect = () => {
       console.log('Socket connected successfully');
@@ -179,7 +245,12 @@ export default function CodeChallengeLobby() {
       // You can add queue position or waiting time display here
     };
     
-    // Register all event handlers
+    // Try to connect if not already connected
+    if (!socket.connected) {
+      reconnectSocket();
+    }
+    
+    // Register all socket events
     socket.on('connect', handleConnect);
     socket.on('connect_error', handleConnectError);
     socket.on('disconnect', handleDisconnect);
@@ -189,13 +260,20 @@ export default function CodeChallengeLobby() {
     socket.on('matchError', handleMatchError);
     socket.on('queueUpdate', handleQueueUpdate);
     
-    // Try to connect if not already connected
-    if (!socket.connected) {
-      socket.connect();
-    }
+    // Add heartbeat for keep-alive
+    const heartbeatInterval = setInterval(() => {
+      if (socket.connected) {
+        console.log('Sending heartbeat to server');
+        socket.emit('heartbeat', {});
+      } else if (connectionStatus !== 'error') {
+        console.log('Socket disconnected, attempting to reconnect');
+        reconnectSocket();
+      }
+    }, 30000); // every 30 seconds
     
     // Cleanup on unmount
     return () => {
+      // Remove all event listeners
       socket.off('connect', handleConnect);
       socket.off('connect_error', handleConnectError);
       socket.off('disconnect', handleDisconnect);
@@ -205,9 +283,13 @@ export default function CodeChallengeLobby() {
       socket.off('matchError', handleMatchError);
       socket.off('queueUpdate', handleQueueUpdate);
       
+      // Cancel ongoing search if component unmounts
       if (isSearching) {
         socket.emit('cancelMatch');
       }
+      
+      // Clear the heartbeat interval
+      clearInterval(heartbeatInterval);
     };
   }, [navigate, isSearching, userStats]);
 
@@ -226,14 +308,30 @@ export default function CodeChallengeLobby() {
       if (timer) clearInterval(timer);
     };
   }, [isSearching]);
-  
-  // Find Match handler
+    // Find Match handler
   const handleFindMatch = () => {
     console.log('Find Match button clicked');
     
+    // Get the socket using our centralized service
+    const socket = getSocket();
+    
+    // Check if we need to reconnect
     if (!socket.connected) {
-      console.error('Socket is not connected');
-      setError('Not connected to matchmaking server');
+      console.log('Socket not connected, attempting to reconnect...');
+      reconnectSocket();
+      
+      // Show an error message and retry after reconnecting
+      setError('Connecting to matchmaking server...');
+      
+      // Set up a one-time listener for reconnection
+      socket.io.once('reconnect', () => {
+        console.log('Reconnected, now attempting to find match');
+        // Clear any error messages
+        setError(null);
+        // Try finding match again
+        handleFindMatch();
+      });
+      
       return;
     }
 
@@ -255,27 +353,20 @@ export default function CodeChallengeLobby() {
       name: userStats.name,
       rank: userStats.rank,
       avatar: userStats.avatar,
-      userId: user.uid // Extra data for our tracking purposes
+      userId: user.uid, // Extra data for our tracking purposes
+      difficulty: 'Easy' // You can make this selectable by users in the future
     });
   };
-  
-  // Handler to cancel match search
+    // Handler to cancel match search
   const handleCancelSearch = () => {
-    socket.emit('cancelMatch');
+    const socket = getSocket();
+    if (socket.connected) {
+      socket.emit('cancelMatch');
+    }
     setIsSearching(false);
+    setSearchTime(0);
   };
-
-  // Add socket event listener for queue updates
-  useEffect(() => {
-    socket.on('queueUpdate', (data) => {
-      console.log('Queue update:', data);
-      // You can add queue position or waiting time display here
-    });
-
-    return () => {
-      socket.off('queueUpdate');
-    };
-  }, []);
+  // Queue updates are already handled in the main socket setup
   // Format time for display in the searching UI
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -298,6 +389,21 @@ export default function CodeChallengeLobby() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-900 to-[#0c1836] text-white p-4">      <h1 className="text-4xl font-bold mb-8 bg-clip-text bg-gradient-to-r from-blue-300 to-purple-400 text-transparent">
         PvP Arena
       </h1>
+      
+      {winMessage && (
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-green-600 text-white px-6 py-3 rounded-md mb-6 shadow-lg border border-green-500 flex items-center"
+        >
+          <div className="mr-3 p-2 bg-white rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <span className="font-medium">{winMessage}</span>
+        </motion.div>
+      )}
       
       {error && (
         <motion.div 
@@ -444,9 +550,28 @@ export default function CodeChallengeLobby() {
            <motion.div
   key={idx}
   whileHover={{ scale: 1.02 }}
-  className="relative border-2 border-blue-600 h-20 rounded-xl p-4 bg-cover bg-no-repeat bg-center shadow-md overflow-hidden flex flex-col justify-between"
+  className="relative border-2 border-blue-600 rounded-xl p-4 bg-cover bg-no-repeat bg-center shadow-md overflow-hidden flex flex-col justify-between"
   style={{ backgroundImage: `url(${HistoryBg})` }}
 >
+  {/* Challenge Info - New section */}
+  {match.challengeTitle && (
+    <div className="mb-2 flex justify-between items-center text-sm">
+      <div className="flex items-center">
+        <span className="text-blue-300 font-semibold mr-1">Challenge:</span> 
+        <span className="text-white">{match.challengeTitle}</span>
+      </div>
+      {match.challengeDifficulty && (
+        <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+          match.challengeDifficulty === 'Easy' ? 'bg-green-600/60' : 
+          match.challengeDifficulty === 'Medium' ? 'bg-yellow-600/60' : 
+          'bg-red-600/60'
+        }`}>
+          {match.challengeDifficulty}
+        </span>
+      )}
+    </div>
+  )}
+
   <div className="relative z-10 flex justify-between items-center">
     {/* Player 1 */}
     <div className="flex items-center space-x-3 min-w-[40%]">
@@ -470,7 +595,6 @@ export default function CodeChallengeLobby() {
 
    
     <div className="relative flex items-center justify-center px-4">
-      
       <div className="px-3 py-1 bg-blue-900/50 rounded-full border border-blue-500/30 text-sm font-medium select-none flex items-center justify-center">
         {/* Sword Icon SVG */}
         <svg
@@ -489,7 +613,6 @@ export default function CodeChallengeLobby() {
         </svg>
       </div>
     </div>
-
 
     {/* Player 2 */}
     <div className="flex items-center space-x-3 min-w-[40%] justify-end">
@@ -512,9 +635,18 @@ export default function CodeChallengeLobby() {
     </div>
   </div>
 
-  {/* Match Date */}
-  <div className="text-right text-xs text-blue-300 select-none">
-    {new Date(match.date).toLocaleDateString()}
+  <div className="flex justify-between items-center mt-2 text-xs">
+    {/* Match Date */}
+    <div className="text-blue-300 select-none">
+      {new Date(match.date).toLocaleDateString()}
+    </div>
+    
+    {/* Completion Time if available */}
+    {match.winner === 'player1' && match.completionTime && (
+      <div className="text-green-300">
+        Solved in {Math.floor(match.completionTime / 60)}:{(match.completionTime % 60).toString().padStart(2, '0')}
+      </div>
+    )}
   </div>
 </motion.div>
 
