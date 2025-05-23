@@ -8,6 +8,8 @@ import profile from '../assets/images/sample profile.png';
 import UploadIcon from '../assets/images/Upload Icon.png';
 import { useAuth } from '../context/authContextProvider';
 import ThreeDots from '../assets/images/Threedot Icon.png';
+import { MessageSquare, HelpCircle, Bell, Plus, Check, X, Send, Edit2, Trash2, Calendar, User, Clock, MessageCircle } from 'lucide-react';
+
  
 const Forum = () => {
     const navigate = useNavigate();
@@ -237,10 +239,19 @@ const Forum = () => {
             </button>
         </div>
 
-        <div className="max-w-7xl mx-auto mt-6 p-6 rounded-lg shadow h-[75vh] overflow-y-auto bg-gray-200">
-            <div className="flex justify-end mb-4">
+        <div className="max-w-7xl mx-auto mt-6 p-6 rounded-lg shadow h-[75vh] overflow-y-auto bg-gray-200">            <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center space-x-2">
+                    <div className="flex items-center bg-[#141a35]/80 text-white text-sm font-medium px-4 py-2.5 rounded-lg shadow-md">
+                        <MessageSquare className="w-5 h-5 mr-2 text-blue-400" />
+                        <span>Forum Discussion</span>
+                    </div>
+                    <div className="flex items-center bg-[#141a35]/60 text-white text-sm font-medium px-3 py-2 rounded-lg">
+                        <Bell className="w-4 h-4 mr-2 text-yellow-400" />
+                        <span>Notifications</span>
+                    </div>
+                </div>
                 <button
-                    className="bg-[#141a35] text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-[#1f274d] transition"
+                    className="bg-gradient-to-r from-blue-600 to-blue-800 text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:from-blue-700 hover:to-blue-900 transition shadow-md flex items-center"
                     onClick={() => {
                         setEditPostId(null);
                         setPostType('Posts');
@@ -249,6 +260,7 @@ const Forum = () => {
                         setShowModal(true);
                     }}
                 >
+                    <Plus className="w-4 h-4 mr-2" />
                     Add Post
                 </button>
             </div>
@@ -319,8 +331,14 @@ const Forum = () => {
                         )}
                         {/* Content */}
                         <div className="p-4">
-                            {/* Type of Post */}
-                            <div className="mb-4 rounded-full bg-cyan-600 py-0.5 px-2.5 border border-transparent text-xs text-white transition-all shadow-sm w-20 text-center">
+                            {/* Type of Post */}                            <div className={`mb-4 rounded-full py-1 px-3 border border-transparent text-xs text-white transition-all shadow-sm inline-flex items-center ${
+                                post.type === 'Question' ? 'bg-orange-500' : 
+                                post.type === 'Announcement' ? 'bg-purple-600' : 
+                                'bg-cyan-600'
+                            }`}>
+                                {post.type === 'Question' && <HelpCircle className="w-3 h-3 mr-1" />}
+                                {post.type === 'Announcement' && <Bell className="w-3 h-3 mr-1" />}
+                                {post.type === 'Posts' && <MessageSquare className="w-3 h-3 mr-1" />}
                                 {post.type?.toUpperCase()}
                             </div>
                             {/* Title */}
@@ -350,8 +368,7 @@ const Forum = () => {
                                 </div>
                             </div>
                         </div>
-                        {/* Comment Section */}
-                        <div className="px-4 pb-4 flex items-center">
+                        {/* Comment Section */}                        <div className="px-4 pb-4 flex items-center">
                             <input
                                 type="text"
                                 placeholder="Add class comment..."
@@ -359,7 +376,12 @@ const Forum = () => {
                                 value={commentInputs[post.id] || ''}
                                 onChange={e => setCommentInputs(inputs => ({ ...inputs, [post.id]: e.target.value }))}
                             />
-                            <img src={UploadIcon} alt="upload" className="w-6 h-6 cursor-pointer ml-2 filter invert opacity-30" onClick={() => handleAddComment(post.id)} />
+                            <button 
+                                className="ml-2 p-2 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors text-white" 
+                                onClick={() => handleAddComment(post.id)}
+                            >
+                                <Send className="w-4 h-4" />
+                            </button>
                         </div>
                         {/* Display Comments */}
                         {Array.isArray(post.comments) && post.comments.length > 0 && (

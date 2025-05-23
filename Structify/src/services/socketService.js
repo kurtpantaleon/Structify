@@ -86,11 +86,19 @@ export function isSocketConnected() {
  * @returns {SocketIO.Socket} - Socket.io socket instance
  */
 export function reconnectSocket() {
-  if (socket && !socket.connected) {
-    console.log('Reconnecting socket');
-    socket.connect();
-  } else if (!socket) {
+  try {
+    if (socket && !socket.connected) {
+      console.log('Reconnecting socket');
+      socket.connect();
+    } else if (!socket) {
+      return getSocket(true);
+    }
+    return socket;
+  } catch (error) {
+    console.error('Error reconnecting socket:', error);
+    // Clean up and create a fresh connection
+    if (socket) socket.disconnect();
+    socket = null;
     return getSocket(true);
   }
-  return socket;
 }

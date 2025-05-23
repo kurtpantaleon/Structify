@@ -241,15 +241,8 @@ export const getUserMatchHistory = async (userId, limit = 10) => {
   }
 };
 
-// Export both named exports and default export
+// Export all functions as named exports
 export {
-  updateUserStats,
-  recordMatchResult,
-  getUserMatchHistory
-};
-
-// Keep default export for backward compatibility
-export default {
   updateUserStats,
   recordMatchResult,
   getUserMatchHistory

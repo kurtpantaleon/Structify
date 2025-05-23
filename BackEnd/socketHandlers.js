@@ -125,13 +125,11 @@ function initializeSocket(io) {
         avatar: playerData.avatar,
         userId: playerData.userId,
         difficulty: playerData.difficulty || 'Easy' // Default to Easy if not specified
-      };
-
-      // If there's someone in queue, try to match
+      };      // If there's someone in queue, try to match
       if (queue.size > 0) {
-        // Get the first player in queue
-        const opponent = Array.from(queue)[0];
-        queue.delete(opponent);
+        // Get the first player in queue - properly extract both key and value
+        const [opponentId, opponent] = Array.from(queue.entries())[0];
+        queue.delete(opponentId);
 
         // Create a match
         const matchId = `match_${Date.now()}`;
@@ -170,24 +168,18 @@ function initializeSocket(io) {
           },
           difficulty: matchDifficulty,
           userId: opponent.id // Add the socket ID to track disconnections
-        });
-      } else {
-        // Add player to queue
-        queue.add(player);
+        });      } else {
+        // Add player to queue using Map's set method (not add)
+        queue.set(socket.id, player);
         socket.emit('waitingForMatch');
       }
-    });
-
-    socket.on('cancelMatch', () => {
-      // Remove player from queue if they cancel
-      for (const player of queue) {
-        if (player.id === socket.id) {
-          queue.delete(player);
-          break;
-        }
+    });    socket.on('cancelMatch', () => {
+      // Remove player from queue if they cancel - simplified since we use socket.id as key
+      if (queue.has(socket.id)) {
+        queue.delete(socket.id);
       }
       socket.emit('matchCancelled');
-    });    socket.on('disconnect', () => {
+    });socket.on('disconnect', () => {
       console.log('User disconnected:', socket.id);
       
       // Update socket status to 'waiting' instead of immediately removing
