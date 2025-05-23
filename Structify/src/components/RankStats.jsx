@@ -7,7 +7,7 @@ import ButtonBg from '../assets/images/buttonBg.png';
 import { getDoc, doc } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../services/firebaseConfig';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate  } from 'react-router-dom';
 
 // Weeks data
 const weeks = [
@@ -162,6 +162,13 @@ const RankStats = () => {
     if (!authLoading) fetchUserData();
   }, [userId, authLoading, selectedWeek]);
 
+
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/CodeChallengeLobby'); // <-- replace with your target path
+  };
+
   return (
     <div className={styles.container} style={{ backgroundColor: '#1A2455' }}>
       {/* Profile Header Section */}
@@ -258,16 +265,17 @@ const RankStats = () => {
 
       {/* Challenge Button */}
       <div className="flex justify-center items-center p-3 mt-2">
-        <button
-          className={styles.challengeButton}
-          style={{
-            backgroundImage: `url(${ButtonBg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        >
-          Find Match
-        </button>
+          <button
+        className={styles.challengeButton}
+        style={{
+          backgroundImage: `url(${ButtonBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+        onClick={handleClick}
+      >
+        Find Match
+      </button>
       </div>
     </div>
   );
