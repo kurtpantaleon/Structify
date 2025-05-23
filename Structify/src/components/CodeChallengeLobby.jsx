@@ -346,10 +346,10 @@ export default function CodeChallengeLobby() {
           </button>
         </div>
       )}      <div 
-        className="bg-[#1e2a6b] rounded-2xl shadow-xl p-8 w-full max-w-2xl space-y-6 border-4 border-blue-800 animate-fadeIn"
+        className="bg-[#1e2a6b] rounded-2xl shadow-xl p-8 w-full max-w-4xl space-y-6 border-4 border-blue-800 animate-fadeIn"
       >
         <h2 className="text-2xl font-semibold text-center">An Opponent to test your might</h2>        <div 
-          className="flex justify-between items-center border-4 border-blue-500 h-50 rounded-2xl overflow-hidden bg-cover bg-no-repeat bg-center shadow-lg" 
+          className="flex justify-between items-center border-4 border-blue-500 h-60 rounded-2xl overflow-hidden bg-cover bg-no-repeat bg-center shadow-lg" 
           style={{ backgroundImage: `url(${select})` }}
         >          <div
             className="flex flex-col items-center justify-center w-1/2 p-4 space-y-3 hover:scale-105 transition-transform duration-300"
@@ -427,7 +427,7 @@ export default function CodeChallengeLobby() {
       </div>
       
       <div 
-        className="bg-[#1e2a6b] rounded-2xl shadow-xl p-8 w-full max-w-2xl space-y-4 border-4 border-blue-800 mt-6 animate-fadeIn"
+        className="bg-[#1e2a6b] rounded-2xl shadow-xl p-8 w-full max-w-4xl space-y-4 border-4 border-blue-800 mt-6 animate-fadeIn"
       >
         <div className="flex items-center justify-center mb-2">
           <div className="h-1 w-16 bg-blue-400 rounded-full mr-4"></div>
