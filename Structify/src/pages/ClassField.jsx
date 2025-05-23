@@ -14,17 +14,30 @@ const ClassField = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
-    const section = location.state?.section || defaultSection;
+    const section = location.state?.section;
 
     useEffect(() => {
         const fetchData = async () => {
+            if (!section) {
+                setError('No section selected. Please select a section first.');
+                setLoading(false);
+                return;
+            }
+
+            console.log('Fetching data for section:', section); // Debug log
             setLoading(true);
             setError(null);
             try {
                 // Fetch lessons
                 const lessonsQuery = query(collection(db, 'lessons'), where('section', '==', section));
                 const lessonsSnap = await getDocs(lessonsQuery);
-                setLessons(lessonsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+                const lessonsData = lessonsSnap.docs.map(doc => {
+                    const data = doc.data();
+                    console.log('Lesson data:', { id: doc.id, ...data }); // Debug log for each lesson
+                    return { id: doc.id, ...data };
+                });
+                console.log('All fetched lessons:', lessonsData); // Debug log
+                setLessons(lessonsData);
 
                 // Fetch activities
                 const activitiesQuery = query(collection(db, 'activities'), where('section', '==', section));
@@ -36,12 +49,20 @@ const ClassField = () => {
                 const quizzesSnap = await getDocs(quizzesQuery);
                 setQuizzes(quizzesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
             } catch (err) {
+                console.error('Error fetching data:', err); // Debug log
                 setError('Failed to fetch class materials.');
             }
             setLoading(false);
         };
         fetchData();
     }, [section]);
+
+    // Debug log for rendered lessons
+    useEffect(() => {
+        if (lessons.length > 0) {
+            console.log('Current lessons state:', lessons);
+        }
+    }, [lessons]);
 
     return (
         <div className="bg-blue-100 min-h-screen">
@@ -84,30 +105,36 @@ const ClassField = () => {
                         {lessons.length === 0 ? (
                             <div className="text-gray-500">No lessons available.</div>
                         ) : (
-                            lessons.map(lesson => (
-                                <div key={lesson.id} className="mb-6 p-4 bg-white rounded shadow">
-                                    <h2 className="text-xl font-bold mb-2">{lesson.title}</h2>
-                                    <div className="text-gray-700 mb-2">{lesson.description}</div>
-                                    <div className="mb-2">
-                                        <span className="font-semibold">Week:</span> {lesson.week}
-                                    </div>
-                                    {lesson.media && lesson.media.length > 0 && (
+                            lessons.map(lesson => {
+                                console.log('Rendering lesson:', lesson); // Debug log for each lesson being rendered
+                                return (
+                                    <div key={lesson.id} className="mb-6 p-4 bg-white rounded shadow">
+                                        <h2 className="text-xl font-bold mb-2">{lesson.title}</h2>
+                                        <div className="text-gray-700 mb-2">{lesson.description}</div>
                                         <div className="mb-2">
-                                            <span className="font-semibold">Files:</span>
-                                            <ul className="list-disc ml-6">
-                                                {lesson.media.map((file, idx) => (
-                                                    <li key={idx}>
-                                                        <a href={file.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{file.name}</a>
-                                                    </li>
-                                                ))}
-                                            </ul>
+                                            <span className="font-semibold">Week:</span> {lesson.week}
                                         </div>
-                                    )}
-                                    {lesson.text && (
-                                        <div className="mt-2 text-gray-800 whitespace-pre-line">{lesson.text}</div>
-                                    )}
-                                </div>
-                            ))
+                                        {lesson.media && lesson.media.length > 0 && (
+                                            <div className="mb-2">
+                                                <span className="font-semibold">Files:</span>
+                                                <ul className="list-disc ml-6">
+                                                    {lesson.media.map((file, idx) => {
+                                                        console.log('Rendering file:', file); // Debug log for each file being rendered
+                                                        return (
+                                                            <li key={idx}>
+                                                                <a href={file.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{file.name}</a>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                </ul>
+                                            </div>
+                                        )}
+                                        {lesson.text && (
+                                            <div className="mt-2 text-gray-800 whitespace-pre-line">{lesson.text}</div>
+                                        )}
+                                    </div>
+                                );
+                            })
                         )}
                     </div>
                 )}
