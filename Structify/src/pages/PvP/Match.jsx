@@ -26,6 +26,12 @@ export default function Match() {
   const [showChallenge, setShowChallenge] = useState(false);
   const [opponentQuit, setOpponentQuit] = useState(false);
   
+  // Ensure socket connection is established when component mounts
+  useEffect(() => {
+    // Make sure socket is connected
+    reconnectSocket();
+  }, []);
+  
   // Debug logging
   console.log("Auth context:", auth);
   console.log("Current user:", currentUser);
@@ -38,10 +44,12 @@ export default function Match() {
       navigate('/CodeChallengeLobby');
     }
   }, [location.state, navigate]);
-
   // Listen for opponent disconnection events
   useEffect(() => {
     if (!matchId || !opponent) return;
+    
+    // Get the socket instance
+    const socket = getSocket();
 
     const handleOpponentQuit = (data) => {
       if (data.matchId === matchId || data.userId === opponent.userId) {
@@ -64,9 +72,7 @@ export default function Match() {
     return () => {
       socket.off('opponentQuit', handleOpponentQuit);
     };
-  }, [matchId, opponent, navigate]);
-
-    useEffect(() => {
+  }, [matchId, opponent, navigate]);  useEffect(() => {
     if (!matchId || !opponent) {
       navigate('/CodeChallengeLobby');
       return;
