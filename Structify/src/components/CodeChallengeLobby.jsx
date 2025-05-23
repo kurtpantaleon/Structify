@@ -402,9 +402,7 @@ export default function CodeChallengeLobby() {
               <div className="absolute inset-0 bg-blue-500 opacity-20 animate-pulse"></div>
             </div>
             <span className="text-xl font-bold text-white drop-shadow-md">Find Opponent</span>
-            <p className="text-xs text-blue-300 max-w-[180px] text-center">
-              Click "Find Match" to get randomly matched with an opponent of similar skill.
-            </p>
+            
           </button>
         </div><div className="flex justify-center items-center p-3 mt-2">
           <motion.button
@@ -443,41 +441,84 @@ export default function CodeChallengeLobby() {
           </div>
         ) : (
           matchHistory.map((match, idx) => (
-            <motion.div
-              key={idx}
-              whileHover={{ scale: 1.02 }}
-              className="relative border-2 border-blue-600 rounded-xl p-4 bg-cover bg-center shadow-md overflow-hidden"
-              style={{ backgroundImage: `url(${HistoryBg})` }}
-            >
-              <div className="absolute inset-0 bg-opacity-50 rounded-xl"></div>
-              <div className="relative z-10 flex justify-evenly items-center">
-                <div className="flex items-center space-x-3">
-                  <img src={match.player1.avatar} alt={match.player1.name} className="w-10 h-10 rounded-full border-2 border-white" />
-                  <span className={`font-bold text-lg ${match.winner === 'player1' ? 'text-yellow-300' : ''}`}>
-                    {match.player1.name} {match.winner === 'player1' ? '👑' : ''}
-                  </span>
-                  <div className="flex items-center space-x-1 text-lg text-white-400">
-                    <img src={fireIcon} alt="rank" className="w-10 h-10" />
-                    <span>{match.player1.rank}</span>
-                  </div>
-                </div>
-                <div className="px-4 py-1 bg-blue-900/50 rounded-full border border-blue-500/30 text-sm font-medium">
-                  VS
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-1 text-lg text-white-400">
-                    <span>{match.player2.rank}</span>
-                    <img src={fireIcon} alt="rank" className="w-10 h-10" />
-                  </div>
-                  <span className={`font-bold text-lg ${match.winner === 'player2' ? 'text-yellow-300' : ''}`}>
-                    {match.player2.name} {match.winner === 'player2' ? '👑' : ''}
-                  </span>
-                  <img src={match.player2.avatar} alt={match.player2.name} className="w-10 h-10 rounded-full border-2 border-white" />
-                </div>
-              </div>
-              <div className="mt-2 text-right text-xs text-blue-300">                {new Date(match.date).toLocaleDateString()}
-              </div>
-            </motion.div>
+           <motion.div
+  key={idx}
+  whileHover={{ scale: 1.02 }}
+  className="relative border-2 border-blue-600 h-20 rounded-xl p-4 bg-cover bg-no-repeat bg-center shadow-md overflow-hidden flex flex-col justify-between"
+  style={{ backgroundImage: `url(${HistoryBg})` }}
+>
+  <div className="relative z-10 flex justify-between items-center">
+    {/* Player 1 */}
+    <div className="flex items-center space-x-3 min-w-[40%]">
+      <img
+        src={match.player1.avatar}
+        alt={match.player1.name}
+        className="w-10 h-10 rounded-full border-2 border-white"
+      />
+      <span
+        className={`font-bold text-lg ${
+          match.winner === 'player1' ? 'text-yellow-300' : 'text-white'
+        }`}
+      >
+        {match.player1.name} {match.winner === 'player1' ? '👑' : ''}
+      </span>
+      <div className="flex items-center space-x-1 text-lg text-white/70">
+        <img src={fireIcon} alt="rank" className="w-6 h-6" />
+        <span>{match.player1.rank}</span>
+      </div>
+    </div>
+
+   
+    <div className="relative flex items-center justify-center px-4">
+      
+      <div className="px-3 py-1 bg-blue-900/50 rounded-full border border-blue-500/30 text-sm font-medium select-none flex items-center justify-center">
+        {/* Sword Icon SVG */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-5 h-5 text-white"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M9 19l-6-6 6-6m6 0l6 6-6 6M9 13l6-6"
+          />
+        </svg>
+      </div>
+    </div>
+
+
+    {/* Player 2 */}
+    <div className="flex items-center space-x-3 min-w-[40%] justify-end">
+      <div className="flex items-center space-x-1 text-lg text-white/70">
+        <span>{match.player2.rank}</span>
+        <img src={fireIcon} alt="rank" className="w-6 h-6" />
+      </div>
+      <span
+        className={`font-bold text-lg ${
+          match.winner === 'player2' ? 'text-yellow-300' : 'text-white'
+        }`}
+      >
+        {match.player2.name} {match.winner === 'player2' ? '👑' : ''}
+      </span>
+      <img
+        src={match.player2.avatar}
+        alt={match.player2.name}
+        className="w-10 h-10 rounded-full border-2 border-white"
+      />
+    </div>
+  </div>
+
+  {/* Match Date */}
+  <div className="text-right text-xs text-blue-300 select-none">
+    {new Date(match.date).toLocaleDateString()}
+  </div>
+</motion.div>
+
+
           ))
         )}
       </div>
