@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import Menu from '../assets/images/Threedot Icon.png';
+import { Users, BookOpen, UserCheck } from 'lucide-react';
 
 function SectionCard({ sectionName, instructor, studentCount, onClick, onEdit, onDelete, hideMenu = false }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleMenuClick = (e) => {
     e.stopPropagation();
@@ -12,41 +14,79 @@ function SectionCard({ sectionName, instructor, studentCount, onClick, onEdit, o
   const handleEdit = (e) => {
     e.stopPropagation();
     setShowMenu(false);
-    onEdit?.({ sectionName, instructor, studentCount }); // use optional chaining
+    onEdit?.({ sectionName, instructor, studentCount });
   };
 
   const handleDelete = (e) => {
     e.stopPropagation();
     setShowMenu(false);
-    onDelete?.(); // optional chaining
+    onDelete?.();
   };
+  
+  const closeMenu = () => {
+    setShowMenu(false);
+  };
+
+  // Handle outside clicks
+  React.useEffect(() => {
+    if (showMenu) {
+      const handleOutsideClick = (event) => {
+        if (!event.target.closest('.menu-container')) {
+          closeMenu();
+        }
+      };
+      document.addEventListener('click', handleOutsideClick);
+      return () => document.removeEventListener('click', handleOutsideClick);
+    }
+  }, [showMenu]);
 
   return (
     <div
-      className="w-64 h-60 mb-3 rounded-xl overflow-hidden shadow-md bg-white hover:shadow-lg transition duration-300 cursor-pointer relative"
+      className={`w-full h-auto rounded-lg overflow-hidden shadow-md bg-white hover:shadow-xl transition-all duration-300 cursor-pointer relative ${
+        isHovered ? 'transform scale-[1.02]' : ''
+      }`}
       onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Header Section */}
-      <div className="h-3/5 bg-[#141a35] relative">
+      {/* Class Pattern Background */}
+      <div className="h-32 bg-gradient-to-r from-[#141a35] to-[#2a3363] relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-white opacity-10 pattern-grid-lg"></div>
+        </div>
+        
+        {/* Section Name */}
+        <div className="absolute bottom-4 left-4 right-4">
+          <h3 className="text-xl font-bold text-white truncate">
+            {sectionName}
+          </h3>
+        </div>
+        
+        {/* Menu Button */}
         {!hideMenu && (
-          <div className="absolute top-4 right-4">
-            <button onClick={handleMenuClick}>
-              <img className="h-4 w-1 cursor-pointer hover:scale-120 transition duration-150" src={Menu} alt="Menu" />
+          <div className="absolute top-3 right-3 menu-container">
+            <button 
+              onClick={handleMenuClick}
+              className="p-1.5 rounded-full hover:bg-white/10 transition-all"
+            >
+              <img className="h-4 w-1" src={Menu} alt="Menu" />
             </button>
 
             {showMenu && (
-              <div className="absolute right-0 mt-2 w-36 bg-white border rounded shadow z-50">
+              <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50 overflow-hidden">
                 <button
                   onClick={handleEdit}
-                  className="block w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  className="flex items-center w-full px-4 py-2.5 text-sm text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
                 >
-                  Edit Name
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Edit Class Name
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="block w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50 cursor-pointer"
+                  className="flex items-center w-full px-4 py-2.5 text-sm text-left text-red-600 hover:bg-red-50 transition-colors"
                 >
-                  Delete Section
+                  <Users className="w-4 h-4 mr-2" />
+                  Delete Class
                 </button>
               </div>
             )}
@@ -55,10 +95,19 @@ function SectionCard({ sectionName, instructor, studentCount, onClick, onEdit, o
       </div>
 
       {/* Info Section */}
-      <div className="h-3/5 bg-gray-100 p-3">
-        <h3 className="text-md font-semibold text-gray-800">{sectionName}</h3>
-        <p className="text-sm text-gray-600">Instructor: {instructor}</p>
-        <p className="text-sm text-gray-600">Students: {studentCount}</p>
+      <div className="p-4 bg-white border-t border-gray-200">
+        <div className="flex items-center text-gray-600 mb-2">
+          <UserCheck className="w-4 h-4 mr-2 text-blue-600" />
+          <p className="text-sm">
+            <span className="font-medium">Instructor:</span> <span className="text-gray-700">{instructor}</span>
+          </p>
+        </div>
+        <div className="flex items-center text-gray-600">
+          <Users className="w-4 h-4 mr-2 text-blue-600" />
+          <p className="text-sm">
+            <span className="font-medium">Students:</span> <span className="text-gray-700">{studentCount}</span>
+          </p>
+        </div>
       </div>
     </div>
   );

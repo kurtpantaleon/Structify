@@ -34,23 +34,44 @@ const Forum = () => {
             setPosts(postsData);
         };
         fetchPosts();
-    }, []);
-
-    const openEditModal = (post) => {
+    }, []);    const openEditModal = (post) => {
+        // Check if current user is the post owner
+        if (!currentUser || !post.user || post.user.uid !== currentUser.uid) {
+            console.error("You don't have permission to edit this post");
+            alert("You don't have permission to edit this post");
+            return;
+        }
+        
         setEditPostId(post.id);
         setPostType(post.type);
         setTitle(post.title);
         setDescription(post.description);
         setShowModal(true);
         setMenuOpenId(null);
-    };
-
-    const handleAddPost = async (e) => {
+    };    const handleAddPost = async (e) => {
         e.preventDefault();
         if (!currentUser) return;
         try {
             if (editPostId) {
-                // Edit mode
+                // Edit mode - verify ownership before updating
+                const postDoc = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
+                const post = postDoc.docs.find(doc => doc.id === editPostId);
+                
+                if (!post) {
+                    console.error("Post not found");
+                    alert("Post not found");
+                    return;
+                }
+                
+                const postData = post.data();
+                
+                // Check if current user is the post owner
+                if (!postData.user || postData.user.uid !== currentUser.uid) {
+                    console.error("You don't have permission to edit this post");
+                    alert("You don't have permission to edit this post");
+                    return;
+                }
+                
                 const postRef = doc(db, "posts", editPostId);
                 await updateDoc(postRef, {
                     type: postType,
@@ -86,17 +107,39 @@ const Forum = () => {
             console.error("Error saving post:", error);
             alert("Failed to save post. Please try again.");
         }
-    };
-
-    const handleDeletePost = async (postId) => {
-        await deleteDoc(doc(db, "posts", postId));
-        setMenuOpenId(null);
-        setPostToDelete(null);
-        // Refetch posts after delete
-        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
-        const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setPosts(postsData);
+    };    const handleDeletePost = async (postId) => {
+        try {
+            // Get the post to verify ownership
+            const postDoc = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
+            const post = postDoc.docs.find(doc => doc.id === postId);
+            
+            if (!post) {
+                console.error("Post not found");
+                return;
+            }
+            
+            const postData = post.data();
+            
+            // Check if current user is the post owner
+            if (!currentUser || !postData.user || postData.user.uid !== currentUser.uid) {
+                console.error("You don't have permission to delete this post");
+                alert("You don't have permission to delete this post");
+                return;
+            }
+            
+            await deleteDoc(doc(db, "posts", postId));
+            setMenuOpenId(null);
+            setPostToDelete(null);
+            
+            // Refetch posts after delete
+            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setPosts(postsData);
+        } catch (error) {
+            console.error("Error deleting post:", error);
+            alert("Failed to delete post. Please try again.");
+        }
     };
 
     const handleAddComment = async (postId) => {
@@ -314,19 +357,27 @@ const Forum = () => {
             )}
             <div className="flex flex-wrap justify-center gap-4">
                 {posts.map(post => (
-                    <div key={post.id} className="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96">
-                        {/* Three-dot menu icon */}
-                        <button
-                            className="absolute top-3 right-3 z-20"
-                            onClick={() => setMenuOpenId(menuOpenId === post.id ? null : post.id)}
-                        >
-                            <img src={ThreeDots} alt="menu" className="w-1 h-4 filter invert opacity-40 cursor-pointer" />
-                        </button>
+                    <div key={post.id} className="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96">                        {/* Three-dot menu icon - only show for post owner */}
+                        {currentUser && post.user && post.user.uid === currentUser.uid && (
+                            <button
+                                className="absolute top-3 right-3 z-20"
+                                onClick={() => setMenuOpenId(menuOpenId === post.id ? null : post.id)}
+                            >
+                                <img src={ThreeDots} alt="menu" className="w-1 h-4 filter invert opacity-40 cursor-pointer" />
+                            </button>
+                        )}
                         {/* Dropdown menu */}
                         {menuOpenId === post.id && (
                             <div className="absolute top-10 right-3 bg-white border border-slate-200 rounded shadow-lg z-30 w-28">
-                                <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => openEditModal(post)}>Edit</button>
-                                <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 cursor-pointer" onClick={() => setPostToDelete(post.id)}>Delete</button>
+                                {currentUser && post.user && post.user.uid === currentUser.uid && (
+                                    <>
+                                        <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => openEditModal(post)}>Edit</button>
+                                        <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 cursor-pointer" onClick={() => setPostToDelete(post.id)}>Delete</button>
+                                    </>
+                                )}
+                                {(!currentUser || !post.user || post.user.uid !== currentUser.uid) && (
+                                    <div className="px-4 py-2 text-gray-500 text-sm">No options</div>
+                                )}
                             </div>
                         )}
                         {/* Content */}
