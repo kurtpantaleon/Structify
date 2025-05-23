@@ -156,10 +156,11 @@ function Leaderboard() {
                   <div className="w-1/4 text-center font-bold">
                     {index === 0 ? '🏆' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
                   </div>
-                  <div className="w-1/2 flex items-center justify-center gap-2">
+                    <div className="flex items-center  gap-2 text-left pl-2 ml-15 w-full">
                     <img src={profile} alt="profile" className="w-7 h-7 rounded-full border-2 border-white" />
-                    <span className="font-semibold text-white text-sm truncate">{student.name}</span>
+                    <span className="font-semibold text-white text-sm truncate text-left w-full">{student.name}</span>
                   </div>
+
                   <div className="w-1/4 text-center text-yellow-300 font-extrabold text-sm">{student.rankPoints}</div>
                 </motion.div>
               ))}
