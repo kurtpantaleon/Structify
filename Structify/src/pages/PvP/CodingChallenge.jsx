@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Code, CheckCircle2, Clock, Trophy, AlertTriangle, Terminal, Heart, Zap, ArrowLeft } from 'lucide-react';
 import { getSocket, reconnectSocket } from '../../services/socketService';
-
+ 
 const challenges = [
   {
     id: 1,
@@ -381,6 +381,7 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
   };
   
   const runTests = async () => {
+    const socket = getSocket();
     setIsSubmitting(true);
     setOutput("");
     setError(null);
