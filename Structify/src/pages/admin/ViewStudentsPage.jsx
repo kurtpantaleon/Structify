@@ -46,7 +46,7 @@ function ViewStudentsPage() {
         console.error('Error fetching students:', error);
       }
     };
-
+ 
     fetchStudents();
   }, []);
   // Load sections when bulk upload modal opens
