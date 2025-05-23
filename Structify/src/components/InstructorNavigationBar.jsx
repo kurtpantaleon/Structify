@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import HomeIcon from "../assets/images/Home Icon.png"; 
 import Leaderboard from "../assets/images/Leaderboard Icon.png";
 import PvPIcon from "../assets/images/PvP Icon.png";
-import ForumIcon from "../assets/images/Forum Icon.png";
+import ForumIcon from "../assets/images/Forum Icon.png"; 
+import AddIcon from "../assets/images/Add Icon.png";
 
 const InstructorNavigationBar = () => {
   return (
@@ -12,8 +13,9 @@ const InstructorNavigationBar = () => {
       <nav className="flex flex-col space-y-8 gap-y-3">
         <NavItem to="/InstructorPage" icon={HomeIcon} label="Home" />
         <NavItem to="/Leaderboard" icon={Leaderboard} label="Leaderboard" />
-        <NavItem to="" icon={PvPIcon} label="PvP" /> 
+        <NavItem to="/CodeChallengeLobby" icon={PvPIcon} label="PvP" /> 
         <NavItem to="/Forum" icon={ForumIcon} label="Forum" />
+        <NavItem to="/AddLessonMaterials" icon={AddIcon} label="Add" />
       </nav>
     </div>
   );

@@ -269,6 +269,7 @@ import ViewProfile from './pages/ViewProfile'
 import InstructorPage from './pages/instructor/InstructorPage'
 import ViewScoresPage from './pages/instructor/ViewScoresPage'
 import ViewStudentLists from './pages/instructor/ViewStudentLists'
+import AddLessonMaterials from './pages/instructor/AddLessonMaterials'
 
 import Leaderboard from './pages/Leaderboard'
 import Forum from './pages/Forum'
@@ -545,11 +546,13 @@ function App() {
       {/*Instructor Page */}
       <Route path="/ViewScoresPage" element={<ProtectedRoute allowedRoles={['instructor']}><ViewScoresPage /></ProtectedRoute>} />
       <Route path="/ViewStudentLists" element={<ProtectedRoute allowedRoles={['instructor']}><ViewStudentLists /></ProtectedRoute>} />
-
+      <Route path="/AddLessonMaterials" element={<ProtectedRoute allowedRoles={['instructor']}><AddLessonMaterials /></ProtectedRoute>} />
+      
       {/* Generic Pages */}
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="/ViewProfile" element={<ViewProfile />} />
-      <Route path="/Leaderboard" element={<Leaderboard />} />        <Route path="/Forum" element={<Forum />} />
+      <Route path="/Leaderboard" element={<Leaderboard />} />        
+      <Route path="/Forum" element={<Forum />} />
       <Route path="/CodeChallengeLobby" element={<CodeChallengeLobby />} />
       <Route path="/PvP/Match" element={<Match />} />
     </Routes> 
