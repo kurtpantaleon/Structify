@@ -274,7 +274,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      <main className="w-mx-auto mt-7 p-6 rounded-2xl shadow-2xl flex-grow relative bg-gradient-to-tr from-blue-800 to-blue-900 animated-border">
+      <main className="max-w-7xl  mx-auto p-6 rounded-2xl shadow-2xl flex-grow relative bg-gradient-to-tr from-blue-800 to-blue-900 animated-border">
         <div className="flex justify-end pb-3">
           <button
             onClick={() => setIsPopupOpen(true)}
