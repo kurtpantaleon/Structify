@@ -9,7 +9,6 @@ import {
   setDoc, 
   addDoc, 
   increment, 
-  arrayUnion, 
   serverTimestamp 
 } from 'firebase/firestore';
 
@@ -108,9 +107,8 @@ export const getUserMatchHistory = async (userId, limit = 10) => {
       console.error('Cannot get match history: No user ID provided');
       return [];
     }
-    
-    // Get match history from user's subcollection
-    const { collection, query, getDocs, where, orderBy, limit: limitQuery, getDoc, doc } = await import('firebase/firestore');
+      // Get match history from user's subcollection
+    const { collection, query, getDocs, where, orderBy, limit: limitQuery } = await import('firebase/firestore');
     
     // First try to get from user's matchHistory subcollection
     const userMatchesRef = collection(db, 'users', userId, 'matchHistory');
@@ -241,9 +239,11 @@ export const getUserMatchHistory = async (userId, limit = 10) => {
   }
 };
 
-// Export all functions as named exports
-export {
+// Already exported above using individual named exports
+// No need for duplicate exports
+
+// Default export for backward compatibility
+export default {
   updateUserStats,
-  recordMatchResult,
-  getUserMatchHistory
-};
+  recordMatchResult,  getUserMatchHistory
+}
