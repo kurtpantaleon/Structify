@@ -8,7 +8,7 @@ import profile from '../assets/images/sample profile.png';
 import UploadIcon from '../assets/images/Upload Icon.png';
 import { useAuth } from '../context/authContextProvider';
 import ThreeDots from '../assets/images/Threedot Icon.png';
-
+ 
 const Forum = () => {
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);

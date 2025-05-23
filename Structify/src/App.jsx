@@ -275,7 +275,8 @@ import Leaderboard from './pages/Leaderboard'
 import Forum from './pages/Forum'
 import CodeChallengeLobby from './components/CodeChallengeLobby'
 import Match from './pages/PvP/Match'
- 
+import ClassField from './pages/ClassField'
+
 function App() {
   const { currentUser, role } = useContext(AuthContext);
 
@@ -555,6 +556,7 @@ function App() {
       <Route path="/Forum" element={<Forum />} />
       <Route path="/CodeChallengeLobby" element={<CodeChallengeLobby />} />
       <Route path="/PvP/Match" element={<Match />} />
+      <Route path="/ClassField" element={<ClassField />} />
     </Routes> 
   )
 }

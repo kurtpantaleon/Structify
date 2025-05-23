@@ -5,6 +5,7 @@ import Leaderboard from "../assets/images/Leaderboard Icon.png";
 import PvPIcon from "../assets/images/PvP Icon.png";
 import ForumIcon from "../assets/images/Forum Icon.png"; 
 import AddIcon from "../assets/images/Add Icon.png";
+import ClassFieldIcon from "../assets/images/Instructor Materials Icon.png";
 
 const InstructorNavigationBar = () => {
   return (
@@ -16,6 +17,7 @@ const InstructorNavigationBar = () => {
         <NavItem to="/CodeChallengeLobby" icon={PvPIcon} label="PvP" /> 
         <NavItem to="/Forum" icon={ForumIcon} label="Forum" />
         <NavItem to="/AddLessonMaterials" icon={AddIcon} label="Add" />
+        <NavItem to="/ClassField" icon={ClassFieldIcon} label="Class Field" />
       </nav>
     </div>
   );
