@@ -1,71 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  collection,
-  getDocs,
-  addDoc,
-  deleteDoc,
-  updateDoc,
-  doc,
-  query,
-  where,
-  serverTimestamp,
-} from 'firebase/firestore';
-import Confetti from 'react-confetti';
+import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
-
-function Badge({ text }) {
-  return (
-    <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 px-6 py-3 rounded-full shadow-lg animate-pulse select-none z-50 font-semibold tracking-wide flex items-center space-x-2">
-      <span className="text-xl">🔥</span>
-      <span>{text}</span>
-    </div>
-  );
-}
-
-function Modal({ children, onClose, title, small = false }) {
-  return (
-    <div
-      className="fixed inset-0 bg-[#1e2a5e]/90 flex justify-center items-center z-50 backdrop-blur-sm"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        className={`relative p-6 rounded-xl shadow-xl w-full max-w-${small ? 'sm' : 'md'} bg-gradient-to-tr from-blue-800 to-blue-900 animated-border`}
-        onClick={(e) => e.stopPropagation()}
-        style={{ animation: 'fadeInScale 0.3s ease forwards' }}
-      >
-        <h2 className="text-2xl font-bold mb-4 text-white">{title}</h2>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function ModalButtons({ onCancel, onConfirm, confirmText, confirmClass }) {
-  return (
-    <div className="flex justify-end space-x-4 mt-6">
-      <button
-        onClick={onCancel}
-        className="relative overflow-hidden px-5 py-2 rounded font-semibold shadow-md transition-transform duration-300 hover:scale-105 focus:outline-none focus:ring-4 bg-blue-700 hover:bg-blue-800 text-white"
-      >
-        Cancel
-      </button>
-      <button
-        onClick={onConfirm}
-        className={`relative overflow-hidden px-5 py-2 rounded font-semibold shadow-md transition-transform duration-300 hover:scale-105 focus:outline-none focus:ring-4 text-white ${confirmClass}`}
-      >
-        {confirmText}
-      </button>
-    </div>
-  );
-}
-
-export default function AdminPage() {
+import SectionCard from '../../components/AdminSectionCard';
+ 
+function AdminPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -80,17 +22,15 @@ export default function AdminPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [sectionToDelete, setSectionToDelete] = useState(null);
 
-  const [affectedUsers, setAffectedUsers] = useState({ students: 0, instructor: null });
-  const [deleteStudents, setDeleteStudents] = useState(false);
-
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [badgeText, setBadgeText] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const classSnapshot = await getDocs(collection(db, 'classes'));
-        const classData = classSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const classData = classSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
         const updatedSections = await Promise.all(
           classData.map(async (section) => {
@@ -114,35 +54,27 @@ export default function AdminPage() {
             return {
               ...section,
               instructor: instructorName,
-              studentCount,
+              studentCount: studentCount,
             };
           })
         );
 
-        updatedSections.sort((a, b) => a.sectionName.localeCompare(b.sectionName));
         setSections(updatedSections);
+        updatedSections.sort((a, b) => a.sectionName.localeCompare(b.sectionName));
       } catch (error) {
         console.error('Error fetching data: ', error);
       }
     };
+
     fetchData();
   }, []);
-
-  const triggerSuccess = (text) => {
-    setBadgeText(text);
-    setShowConfetti(true);
-
-    setTimeout(() => {
-      setShowConfetti(false);
-      setBadgeText('');
-    }, 3000);
-  };
 
   const handleAddClass = async () => {
     if (newClassName.trim() === '') {
       alert('Please enter a class name');
       return;
     }
+
     const newSection = {
       sectionName: newClassName,
       instructor: 'TBA',
@@ -155,7 +87,6 @@ export default function AdminPage() {
       setSections([...sections, { id: docRef.id, ...newSection }]);
       setIsPopupOpen(false);
       setNewClassName('');
-      triggerSuccess('Class Added!');
     } catch (error) {
       console.error('Error adding class: ', error);
     }
@@ -169,23 +100,29 @@ export default function AdminPage() {
 
   const handleSaveEdit = async () => {
     if (!editedSection || editedName.trim() === '') return;
+
     try {
       const sectionRef = doc(db, 'classes', editedSection.id);
       await updateDoc(sectionRef, { sectionName: editedName });
 
+      // update local state
       setSections((prev) =>
-        prev.map((sec) => (sec.id === editedSection.id ? { ...sec, sectionName: editedName } : sec))
+        prev.map((sec) =>
+          sec.id === editedSection.id ? { ...sec, sectionName: editedName } : sec
+        )
       );
+
       setIsEditModalOpen(false);
       setEditedSection(null);
       setEditedName('');
-      triggerSuccess('Section Edited!');
     } catch (error) {
       console.error('Error updating section name:', error);
     }
-  };
+  };  const [affectedUsers, setAffectedUsers] = useState({ students: 0, instructor: null });
+  const [deleteStudents, setDeleteStudents] = useState(false);
 
   const handleDeleteSection = async (section) => {
+    // Get count of affected users
     try {
       const studentQuery = query(
         collection(db, 'users'),
@@ -200,12 +137,12 @@ export default function AdminPage() {
 
       const [studentSnapshot, instructorSnapshot] = await Promise.all([
         getDocs(studentQuery),
-        getDocs(instructorQuery),
+        getDocs(instructorQuery)
       ]);
 
       setAffectedUsers({
         students: studentSnapshot.size,
-        instructor: instructorSnapshot.docs[0]?.data()?.name || null,
+        instructor: instructorSnapshot.docs[0]?.data()?.name || null
       });
     } catch (error) {
       console.error('Error checking affected users:', error);
@@ -214,11 +151,11 @@ export default function AdminPage() {
     setSectionToDelete(section);
     setShowDeleteModal(true);
   };
-
-  const confirmDeleteSection = async () => {
+    const confirmDeleteSection = async () => {
     if (!sectionToDelete) return;
-
+  
     try {
+      // 1. Get all users in this section
       const studentsQuery = query(
         collection(db, 'users'),
         where('section', '==', sectionToDelete.sectionName),
@@ -229,268 +166,188 @@ export default function AdminPage() {
         where('section', '==', sectionToDelete.sectionName),
         where('role', '==', 'instructor')
       );
-
+      
       const [studentSnapshot, instructorSnapshot] = await Promise.all([
         getDocs(studentsQuery),
-        getDocs(instructorsQuery),
+        getDocs(instructorsQuery)
       ]);
 
+      // 2. Handle students based on deleteStudents option
       const studentUpdates = deleteStudents
-        ? studentSnapshot.docs.map((doc) => deleteDoc(doc.ref))
-        : studentSnapshot.docs.map((doc) => updateDoc(doc.ref, { section: '' }));
+        ? studentSnapshot.docs.map(doc => deleteDoc(doc.ref))
+        : studentSnapshot.docs.map(doc => updateDoc(doc.ref, { section: '' }));
 
-      const instructorUpdates = instructorSnapshot.docs.map((doc) =>
+      // 3. Always unassign instructors
+      const instructorUpdates = instructorSnapshot.docs.map(doc => 
         updateDoc(doc.ref, { section: '' })
-      );
-
+      );      // 4. Execute all updates and delete the section
       await Promise.all([
         ...studentUpdates,
         ...instructorUpdates,
-        deleteDoc(doc(db, 'classes', sectionToDelete.id)),
+        deleteDoc(doc(db, 'classes', sectionToDelete.id))
       ]);
 
       setSections((prev) => prev.filter((s) => s.id !== sectionToDelete.id));
       setShowDeleteModal(false);
       setSectionToDelete(null);
       setAffectedUsers({ students: 0, instructor: null });
-      setDeleteStudents(false);
-      triggerSuccess('Section Deleted!');
     } catch (error) {
       console.error('Error deleting section:', error);
       alert('Failed to delete section.');
     }
-  };
+  };  
 
   return (
-    <div className="min-h-screen relative font-sans bg-gradient-to-br from-blue-900 to-blue-700 overflow-hidden text-white flex flex-col">
-      {/* Crystal animated background */}
-      <div className="fixed inset-0 pointer-events-none crystal-bg -z-10" />
-
+    <div className="min-h-screen bg-gray-200 relative">
       <Header />
       <AdminSubHeading toggleNav={() => setIsNavOpen(!isNavOpen)} title="Class" />
       {isNavOpen && (
-        <div className="w-20 border-r border-blue-700 bg-blue-800 shadow-lg animated-border">
+        <div className="w-20 border-r border-white/20 bg-[#141a35]">
           <AdminNavigationBar />
         </div>
       )}
 
-      <main className="max-w-7xl  mx-auto p-6 rounded-2xl shadow-2xl flex-grow relative bg-gradient-to-tr from-blue-800 to-blue-900 animated-border">
-        <div className="flex justify-end pb-3">
+      <div className="max-w-7xl mx-auto mt-7 bg-white p-6 rounded-lg shadow h-[75vh] flex flex-col relative">
+        <div className="flex justify-end py-3">
           <button
             onClick={() => setIsPopupOpen(true)}
-            className="relative overflow-hidden px-4 py-2 rounded-md font-semibold shadow-lg bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-400 transition-transform duration-300 transform hover:scale-110 hover:shadow-[0_0_15px_5px_rgba(34,197,94,0.8)]"
+            className="bg-[#141a35] text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-[#1f274d] transition"
           >
             Add Class
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-h-[75vh] overflow-y-auto pr-4 custom-scrollbar">
-          {sections.map((section) => (
-            <div
-              key={section.id}
-              onClick={() => navigate('/ViewClassPage', { state: { section } })}
-              className="relative cursor-pointer rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden transition-transform duration-300 hover:scale-[1.04] hover:shadow-[0_0_25px_8px_rgba(59,130,246,0.75)] animated-border"
-            >
-              <div className="absolute inset-0 pointer-events-none shimmer-overlay rounded-xl" />
-              <div className="p-5 space-y-2 relative z-10">
-                <h3 className="text-white font-semibold text-lg">{section.sectionName}</h3>
-                <p className="text-blue-200 text-sm">Instructor: {section.instructor}</p>
-                <p className="text-blue-200 text-sm">Students: {section.studentCount}</p>
-              </div>
-
-              <div className="absolute top-3 right-3 flex flex-col space-y-2 z-20">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEditSection(section);
-                  }}
-                  className="p-1 rounded bg-blue-600/70 hover:bg-blue-700 transition-colors text-white"
-                  aria-label="Edit Section"
-                >
-                  &#9998;
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteSection(section);
-                  }}
-                  className="p-1 rounded bg-red-600/70 hover:bg-red-700 transition-colors text-white"
-                  aria-label="Delete Section"
-                >
-                  &#128465;
-                </button>
-              </div>
-            </div>
+        <div className="p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pr-2 flex-grow">
+          {sections.map((item) => (
+            <SectionCard
+              key={item.id}
+              sectionName={item.sectionName}
+              instructor={item.instructor}
+              studentCount={item.studentCount}
+              onClick={() => navigate('/ViewClassPage', { state: { section: item } })}
+              onEdit={() => handleEditSection(item)}
+              onDelete={() => handleDeleteSection(item)}
+            />
           ))}
         </div>
-      </main>
 
-      {/* Add Class Modal */}
-      {isPopupOpen && (
-        <Modal onClose={() => setIsPopupOpen(false)} title="Add Class" small>
-          <input
-            type="text"
-            value={newClassName}
-            onChange={(e) => setNewClassName(e.target.value)}
-            placeholder="Enter Class Name"
-            className="w-full border border-green-400 rounded px-3 py-2 bg-blue-900 text-white font-semibold"
-            autoFocus
-          />
-          <ModalButtons
-            onCancel={() => setIsPopupOpen(false)}
-            onConfirm={handleAddClass}
-            confirmText="Add"
-            confirmClass="bg-green-600 hover:bg-green-700"
-          />
-        </Modal>
-      )}
-
-      {/* Edit Section Modal */}
-      {isEditModalOpen && (
-        <Modal onClose={() => setIsEditModalOpen(false)} title="Edit Section Name" small>
-          <input
-            type="text"
-            value={editedName}
-            onChange={(e) => setEditedName(e.target.value)}
-            className="w-full border border-green-400 rounded px-3 py-2 bg-blue-900 text-white font-semibold"
-            autoFocus
-          />
-          <ModalButtons
-            onCancel={() => setIsEditModalOpen(false)}
-            onConfirm={handleSaveEdit}
-            confirmText="Save"
-            confirmClass="bg-green-600 hover:bg-green-700"
-          />
-        </Modal>
-      )}
-
-      {/* Delete Section Modal */}
-      {showDeleteModal && (
-        <Modal onClose={() => setShowDeleteModal(false)} title="Delete Section" small>
-          <p className="text-white mb-4">
-            Are you sure you want to delete{' '}
-            <span className="font-semibold text-orange-400">{sectionToDelete?.sectionName}</span>?
-          </p>
-          {(affectedUsers.students > 0 || affectedUsers.instructor) && (
-            <div className="bg-orange-400 bg-opacity-20 border border-orange-400 rounded-md p-3 mb-4 text-orange-400 text-sm">
-              <p className="font-semibold mb-1">Warning: This will affect:</p>
-              <ul className="list-disc list-inside">
-                {affectedUsers.students > 0 && (
-                  <li>
-                    {affectedUsers.students} student
-                    {affectedUsers.students !== 1 ? 's' : ''} will be{' '}
-                    {deleteStudents ? 'deleted' : 'unassigned'}
-                  </li>
-                )}
-                {affectedUsers.instructor && (
-                  <li>Instructor {affectedUsers.instructor} will be unassigned</li>
-                )}
-              </ul>
-              {affectedUsers.students > 0 && (
-                <label className="flex items-center mt-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={deleteStudents}
-                    onChange={(e) => setDeleteStudents(e.target.checked)}
-                    className="h-4 w-4 text-orange-400 rounded border-blue-800 focus:ring-orange-400"
-                  />
-                  <span className="ml-2 text-orange-400 text-sm">Also delete student accounts</span>
-                </label>
-              )}
+        {/* Add Class Modal */}
+        {isPopupOpen && (
+          <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg w-80 space-y-4">
+              <h2 className="text-lg font-semibold">Add Class</h2>
+              <input
+                type="text"
+                value={newClassName}
+                onChange={(e) => setNewClassName(e.target.value)}
+                placeholder="Enter Class Name"
+                className="w-full border border-gray-300 rounded px-3 py-2"
+              />
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => setIsPopupOpen(false)}
+                  className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddClass}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Add
+                </button>
+              </div>
             </div>
-          )}
-          <ModalButtons
-            onCancel={() => {
-              setShowDeleteModal(false);
-              setSectionToDelete(null);
-              setAffectedUsers({ students: 0, instructor: null });
-              setDeleteStudents(false);
-            }}
-            onConfirm={confirmDeleteSection}
-            confirmText="Delete"
-            confirmClass="bg-orange-400 hover:bg-orange-500"
-          />
-        </Modal>
-      )}
+          </div>
+        )}
 
-      {badgeText && <Badge text={badgeText} />}
-      {showConfetti && (
-        <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} />
-      )}
+        {/* Edit Section Modal */}
+        {isEditModalOpen && (
+          <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg w-96 space-y-4">
+              <h2 className="text-lg font-semibold">Edit Section Name</h2>
+              <input
+                type="text"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+              />
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
-      {/* Animations keyframes */}
-      <style>{`
-        /* Animated glowing moving border */
-        .animated-border {
-          position: relative;
-          border-radius: 1rem;
-          z-index: 0;
-          padding: 4px; /* for border space */
-        }
-        .animated-border::before {
-          content: '';
-          pointer-events: none;
-          position: absolute;
-          inset: 0;
-          border-radius: 1rem;
-          padding: 4px;
-          background: linear-gradient(270deg, #3b82f6, #2563eb, #3b82f6, #2563eb);
-          background-size: 600% 600%;
-          animation: borderShift 10s linear infinite;
-          -webkit-mask:
-            linear-gradient(#fff 0 0) content-box,
-            linear-gradient(#fff 0 0);
-          -webkit-mask-composite: destination-out;
-          mask-composite: exclude;
-          z-index: -1;
-        }
-        @keyframes borderShift {
-          0% {
-            background-position: 0% 50%;
-          }
-          100% {
-            background-position: 100% 50%;
-          }
-        }
-        /* Shimmer effect for crystal card */
-        .shimmer-overlay {
-          background: linear-gradient(
-            115deg,
-            rgba(255, 255, 255, 0.15) 20%,
-            rgba(255, 255, 255, 0.3) 50%,
-            rgba(255, 255, 255, 0.15) 80%
-          );
-          background-size: 200% 200%;
-          animation: shimmerMove 3s ease-in-out infinite;
-          border-radius: inherit;
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          z-index: 1;
-        }
-        @keyframes shimmerMove {
-          0% {
-            background-position: 200% 0;
-          }
-          100% {
-            background-position: -200% 0;
-          }
-        }
-        /* Custom scrollbar */
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(59, 130, 246, 0.5);
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(59, 130, 246, 0.8);
-        }
-      `}</style>
+        {/* Delete Section Modal */}
+        {showDeleteModal && (          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+            <div className="bg-white px-6 py-5 rounded-lg shadow-md w-full max-w-sm text-center">
+              <h3 className="text-lg font-semibold text-[#141a35] mb-2">Delete Section</h3>
+              <p className="text-gray-700 mb-4">
+                Are you sure you want to delete <span className="font-medium">{sectionToDelete?.sectionName}</span>?
+              </p>              {(affectedUsers.students > 0 || affectedUsers.instructor) && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-4 text-left">
+                  <p className="text-sm text-yellow-800 font-medium mb-1">Warning: This will affect:</p>
+                  <ul className="text-sm text-yellow-700 list-disc list-inside mb-3">
+                    {affectedUsers.students > 0 && (
+                      <li>{affectedUsers.students} student{affectedUsers.students !== 1 ? 's' : ''} will be {deleteStudents ? 'deleted' : 'unassigned'}</li>
+                    )}
+                    {affectedUsers.instructor && (
+                      <li>Instructor {affectedUsers.instructor} will be unassigned</li>
+                    )}
+                  </ul>
+                  {affectedUsers.students > 0 && (
+                    <div className="flex items-center mt-2">
+                      <input
+                        type="checkbox"
+                        id="deleteStudents"
+                        checked={deleteStudents}
+                        onChange={(e) => setDeleteStudents(e.target.checked)}
+                        className="h-4 w-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
+                      />
+                      <label htmlFor="deleteStudents" className="ml-2 text-sm text-red-700">
+                        Also delete student accounts
+                      </label>
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="flex justify-center gap-3">
+                <button                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setSectionToDelete(null);
+                    setAffectedUsers({ students: 0, instructor: null });
+                    setDeleteStudents(false);
+                  }}
+                  className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteSection}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
+
+export default AdminPage;
