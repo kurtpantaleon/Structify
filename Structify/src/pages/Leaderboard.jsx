@@ -91,7 +91,7 @@ function Leaderboard() {
         {celebrate && <Confetti numberOfPieces={10} recycle={false} />}
 
         <div className="pt-10 text-center text-5xl text-yellow-300 font-bold tracking-widest mb-6">
-          🏆 LEADER BOARD 🏆
+          🏆 LEADERBOARD 🏆
         </div>
 
         <div className="flex justify-center mb-8">
