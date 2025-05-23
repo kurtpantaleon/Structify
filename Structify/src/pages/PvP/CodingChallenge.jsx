@@ -8,9 +8,34 @@ const challenges = [
     id: 1,
     title: "FizzBuzz Challenge",
     description: "Write a function that returns 'Fizz' for numbers divisible by 3, 'Buzz' for numbers divisible by 5, and 'FizzBuzz' for numbers divisible by both.",
-    initialCode: `function fizzBuzz(n) {
+    languages: {
+      javascript: {
+        initialCode: `function fizzBuzz(n) {
   // Your code here
 }`,
+      },
+      python: {
+        initialCode: `def fizz_buzz(n):
+    # Your code here
+    pass`,
+      },
+      java: {
+        initialCode: `public class Solution {
+    public static String fizzBuzz(int n) {
+        // Your code here
+        return "";
+    }
+}`
+      },
+      csharp: {
+        initialCode: `public class Solution {
+    public static string FizzBuzz(int n) {
+        // Your code here
+        return "";
+    }
+}`
+      }
+    },
     testCases: [
       { input: "3", expected: "Fizz" },
       { input: "5", expected: "Buzz" },
@@ -129,13 +154,14 @@ const challenges = [
 ];
 
 export default function CodingChallenge({ matchId, opponent, currentUser, onCompleteChallenge, onTimeUp, difficulty = 'Easy' }) {
-  const navigate = useNavigate();    const [challenge, setChallenge] = useState(null);
+  const navigate = useNavigate();    
+  const [challenge, setChallenge] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [passedTests, setPassedTests] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);  const [passedTests, setPassedTests] = useState(0);
   const [totalTests, setTotalTests] = useState(0);  
-  const [timeLeft, setTimeLeft] = useState(420); 
+  const [timeLeft, setTimeLeft] = useState(240); // 4 minutes instead of 7
   const [opponentProgress, setOpponentProgress] = useState(0);
   const [challengeComplete, setChallengeComplete] = useState(false);
   const [winner, setWinner] = useState(null);
@@ -187,13 +213,18 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
             assignedChallenge = difficultyMatches[randomIdx];
           }
         }
-        
-        // If no valid challenge was found, use default
+          // If no valid challenge was found, use default
         if (!assignedChallenge) {
           assignedChallenge = eligibleChallenges[0] || challenges[0];
         }
           setChallenge(assignedChallenge);
-        setCode(assignedChallenge.initialCode);
+        // Check if challenge has languages support
+        if (assignedChallenge.languages && assignedChallenge.languages[selectedLanguage]) {
+          setCode(assignedChallenge.languages[selectedLanguage].initialCode);
+        } else {
+          // Fallback to old format if languages not defined
+          setCode(assignedChallenge.initialCode || '');
+        }
         setTotalTests(assignedChallenge.testCases.length);
         setIsLoadingChallenge(false); // Challenge is now loaded
         setStartTime(Date.now()); // Record when the challenge started
@@ -227,23 +258,25 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
     }
     
     // Set loading state to false once challenge is received
-    const timeoutId = setTimeout(() => {
-      // If we don't get a response within 5 seconds, use default challenge as fallback
+    const timeoutId = setTimeout(() => {      // If we don't get a response within 5 seconds, use default challenge as fallback
       if (isLoadingChallenge) {
         const defaultChallenge = challenges[0];
         setChallenge(defaultChallenge);
-        setCode(defaultChallenge.initialCode);
+        if (defaultChallenge.languages && defaultChallenge.languages[selectedLanguage]) {
+          setCode(defaultChallenge.languages[selectedLanguage].initialCode);
+        } else {
+          setCode(defaultChallenge.initialCode || '');
+        }
         setTotalTests(defaultChallenge.testCases.length);
         setIsLoadingChallenge(false);
         console.warn('Challenge synchronization timed out, using default challenge');
       }
     }, 5000);
-    
-    return () => {
+      return () => {
       socket.off('assignChallenge', handleChallengeAssignment);
       clearTimeout(timeoutId);
     };
-  }, [matchId, isLoadingChallenge, difficulty]);
+  }, [matchId, isLoadingChallenge, difficulty, selectedLanguage]);
   // Set up socket event listeners for opponent progress and quitting
   useEffect(() => {
     // Get or create socket connection
@@ -302,10 +335,37 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
           const endTime = Date.now();
           const timeTaken = Math.floor((endTime - (startTime || endTime)) / 1000);
           setCompletionTime(timeTaken);
-          
-          // Call the completion handler if provided
+            // Call the completion handler if provided
           if (onCompleteChallenge) {
             onCompleteChallenge(true, 'opponent_quit', challenge, timeTaken);
+            
+            // Also record the match result with winner (current player) and loser (opponent who quit)
+            const socket = getSocket();
+            if (socket && socket.connected) {
+              socket.emit('matchResult', { 
+                matchId,
+                winner: {
+                  userId: currentUser?.uid,
+                  name: currentUser?.name || 'You',
+                  time: timeTaken,
+                  language: selectedLanguage,
+                  reason: 'opponent_quit'
+                },
+                loser: {
+                  userId: opponent?.userId,
+                  name: opponent?.name,
+                  progress: opponentProgress,
+                  language: selectedLanguage, // Assuming both players use same language
+                  quit: true
+                },
+                challenge: {
+                  id: challenge.id,
+                  title: challenge.title,
+                  difficulty: challenge.difficulty
+                },
+                completionTime: timeTaken
+              });
+            }
           }
         }
       }, 30000); // 30 seconds wait for reconnection
@@ -333,8 +393,7 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
       reconnectSocket();
     }
   }, 10000); // Every 10 seconds
-  
-  return () => {
+    return () => {
     // Clean up event listeners
     socket.off('opponentProgress', handleOpponentProgress);
     socket.off('opponentQuit', handleOpponentQuit);
@@ -344,11 +403,11 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
     // Clear heartbeat interval
     clearInterval(heartbeatInterval);
   };
-}, [matchId, opponent, winner, currentUser, onCompleteChallenge, challenge, startTime]);
-    // Timer countdown
+}, [matchId, opponent, winner, currentUser, onCompleteChallenge, challenge, startTime, error, challengeComplete, opponentProgress, selectedLanguage]);// Timer countdown
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {        if (prev <= 1) {
+      setTimeLeft((prev) => {        
+        if (prev <= 1) {
           clearInterval(timer);
           if (!challengeComplete) {
             setChallengeComplete(true);
@@ -368,7 +427,7 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
     }, 1000);
     
     return () => clearInterval(timer);
-  }, [challengeComplete, onTimeUp, challenge, startTime]);
+  }, [challenge, challengeComplete, onTimeUp, startTime]);
   
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -379,8 +438,7 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
   const handleCodeChange = (e) => {
     setCode(e.target.value);
   };
-  
-  const runTests = async () => {
+    const runTests = async () => {
     setIsSubmitting(true);
     setOutput("");
     setError(null);
@@ -436,13 +494,17 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
       const progress = Math.floor((passed / challenge.testCases.length) * 100);
       
       // Send progress update to server
-      socket.emit('updateProgress', { 
-        matchId, 
-        userId: currentUser?.uid,
-        progress,
-        completed: passed === challenge.testCases.length
-      });
-        // If all tests passed, mark challenge as complete
+      const socket = getSocket();
+      if (socket && socket.connected) {
+        socket.emit('updateProgress', { 
+          matchId, 
+          userId: currentUser?.uid,
+          progress,
+          completed: passed === challenge.testCases.length
+        });
+      }
+      
+      // If all tests passed, mark challenge as complete
       if (passed === challenge.testCases.length) {
         setChallengeComplete(true);
         setWinner(currentUser?.name || 'You');
@@ -454,9 +516,34 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
         
         if (onCompleteChallenge) {
           onCompleteChallenge(true, 'solved', challenge, timeTaken);
+          
+          // Send the match result to the server with winner and loser info
+          const socket = getSocket();
+          if (socket && socket.connected) {
+            socket.emit('matchResult', { 
+              matchId,
+              winner: {
+                userId: currentUser?.uid,
+                name: currentUser?.name || 'You',
+                time: timeTaken,
+                language: selectedLanguage
+              },
+              loser: {
+                userId: opponent?.userId,
+                name: opponent?.name,
+                progress: opponentProgress,
+                language: selectedLanguage // Assuming both players use the same language
+              },
+              challenge: {
+                id: challenge.id,
+                title: challenge.title,
+                difficulty: challenge.difficulty
+              },
+              completionTime: timeTaken
+            });
+          }
         }
       }
-      
     } catch (err) {
       setError("Error in your code: " + err.message);
     } finally {
@@ -475,8 +562,7 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
   
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
-      {/* Header with Challenge Info and Timer */}
-      <div className="bg-[#151f4b] p-4 flex justify-between items-center border-b border-blue-800">
+      {/* Header with Challenge Info and Timer */}      <div className="bg-[#151f4b] p-4 flex justify-between items-center border-b border-blue-800">
         <div className="flex items-center">
           <Code className="text-blue-400 mr-2" />
           <h2 className="text-xl font-bold">{challenge.title}</h2>
@@ -486,6 +572,26 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
           }`}>
             {challenge.difficulty}
           </span>
+          
+          {challenge.languages && !challengeComplete && (
+            <select 
+              className="ml-4 bg-blue-900/40 text-sm border border-blue-700 rounded px-2 py-1"
+              value={selectedLanguage}
+              onChange={(e) => {
+                const newLang = e.target.value;
+                setSelectedLanguage(newLang);
+                if (challenge.languages[newLang]) {
+                  setCode(challenge.languages[newLang].initialCode || '');
+                }
+              }}
+            >
+              {Object.keys(challenge.languages).map(lang => (
+                <option key={lang} value={lang}>
+                  {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center bg-blue-900/30 px-3 py-1 rounded-full">

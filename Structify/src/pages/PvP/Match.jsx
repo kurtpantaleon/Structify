@@ -8,7 +8,7 @@ import { getSocket, reconnectSocket } from '../../services/socketService';
 import { initTestingModule } from '../../utils/challengeSync';
 
 // Initialize challenge testing module for development
-if (process.env.NODE_ENV !== 'production') {
+if (import.meta.env.MODE !== 'production') {
   // Make testing functions available in browser console
   setTimeout(() => {
     initTestingModule();
