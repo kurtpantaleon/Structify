@@ -30,6 +30,7 @@
     "react-firebase-hooks": "^5.1.1",
     "react-router-dom": "^7.3.0",
     "react-split": "^2.0.14",
+    "react-use": "^17.6.0",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1"
   },
