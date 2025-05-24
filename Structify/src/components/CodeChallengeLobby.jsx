@@ -15,6 +15,7 @@ import select from '../assets/images/select.png';
 import icon from '../assets/images/select-icon.png';
 import Match from '../pages/PvP/Match';
 import { io } from 'socket.io-client';
+import BackgroundSound from './BackgroundSound';
 
 // Initialize socket connection
 const socket = io('http://localhost:3001', {
@@ -580,6 +581,8 @@ export default function CodeChallengeLobby() {
           </div>
         </div>
       )}
+
+      <BackgroundSound/>
     </div>
   );
 }

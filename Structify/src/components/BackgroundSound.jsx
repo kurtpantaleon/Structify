@@ -1,38 +1,46 @@
 // src/components/BackgroundSound.jsx
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import backgroundMusic from '../assets/sounds/background.mp3';
 
+// Create a persistent audio object (singleton)
+const audio = new Audio(backgroundMusic);
+audio.loop = true;
+audio.volume = 0.3;
+
 function BackgroundSound() {
-  const audioRef = useRef(new Audio(backgroundMusic));
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(() => {
+    // Try to retrieve last state from localStorage
+    return localStorage.getItem('isPlaying') === 'true';
+  });
 
   useEffect(() => {
-    const audio = audioRef.current;
-    audio.loop = true;
-    audio.volume = 0.3;
-
-    const play = async () => {
-      try {
-        await audio.play();
-      } catch (err) {
+    if (isPlaying) {
+      audio.play().catch((err) => {
         console.warn('Autoplay blocked:', err);
         setIsPlaying(false);
-      }
-    };
-
-    play();
+      });
+    } else {
+      audio.pause();
+    }
 
     return () => {
+      // Pause when component unmounts to prevent duplication
       audio.pause();
-      audio.currentTime = 0;
     };
-  }, []);
+  }, [isPlaying]);
 
   const toggleAudio = () => {
-    const audio = audioRef.current;
-    if (isPlaying) audio.pause();
-    else audio.play();
-    setIsPlaying(!isPlaying);
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      audio.play().catch((err) => {
+        console.warn('Autoplay blocked:', err);
+      });
+    }
+
+    const newState = !isPlaying;
+    setIsPlaying(newState);
+    localStorage.setItem('isPlaying', newState.toString());
   };
 
   return (
