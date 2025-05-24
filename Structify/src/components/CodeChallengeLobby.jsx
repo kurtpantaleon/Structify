@@ -378,7 +378,7 @@ export default function CodeChallengeLobby() {
         <h2 className="text-2xl font-semibold text-center">An Opponent to test your might</h2>
         
         <div 
-          className="flex justify-between items-center border-4 border-blue-500 h-50 rounded-2xl overflow-hidden bg-cover bg-no-repeat bg-center shadow-lg" 
+          className="flex justify-between items-center border-4 border-blue-500 h-60 rounded-2xl overflow-hidden bg-cover bg-no-repeat bg-center shadow-lg" 
           style={{ backgroundImage: `url(${select})` }}
         >
           <div
