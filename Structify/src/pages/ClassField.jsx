@@ -3,9 +3,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../services/firebaseConfig';
 import Header from '../components/ProfileHeader ';
-import exit from '../assets/images/X Icon.png';
 import { useAuth } from '../context/authContextProvider';
 import { doc, deleteDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { X } from 'lucide-react';
+
 
 const ClassField = () => {
     const [activeTab, setActiveTab] = useState('lessons');
@@ -162,8 +163,9 @@ const ClassField = () => {
             <Header />
             {/* Exit Button */}
             <div className="flex justify-end m-8">
-                <button onClick={() => navigate(-1)} className="z-10">
-                    <img src={exit} alt="Close" className="w-6 h-6 cursor-pointer filter invert" />
+                <button onClick={() => navigate(-1)} className="p-2 rounded-full bg-red-600 hover:bg-red-700 transition duration-200"
+>
+                    <X className="w-6 h-6 text-white" />
                 </button>
             </div>
             <div className="max-w-7xl mx-auto mt-6 bg-white p-6 rounded-lg shadow h-[75vh] overflow-y-auto">
