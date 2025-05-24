@@ -47,7 +47,9 @@ function ViewStudentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [passwordMismatch, setPasswordMismatch] = useState(false);  const [formData, setFormData] = useState({
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState({});
+  const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
@@ -65,8 +67,7 @@ function ViewStudentsPage() {
   const [reassignModalOpen, setReassignModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [availableSections, setAvailableSections] = useState([]);
-  const [selectedSection, setSelectedSection] = useState('');
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedSection, setSelectedSection] = useState('');  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
 
@@ -102,8 +103,29 @@ function ViewStudentsPage() {
           (student.section && student.section.toLowerCase().includes(searchTerm.toLowerCase()))
       );
       setFilteredStudents(filtered);
-    }
+    }  
   }, [searchTerm, students]);
+
+  // Move groupedBySection calculation here, before it's used in the next useEffect
+  const groupedBySection = filteredStudents.reduce((acc, student) => {
+    const section = student.section || 'Unassigned';
+    if (!acc[section]) acc[section] = [];
+    acc[section].push(student);
+    return acc;
+  }, {});
+    // Initialize collapsed state for sections only on initial load or when new sections are added
+  useEffect(() => {
+    const sections = Object.keys(groupedBySection);
+    const newSections = sections.filter(section => !(section in collapsedSections));
+    
+    if (newSections.length > 0) {
+      setCollapsedSections(prev => ({
+        ...prev,
+        ...Object.fromEntries(newSections.map(section => [section, false]))
+      }));
+    }
+  }, [groupedBySection, collapsedSections]);
+  
   // Load sections when bulk upload modal opens
   useEffect(() => {
     if (showBulkUploadModal) {
@@ -127,12 +149,7 @@ function ViewStudentsPage() {
       loadSections();
     }
   }, [showBulkUploadModal]);
-  const groupedBySection = filteredStudents.reduce((acc, student) => {
-    const section = student.section || 'Unassigned';
-    if (!acc[section]) acc[section] = [];
-    acc[section].push(student);
-    return acc;
-  }, {});
+  
   // Calculate statistics about the students and sections
   const totalSections = Object.keys(groupedBySection).filter(section => section !== 'Unassigned').length;
   const totalAssignedStudents = Object.entries(groupedBySection)
@@ -644,8 +661,7 @@ function ViewStudentsPage() {
               <span className="sm:hidden">Add</span>
             </button>
           </div>
-        </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        </div>          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-start">
             <div className="bg-blue-100 rounded-full p-2 mr-3">
               <UsersRound className="w-5 h-5 text-blue-600" />
@@ -696,7 +712,41 @@ function ViewStudentsPage() {
               </button>
             )}
           </div>
-        </div><div className="overflow-y-auto pr-3 flex-grow">          {isLoading ? (
+        </div>        <div className="overflow-y-auto pr-3 flex-grow">
+          {!isLoading && Object.keys(groupedBySection).length > 0 && (
+            <div className="flex justify-end mb-3">
+              <button 
+                onClick={() => {
+                  const sections = Object.keys(groupedBySection);
+                  // Fix 2: Check if any section is expanded rather than all are collapsed
+                  const anyExpanded = sections.some(section => !collapsedSections[section]);
+                  
+                  // If any section is expanded, collapse all; otherwise, expand all
+                  const newCollapsedState = {};
+                  sections.forEach(section => {
+                    newCollapsedState[section] = anyExpanded;
+                  });
+                  
+                  setCollapsedSections(newCollapsedState);
+                }}
+                className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-md transition-colors"
+              >
+                {Object.keys(collapsedSections).length > 0 && Object.values(collapsedSections).every(Boolean) ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevrons-up"><path d="m17 11-5-5-5 5"/><path d="m17 18-5-5-5 5"/></svg>
+                    Expand All
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevrons-down"><path d="m7 6 5 5 5-5"/><path d="m7 13 5 5 5-5"/></svg>
+                    Collapse All
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+          
+          {isLoading ? (
             <div className="space-y-6">
               {[...Array(3)].map((_, idx) => (
                 <StudentSectionSkeleton key={idx} />
@@ -718,60 +768,71 @@ function ViewStudentsPage() {
                 </>
               )}
             </div>
-          ) : (
-            <div className="space-y-6">
+          ) : (            <div className="space-y-6">
               {Object.entries(groupedBySection)
                 .sort(([a], [b]) => a.localeCompare(b))
-                .map(([section, studentsInSection], index) => (
-                <div key={index} className="bg-white rounded-lg border border-gray-100 shadow-sm">
-                  <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-t-lg border-b border-gray-100">
-                    <div className={`p-1.5 rounded-md ${
-                      section === 'Unassigned' ? 'bg-gray-200 text-gray-600' : 'bg-blue-100 text-blue-700'
-                    }`}>
-                      {section === 'Unassigned' ? 
-                        <Users className="w-5 h-5" /> : 
-                        <Layers className="w-5 h-5" />
-                      }
+                .map(([section, studentsInSection], index) => (                <div key={index} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
+                  <div                    className={`flex items-center justify-between p-3 ${collapsedSections[section] ? 'bg-gray-50 rounded-lg' : 'bg-gray-50 rounded-t-lg'} border-b ${collapsedSections[section] ? 'border-b-0' : 'border-gray-100'} cursor-pointer hover:bg-gray-100 transition-colors relative group`}
+                    onClick={() => {
+                      setCollapsedSections(prev => ({
+                        ...prev, 
+                        [section]: !prev[section]
+                      }));
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className={`p-1.5 rounded-md ${
+                        section === 'Unassigned' ? 'bg-gray-200 text-gray-600' : 'bg-blue-100 text-blue-700'
+                      }`}>
+                        {section === 'Unassigned' ? 
+                          <Users className="w-5 h-5" /> : 
+                          <Layers className="w-5 h-5" />
+                        }
+                      </div>
+                      <h3 className="text-lg font-bold text-[#141a35]">{section}</h3>
+                      <div className="ml-2 bg-gray-200 text-gray-700 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        {studentsInSection.length}
+                      </div>
                     </div>
-                    <h3 className="text-lg font-bold text-[#141a35]">{section}</h3>
-                    <div className="ml-2 bg-gray-200 text-gray-700 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                      {studentsInSection.length}
+                    <div className={`text-gray-500 bg-white/50 rounded-full p-1 transition-transform duration-300 transform ${collapsedSections[section] ? 'rotate-180' : 'rotate-0'} group-hover:bg-white/80`}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6"/></svg>
                     </div>
                   </div>
-                  
-                  <div className="divide-y divide-gray-100">
-                    {studentsInSection.map((student, idx) => (
-                      <div key={idx} className="flex items-center justify-between py-3 px-4 hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <div className="bg-[#141a35]/5 p-2 rounded-full">
-                            <UserCheck className="w-5 h-5 text-[#141a35]" />
-                          </div>
-                          <div>
-                            <span className="font-medium text-[#141a35]">{student.name}</span>
-                            <div className="flex items-center text-xs text-gray-500 mt-0.5">
-                              <Mail className="w-3 h-3 mr-1" />
-                              {student.email}
+                      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${collapsedSections[section] ? 'opacity-0 max-h-0' : 'opacity-100'}`}
+                       style={{ maxHeight: collapsedSections[section] ? '0px' : `${studentsInSection.length * 80}px` }}>
+                    <div className="divide-y divide-gray-100">
+                      {studentsInSection.map((student, idx) => (
+                        <div key={idx} className="flex items-center justify-between py-3 px-4 hover:bg-gray-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-[#141a35]/5 p-2 rounded-full">
+                              <UserCheck className="w-5 h-5 text-[#141a35]" />
+                            </div>
+                            <div>
+                              <span className="font-medium text-[#141a35]">{student.name}</span>
+                              <div className="flex items-center text-xs text-gray-500 mt-0.5">
+                                <Mail className="w-3 h-3 mr-1" />
+                                {student.email}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            className="p-2 text-blue-700 hover:bg-blue-50 rounded-full transition-colors"
-                            onClick={() => openReassignModal(student)}
-                            title={student.section === '' ? 'Assign Section' : 'Re-assign Section'}
-                          >
-                            <Edit3 className="w-4.5 h-4.5" />
-                          </button>
-                          <button 
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                            onClick={() => { setStudentToDelete(student); setShowDeleteModal(true); }}
-                            title="Delete Account"
-                          >
-                            <Trash2 className="w-4.5 h-4.5" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                          <div className="flex items-center gap-2">
+                            <button
+                              className="p-2 text-blue-700 hover:bg-blue-50 rounded-full transition-colors"
+                              onClick={() => openReassignModal(student)}
+                              title={student.section === '' ? 'Assign Section' : 'Re-assign Section'}
+                            >
+                              <Edit3 className="w-4.5 h-4.5" />
+                            </button>
+                            <button 
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                              onClick={() => { setStudentToDelete(student); setShowDeleteModal(true); }}
+                              title="Delete Account"
+                            >
+                              <Trash2 className="w-4.5 h-4.5" />
+                            </button>
+                          </div>
+                        </div>                      ))}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -1106,7 +1167,7 @@ function ViewStudentsPage() {
                   <Upload className="w-4 h-4" />
                   Select CSV File
                 </label>                <p className="text-sm text-gray-500 mb-1 text-center">
-                  Upload CSV with columns: Last Name, First Name, Email, Password, Section (optional)
+                  Upload CSV with columns: Last Name, First Name, Email, Password, Section (optional, will be created if doesn't exist)
                 </p>
                 <button
                   onClick={downloadCsvTemplate}

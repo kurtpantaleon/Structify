@@ -454,13 +454,39 @@ function ViewInstructorPage() {
             continue;
           }          // Validate section assignment
           if (section) {
+            // Check if section doesn't exist and create it
             if (!existingSections.has(section)) {
-              errors.push({
-                name: fullName,
-                email,
-                error: `Section "${section}" does not exist`
-              });
-              continue;
+              try {
+                // Check if section name is valid
+                if (!section.match(/^[A-Za-z0-9\s-]+$/)) {
+                  errors.push({
+                    name: fullName,
+                    email,
+                    error: `Invalid section name: ${section}. Only letters, numbers, spaces, and hyphens are allowed.`
+                  });
+                  continue;
+                }
+
+                // Add new section to Firestore
+                const newSectionRef = doc(collection(db, 'classes'));
+                await setDoc(newSectionRef, {
+                  sectionName: section,
+                  studentCount: 0,
+                  instructor: fullName,
+                  createdAt: new Date().toISOString()
+                });
+                
+                existingSections.set(section, newSectionRef.id);
+                console.log(`Created new section: ${section}`);
+              } catch (error) {
+                console.error(`Error creating section ${section}:`, error);
+                errors.push({ 
+                  name: fullName, 
+                  email, 
+                  error: `Failed to create new section: ${section}. Error: ${error.message}` 
+                });
+                continue;
+              }
             }
 
             if (usedSections.includes(section)) {
@@ -471,7 +497,7 @@ function ViewInstructorPage() {
               });
               continue;
             }
-          }          try {
+          }try {
             const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
             const uid = userCredential.user.uid;            const newInstructor = {
               id: uid,
@@ -1015,7 +1041,7 @@ function ViewInstructorPage() {
                   <Upload className="w-4 h-4" />
                   Select CSV File
                 </label>                <p className="text-sm text-gray-500 mb-1 text-center">
-                  Upload CSV with columns: FirstName, LastName, Email, Password, Section (optional), Role
+                  Upload CSV with columns: FirstName, LastName, Email, Password, Section (optional, will be created if doesn't exist), Role
                 </p>
                 <button
                   onClick={downloadCsvTemplate}
