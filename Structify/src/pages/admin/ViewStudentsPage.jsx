@@ -474,10 +474,10 @@ function ViewStudentsPage() {
 
         // Create a map to track new sections and their student counts
         const newSections = new Map();
-        
-        // Skip header row and process each student
+          // Skip header row and process each student
         for (let i = 1; i < rows.length; i++) {
-          const [name, email, password, section] = rows[i].split(',').map(field => field.trim());
+          const [lastName, firstName, email, password, section] = rows[i].split(',').map(field => field.trim());
+          const name = `${firstName} ${lastName}`;
             // If section provided and doesn't exist, create it
           if (section && !existingSections.has(section)) {
             try {
@@ -595,7 +595,7 @@ function ViewStudentsPage() {
     reader.readAsText(file);
   };
   const downloadCsvTemplate = () => {
-    const template = 'Name,Email,Password,Section\nJohn Doe,john@example.com,password123,Section A\n';
+    const template = 'Last Name,First Name,Email,Password,Section\nDoe,John,john@example.com,password123,Section A\n';
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1105,9 +1105,8 @@ function ViewStudentsPage() {
                 >
                   <Upload className="w-4 h-4" />
                   Select CSV File
-                </label>
-                <p className="text-sm text-gray-500 mb-1 text-center">
-                  Upload CSV with columns: Name, Email, Password, Section (optional)
+                </label>                <p className="text-sm text-gray-500 mb-1 text-center">
+                  Upload CSV with columns: Last Name, First Name, Email, Password, Section (optional)
                 </p>
                 <button
                   onClick={downloadCsvTemplate}
