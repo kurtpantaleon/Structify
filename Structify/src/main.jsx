@@ -11,11 +11,11 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter> 
       <AuthContextProvider>
+      <GameStatsProvider>
         <LessonProgressProvider>
-          <GameStatsProvider>
             <App />
+            </LessonProgressProvider>
           </GameStatsProvider>
-        </LessonProgressProvider>
       </AuthContextProvider>
     </BrowserRouter>
   </StrictMode>

@@ -3,6 +3,7 @@ import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../services/firebaseConfig";
+import { useGameStats } from "../context/gameStatsContext";
  
 const LessonProgressContext = createContext();
 
@@ -14,6 +15,7 @@ export const LessonProgressProvider = ({ children }) => {
   const [completedActivities, setCompletedActivities] = useState([]);
   const [activityScores, setActivityScores] = useState({});
   const [completedQuizzes, setCompletedQuizzes] = useState([]);
+  const { addCoins } = useGameStats();
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -39,6 +41,7 @@ export const LessonProgressProvider = ({ children }) => {
       completedLessons: arrayUnion(lessonId)
     });
     setCompletedLessons((prev) => [...new Set([...prev, lessonId])]);
+    await addCoins(1);
   };
 
   const markActivityComplete = async (activityId, score = null) => {
