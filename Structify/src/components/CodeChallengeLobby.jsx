@@ -482,8 +482,11 @@ export default function CodeChallengeLobby() {
           </div>
         ) : (
           matchHistory.map((match, idx) => {
-            const isWinner = match.winnerUid === user?.uid;
+            const userIsWinner = match.winnerUid === user?.uid;
             const opponent = match.isPlayer1 ? match.player2 : match.player1;
+            const opponentIsWinner = match.winnerUid === opponent?.uid && opponent?.uid !== 'unknown';
+            const userLabel = user?.uid === match.winnerUid ? 'Winner' : (opponent?.uid === 'unknown' ? 'Unknown' : 'Loser');
+            const opponentLabel = opponent?.uid === match.winnerUid ? 'Winner' : (opponent?.uid === 'unknown' ? 'Unknown' : 'Loser');
             return (
               <motion.div
                 key={match.id}
@@ -496,11 +499,12 @@ export default function CodeChallengeLobby() {
                   {/* User */}
                   <div className="flex flex-col items-center">
                     <img src={userStats?.avatar || profile} alt={userStats?.name} className="w-10 h-10 rounded-full border-2 border-white" />
-                    <span className="font-bold text-lg text-yellow-300">{userStats?.name} {isWinner ? '👑' : ''}</span>
+                    <span className="font-bold text-lg">{userStats?.name}</span>
                     <div className="flex items-center mt-1">
                       <img src={fireIcon} alt="rank" className="w-5 h-5 mr-1" />
                       <span className="font-semibold text-white text-sm">{userStats?.rank}</span>
                     </div>
+                    <span className={`mt-1 text-xs font-semibold ${userLabel === 'Winner' ? 'text-green-400' : userLabel === 'Loser' ? 'text-red-400' : 'text-gray-400'}`}>{userLabel}</span>
                   </div>
                   {/* VS */}
                   <div className="px-4 py-1 bg-blue-900/50 rounded-full border border-blue-500/30 text-lg font-bold text-white mx-3">
@@ -509,11 +513,12 @@ export default function CodeChallengeLobby() {
                   {/* Opponent */}
                   <div className="flex flex-col items-center">
                     <img src={opponent?.avatar || profile} alt={opponent?.name} className="w-10 h-10 rounded-full border-2 border-white" />
-                    <span className="font-bold text-lg">{opponent?.name} {(!isWinner && match.winnerUid) ? '👑' : ''}</span>
+                    <span className="font-bold text-lg">{opponent?.name}</span>
                     <div className="flex items-center mt-1">
                       <img src={fireIcon} alt="rank" className="w-5 h-5 mr-1" />
                       <span className="font-semibold text-white text-sm">{opponent?.rank || ''}</span>
                     </div>
+                    <span className={`mt-1 text-xs font-semibold ${opponentLabel === 'Winner' ? 'text-green-400' : opponentLabel === 'Loser' ? 'text-red-400' : 'text-gray-400'}`}>{opponentLabel}</span>
                   </div>
                 </div>
                 <div className="mt-3 flex justify-between items-center text-xs">
