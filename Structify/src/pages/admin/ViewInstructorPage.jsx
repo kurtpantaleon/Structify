@@ -19,13 +19,15 @@ function ViewInstructorPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [passwordMismatch, setPasswordMismatch] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
+  const [passwordMismatch, setPasswordMismatch] = useState(false);  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
+  const [passwordError, setPasswordError] = useState('');
+  
   const [selectedInstructor, setSelectedInstructor] = useState(null);
   const [reassignModalOpen, setReassignModalOpen] = useState(false);
   const [availableSections, setAvailableSections] = useState([]);
@@ -103,14 +105,48 @@ function ViewInstructorPage() {
       loadSections();
     }
   }, [showBulkUploadModal]);
+  const validatePassword = (password) => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
+    
+    if (password.length < minLength) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (!hasUpperCase) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!hasLowerCase) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!hasNumber) {
+      return 'Password must contain at least one number';
+    }
+    if (!hasSpecial) {
+      return 'Password must contain at least one special character';
+    }
+    
+    return '';
+  };
 
   const createInstructor = async (e) => {
     e.preventDefault();
 
-    const { email, password, confirmPassword, name } = formData;
-    if (!email || !password || !name || !confirmPassword) {
+    const { email, password, confirmPassword, firstName, lastName } = formData;
+    if (!email || !password || !firstName || !lastName || !confirmPassword) {
       alert('Please fill out all fields.');
       return;
+    }
+
+    // Validate password
+    const passwordValidationError = validatePassword(password);
+    if (passwordValidationError) {
+      setPasswordError(passwordValidationError);
+      return;
+    } else {
+      setPasswordError('');
     }
 
     if (password !== confirmPassword) {
@@ -124,19 +160,21 @@ function ViewInstructorPage() {
       const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
       await secondaryAuth.signOut(); 
 
-      const uid = userCredential.user.uid;      const newInstructor = {
+      const uid = userCredential.user.uid;
+      const fullName = `${firstName} ${lastName}`;
+      const newInstructor = {
         id: uid,
         email,
-        name, 
+        name: fullName,
+        firstName,
+        lastName,
         role: 'instructor',
         section: '',
       };
       
-      await setDoc(doc(db, 'users', uid), newInstructor);
-
-      setInstructors((prev) => [...prev, newInstructor]);
+      await setDoc(doc(db, 'users', uid), newInstructor);      setInstructors((prev) => [...prev, newInstructor]);
       setFilteredInstructors((prev) => [...prev, newInstructor]);
-      setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+      setFormData({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
       setShowModal(false);
       setShowSuccessModal(true);
     } catch (error) {
@@ -402,26 +440,23 @@ function ViewInstructorPage() {
         const instructorsSnapshot = await getDocs(
           query(collection(db, 'users'), where('role', '==', 'instructor'))
         );
-        const usedSections = instructorsSnapshot.docs.map(doc => doc.data().section);
-
-        // Skip header row and process each instructor
-        for (let i = 1; i < rows.length; i++) {          const [name, email, password, section, role] = rows[i].split(',').map(field => field.trim());
+        const usedSections = instructorsSnapshot.docs.map(doc => doc.data().section);        // Skip header row and process each instructor
+        for (let i = 1; i < rows.length; i++) {          const [firstName, lastName, email, password, section, role] = rows[i].split(',').map(field => field.trim());
+          const fullName = `${firstName} ${lastName}`;
 
           // Validate role
           if (!role || role.toLowerCase() !== 'instructor') {
             errors.push({
-              name,
+              name: fullName,
               email,
               error: `Invalid role: ${role || 'missing'}. Role must be "instructor"`
             });
             continue;
-          }
-
-          // Validate section assignment
+          }          // Validate section assignment
           if (section) {
             if (!existingSections.has(section)) {
               errors.push({
-                name,
+                name: fullName,
                 email,
                 error: `Section "${section}" does not exist`
               });
@@ -430,32 +465,30 @@ function ViewInstructorPage() {
 
             if (usedSections.includes(section)) {
               errors.push({
-                name,
+                name: fullName,
                 email,
                 error: `Section "${section}" is already assigned to another instructor`
               });
               continue;
             }
-          }
-
-          try {
+          }          try {
             const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
             const uid = userCredential.user.uid;            const newInstructor = {
               id: uid,
-              name,
+              name: fullName,
+              firstName,
+              lastName,
               email,
               section: section || '',
               role: 'instructor',
             };
             
-            await setDoc(doc(db, 'users', uid), newInstructor);
-
-            // Update the class document with instructor info if section is provided
+            await setDoc(doc(db, 'users', uid), newInstructor);            // Update the class document with instructor info if section is provided
             if (section) {
               const classId = existingSections.get(section);
               await setDoc(doc(db, 'classes', classId), {
                 sectionName: section,
-                instructor: name,
+                instructor: fullName,
               }, { merge: true });
               
               // Add section to used sections to prevent double assignment
@@ -468,9 +501,8 @@ function ViewInstructorPage() {
 
             // Update both arrays
             setInstructors(prev => [...prev, newInstructor]);
-            setFilteredInstructors(prev => [...prev, newInstructor]);
-          } catch (error) {
-            errors.push({ name, email, error: error.message });
+            setFilteredInstructors(prev => [...prev, newInstructor]);          } catch (error) {
+            errors.push({ name: fullName, email, error: error.message });
           }
         }
 
@@ -490,9 +522,8 @@ function ViewInstructorPage() {
     };
 
     reader.readAsText(file);
-  };
-  const downloadCsvTemplate = () => {
-    const template = 'Name,Email,Password,Section,Role\nJohn Smith,john.smith@example.com,password123,Section A,instructor\n';
+  };  const downloadCsvTemplate = () => {
+    const template = 'FirstName,LastName,Email,Password,Section,Role\nJohn,Smith,john.smith@example.com,Password123!,Section A,instructor\n';
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -665,20 +696,34 @@ function ViewInstructorPage() {
                 <UserPlus className="h-6 w-6 text-[#141a35]" />
               </div>
               <h2 className="text-xl font-semibold text-[#141a35]">Add New Instructor</h2>
-            </div>
-            <form onSubmit={createInstructor} className="space-y-5">
-              <div>
-                <label htmlFor="name" className="text-sm font-medium text-gray-700 block mb-1">Full Name</label>
-                <input
-                  id="name"
-                  type="text"
-                  name="name"
-                  placeholder="John Smith"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#141a35]/20 focus:border-[#141a35] transition-all duration-200"
-                  required
-                />
+            </div>            <form onSubmit={createInstructor} className="space-y-5">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="firstName" className="text-sm font-medium text-gray-700 block mb-1">First Name</label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    name="firstName"
+                    placeholder="John"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#141a35]/20 focus:border-[#141a35] transition-all duration-200"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="text-sm font-medium text-gray-700 block mb-1">Last Name</label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    name="lastName"
+                    placeholder="Smith"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#141a35]/20 focus:border-[#141a35] transition-all duration-200"
+                    required
+                  />
+                </div>
               </div>
               
               <div>
@@ -704,9 +749,29 @@ function ViewInstructorPage() {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#141a35]/20 focus:border-[#141a35] transition-all duration-200"
+                  className={`w-full border rounded-lg px-4 py-2.5 focus:ring-2 transition-all duration-200 ${
+                    passwordError 
+                      ? 'border-red-500 focus:ring-red-200 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-[#141a35]/20 focus:border-[#141a35]'
+                  }`}
                   required
                 />
+                {passwordError && (
+                  <p className="flex items-start gap-1 text-xs text-red-500 mt-1.5">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" /> 
+                    {passwordError}
+                  </p>
+                )}
+                <div className="mt-1 text-xs text-gray-500">
+                  Password must contain:
+                  <ul className="list-disc pl-5 mt-1">
+                    <li>At least 8 characters</li>
+                    <li>At least one uppercase letter</li>
+                    <li>At least one lowercase letter</li>
+                    <li>At least one number</li>
+                    <li>At least one special character</li>
+                  </ul>
+                </div>
               </div>
               
               <div>
@@ -735,11 +800,11 @@ function ViewInstructorPage() {
               
               <div className="flex justify-end gap-3 pt-2">
                 <button
-                  type="button"
-                  onClick={() => {
+                  type="button"                  onClick={() => {
                     setShowModal(false);
-                    setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+                    setFormData({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
                     setPasswordMismatch(false);
+                    setPasswordError('');
                   }}
                   className="px-4 py-2.5 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                 >
@@ -949,9 +1014,8 @@ function ViewInstructorPage() {
                 >
                   <Upload className="w-4 h-4" />
                   Select CSV File
-                </label>
-                <p className="text-sm text-gray-500 mb-1 text-center">
-                  Upload CSV with columns: Name, Email, Password, Section (optional), Role
+                </label>                <p className="text-sm text-gray-500 mb-1 text-center">
+                  Upload CSV with columns: FirstName, LastName, Email, Password, Section (optional), Role
                 </p>
                 <button
                   onClick={downloadCsvTemplate}

@@ -47,13 +47,14 @@ function ViewStudentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [passwordMismatch, setPasswordMismatch] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
+  const [passwordMismatch, setPasswordMismatch] = useState(false);  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
+  const [passwordError, setPasswordError] = useState('');
   // Bulk upload states
   const [showBulkUploadModal, setShowBulkUploadModal] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -138,31 +139,70 @@ function ViewStudentsPage() {
     .filter(([section]) => section !== 'Unassigned')
     .reduce((sum, [, students]) => sum + students.length, 0);
   const unassignedStudents = groupedBySection['Unassigned']?.length || 0;
+  const validatePassword = (password) => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
+    
+    if (password.length < minLength) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (!hasUpperCase) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!hasLowerCase) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!hasNumber) {
+      return 'Password must contain at least one number';
+    }
+    if (!hasSpecial) {
+      return 'Password must contain at least one special character';
+    }
+    
+    return '';
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   const createStudent = async (e) => {
     e.preventDefault();
-    const { name, email, password, confirmPassword } = formData;
+    const { firstName, lastName, email, password, confirmPassword } = formData;
   
-    if (!name || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
       alert('Please fill out all fields.');
       return;
+    }
+    
+    // Validate password
+    const passwordValidationError = validatePassword(password);
+    if (passwordValidationError) {
+      setPasswordError(passwordValidationError);
+      return;
+    } else {
+      setPasswordError('');
     }
   
     if (password !== confirmPassword) {
       setPasswordMismatch(true);
       return;
+    } else {
+      setPasswordMismatch(false);
     }
-  
     try {
       const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-      const uid = userCredential.user.uid;      const newStudent = {
+      const uid = userCredential.user.uid;
+      
+      const fullName = `${firstName} ${lastName}`;
+      const newStudent = {
         id: uid,
-        name,
+        name: fullName,
+        firstName,
+        lastName,
         email,
         section: '',
         role: 'student',
@@ -173,11 +213,10 @@ function ViewStudentsPage() {
       
       await setDoc(doc(db, 'users', uid), newStudent);
   
-      await secondaryAuth.signOut(); // Clean up secondary session
-  
-      setStudents((prev) => [...prev, newStudent]);
+      await secondaryAuth.signOut(); // Clean up secondary session      setStudents((prev) => [...prev, newStudent]);
       setFilteredStudents((prev) => [...prev, newStudent]);
-      setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+      setFormData({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
+      setPasswordError('');
       setShowModal(false);
       setShowSuccessModal(true);
     } catch (error) {
@@ -748,20 +787,34 @@ function ViewStudentsPage() {
                 <UserPlus className="h-6 w-6 text-[#141a35]" />
               </div>
               <h2 className="text-xl font-semibold text-[#141a35]">Add New Student</h2>
-            </div>
-            <form onSubmit={createStudent} className="space-y-5">
-              <div>
-                <label htmlFor="name" className="text-sm font-medium text-gray-700 block mb-1">Full Name</label>
-                <input
-                  id="name"
-                  type="text"
-                  name="name"
-                  placeholder="John Smith"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#141a35]/20 focus:border-[#141a35] transition-all duration-200"
-                  required
-                />
+            </div>            <form onSubmit={createStudent} className="space-y-5">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="firstName" className="text-sm font-medium text-gray-700 block mb-1">First Name</label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    name="firstName"
+                    placeholder="John"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#141a35]/20 focus:border-[#141a35] transition-all duration-200"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="text-sm font-medium text-gray-700 block mb-1">Last Name</label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    name="lastName"
+                    placeholder="Smith"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#141a35]/20 focus:border-[#141a35] transition-all duration-200"
+                    required
+                  />
+                </div>
               </div>
               
               <div>
@@ -777,8 +830,7 @@ function ViewStudentsPage() {
                   required
                 />
               </div>
-              
-              <div>
+                <div>
                 <label htmlFor="password" className="text-sm font-medium text-gray-700 block mb-1">Password</label>
                 <input
                   id="password"
@@ -787,9 +839,29 @@ function ViewStudentsPage() {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#141a35]/20 focus:border-[#141a35] transition-all duration-200"
+                  className={`w-full border rounded-lg px-4 py-2.5 focus:ring-2 transition-all duration-200 ${
+                    passwordError 
+                      ? 'border-red-500 focus:ring-red-200 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-[#141a35]/20 focus:border-[#141a35]'
+                  }`}
                   required
                 />
+                {passwordError && (
+                  <p className="flex items-start gap-1 text-xs text-red-500 mt-1.5">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" /> 
+                    {passwordError}
+                  </p>
+                )}
+                <div className="mt-1 text-xs text-gray-500">
+                  Password must contain:
+                  <ul className="list-disc pl-5 mt-1">
+                    <li>At least 8 characters</li>
+                    <li>At least one uppercase letter</li>
+                    <li>At least one lowercase letter</li>
+                    <li>At least one number</li>
+                    <li>At least one special character</li>
+                  </ul>
+                </div>
               </div>
               
               <div>
