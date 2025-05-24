@@ -7,7 +7,7 @@ const GameStatsContext = createContext();
 export function useGameStats() {
   return useContext(GameStatsContext);
 }
-
+ 
 export function GameStatsProvider({ children }) {
   const [stats, setStats] = useState({ hearts: 0, coins: 0, rankPoints: 0 });
   const [userId, setUserId] = useState(null);
