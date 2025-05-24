@@ -167,14 +167,6 @@ function InstructorPage() {
                       </button>
                     </div>
                     
-                    <button
-                      onClick={() => navigate('/create-class')}
-                      className="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 
-                              px-4 py-2 rounded-lg transition-all duration-200 font-medium"
-                    >
-                      <Plus className="h-4 w-4" />
-                      New Class
-                    </button>
                   </div>
                 </div>
 
