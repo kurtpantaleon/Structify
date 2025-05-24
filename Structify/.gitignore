@@ -26,3 +26,15 @@ dist-ssr
 *.sw?
 *.env
 *.package.json
+
+structify-f712f-firebase-adminsdk-fbsvc-2f42c321c6.json
+
+pids
+*.pid
+*.seed
+*.pid.lock
+
+
+# Operating System Files
+.DS_Store
+Thumbs.db

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, doc, setDoc } from 'firebase/firestore';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { db, secondaryAuth } from '../../services/firebaseConfig';
+import { createUserWithEmailAndPassword, deleteUser, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { db, secondaryAuth, adminDeleteUser } from '../../services/firebaseConfig';
 import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
@@ -235,14 +235,137 @@ function ViewInstructorPage() {
     } catch (error) {
       console.error('Error updating section:', error);
     }
-  };  
-  const handleDeleteInstructor = async () => {
+  };  const handleDeleteInstructor = async () => {
     if (!instructorToDelete) return;
   
     try {
-      await deleteDoc(doc(db, 'users', instructorToDelete.id));
+      // Step 1: If instructor has a section, update the class document to remove the instructor
+      if (instructorToDelete.section) {
+        const classQuery = query(
+          collection(db, 'classes'),
+          where('sectionName', '==', instructorToDelete.section)
+        );
+        const classSnapshot = await getDocs(classQuery);
+        
+        if (!classSnapshot.empty) {
+          const classDoc = classSnapshot.docs[0];
+          const classId = classDoc.id;
+          
+          // Update the class document to remove instructor reference
+          await setDoc(doc(db, 'classes', classId), {
+            ...classDoc.data(),
+            instructor: '', // Remove instructor reference
+          });
+          
+          console.log(`Removed instructor association from section: ${instructorToDelete.section}`);
+        }
+      }
       
-      // Update both instructors and filtered instructors
+      // Step 2: Delete all lessons created by this instructor
+      const lessonsQuery = query(
+        collection(db, 'lessons'),
+        where('createdBy', '==', instructorToDelete.id)
+      );
+      const lessonsSnapshot = await getDocs(lessonsQuery);
+      const lessonDeletionPromises = lessonsSnapshot.docs.map(lessonDoc => 
+        deleteDoc(doc(db, 'lessons', lessonDoc.id))
+      );
+      
+      if (lessonDeletionPromises.length > 0) {
+        await Promise.all(lessonDeletionPromises);
+        console.log(`Deleted ${lessonDeletionPromises.length} lessons created by instructor ${instructorToDelete.name}`);
+      }
+      
+      // Step 3: Delete all activities created by this instructor
+      const activitiesQuery = query(
+        collection(db, 'activities'),
+        where('createdBy', '==', instructorToDelete.id)
+      );
+      const activitiesSnapshot = await getDocs(activitiesQuery);
+      const activityDeletionPromises = activitiesSnapshot.docs.map(activityDoc => 
+        deleteDoc(doc(db, 'activities', activityDoc.id))
+      );
+      
+      if (activityDeletionPromises.length > 0) {
+        await Promise.all(activityDeletionPromises);
+        console.log(`Deleted ${activityDeletionPromises.length} activities created by instructor ${instructorToDelete.name}`);
+      }
+      
+      // Step 4: Delete all quizzes created by this instructor
+      const quizzesQuery = query(
+        collection(db, 'quizzes'),
+        where('createdBy', '==', instructorToDelete.id)
+      );
+      const quizzesSnapshot = await getDocs(quizzesQuery);
+      const quizDeletionPromises = quizzesSnapshot.docs.map(quizDoc => 
+        deleteDoc(doc(db, 'quizzes', quizDoc.id))
+      );
+      
+      if (quizDeletionPromises.length > 0) {
+        await Promise.all(quizDeletionPromises);
+        console.log(`Deleted ${quizDeletionPromises.length} quizzes created by instructor ${instructorToDelete.name}`);
+      }
+      
+      // Step 5: Delete forum posts by this instructor
+      const postsQuery = query(
+        collection(db, 'posts'),
+        where('userId', '==', instructorToDelete.id)
+      );
+      const postsSnapshot = await getDocs(postsQuery);
+      const postDeletionPromises = postsSnapshot.docs.map(postDoc => 
+        deleteDoc(doc(db, 'posts', postDoc.id))
+      );
+      
+      if (postDeletionPromises.length > 0) {
+        await Promise.all(postDeletionPromises);
+        console.log(`Deleted ${postDeletionPromises.length} forum posts by instructor ${instructorToDelete.name}`);
+      }
+      
+      // Step 6: Check for subcollections and delete them
+      // Firestore doesn't automatically delete subcollections when a document is deleted
+      try {
+        // Get all subcollections for this instructor
+        const subcollections = await db.collection('users').doc(instructorToDelete.id).listCollections();
+        
+        // Delete all documents in each subcollection
+        for (const subcollection of subcollections) {
+          const subcollectionDocs = await getDocs(
+            collection(db, 'users', instructorToDelete.id, subcollection.id)
+          );
+          
+          const subcollectionDeletionPromises = subcollectionDocs.docs.map(subdoc => 
+            deleteDoc(doc(db, 'users', instructorToDelete.id, subcollection.id, subdoc.id))
+          );
+          
+          if (subcollectionDeletionPromises.length > 0) {
+            await Promise.all(subcollectionDeletionPromises);
+            console.log(`Deleted ${subcollectionDeletionPromises.length} documents from subcollection ${subcollection.id}`);
+          }
+        }
+      } catch (subcollectionError) {
+        console.error('Error deleting subcollections:', subcollectionError);
+        // Continue with deletion even if subcollection deletion fails
+      }
+      
+      // Step 7: Delete the instructor document from users collection
+      await deleteDoc(doc(db, 'users', instructorToDelete.id));
+      console.log(`Deleted instructor document for ${instructorToDelete.name}`);
+      
+      // Step 8: Delete the Firebase Authentication record to allow email reuse
+      try {
+        const authDeleted = await adminDeleteUser(null, null, instructorToDelete.id);
+        
+        if (authDeleted) {
+          console.log(`Successfully deleted Firebase Auth record for ${instructorToDelete.email}`);
+        } else {
+          console.warn(`Could not delete Firebase Auth record for ${instructorToDelete.email}. Email may not be reusable.`);
+        }
+      } catch (authError) {
+        console.error('Error deleting Firebase Auth record:', authError);
+        // Continue with the process even if auth deletion fails
+      }
+      
+      // Step 9: Update both instructors and filtered instructors
       setInstructors((prev) => prev.filter((i) => i.id !== instructorToDelete.id));
       setFilteredInstructors((prev) => prev.filter((i) => i.id !== instructorToDelete.id));
       

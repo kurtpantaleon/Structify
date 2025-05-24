@@ -13,6 +13,16 @@ cd BackEnd
 npm install
 ```
 
+### Firebase Admin SDK Setup
+
+For user deletion functionality to work, you need to set up Firebase Admin SDK:
+
+1. Go to your Firebase Console
+2. Navigate to Project Settings > Service Accounts
+3. Click "Generate new private key"
+4. Save the downloaded file as `serviceAccountKey.json` in the BackEnd directory
+5. This file contains sensitive information - never commit it to version control
+
 ### Running the Server
 
 ```

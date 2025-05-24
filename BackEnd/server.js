@@ -3,9 +3,21 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const { initializeSocket } = require('./socketHandlers');
+const userRoutes = require('./routes/userRoutes');
+const fs = require('fs');
+const path = require('path');
+
+// Check if Firebase Admin service account key exists and warn if not
+const serviceAccountPath = path.join(__dirname, 'structify-f712f-firebase-adminsdk-fbsvc-2f42c321c6.json');
+if (!fs.existsSync(serviceAccountPath)) {
+  console.warn('\x1b[33m%s\x1b[0m', '⚠️  WARNING: Firebase Admin service account key not found!');
+  console.warn('\x1b[33m%s\x1b[0m', '⚠️  Firebase Auth user deletion will not work.');
+  console.warn('\x1b[33m%s\x1b[0m', '⚠️  See README.md for setup instructions.');
+}
 
 const app = express();
 app.use(cors());
+app.use(express.json()); // Parse JSON request bodies
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -21,6 +33,9 @@ const io = new Server(server, {
 
 // Initialize socket handlers
 initializeSocket(io);
+
+// Mount the API routes
+app.use('/', userRoutes);
 
 // Basic health check route
 app.get('/', (req, res) => {
