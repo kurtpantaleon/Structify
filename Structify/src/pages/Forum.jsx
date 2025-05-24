@@ -277,8 +277,9 @@ const Forum = () => {
 
         {/* 🔙 Exit Button */}
         <div className="flex justify-end m-8">
-            <button onClick={() => navigate(-1)} className="z-10">
-                <img src={exit} alt="Close" className="w-6 h-6 cursor-pointer" />
+            <button onClick={() => navigate(-1)} className="p-2 rounded-full bg-red-600 hover:bg-red-700 transition duration-200"
+>
+                <X className="w-6 h-6 text-white" />
             </button>
         </div>
 
