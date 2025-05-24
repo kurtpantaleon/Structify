@@ -9,10 +9,11 @@ import Silverrank from '../assets/images/Silver Rank.png';
 import Bronzerank from '../assets/images/Bronze Rank.png';
 import fire from '../assets/images/fire.png';
 import profile from '../assets/images/sample profile.png';
-import exit from '../assets/images/X Icon.png';
 import Confetti from 'react-confetti';
 import { motion } from 'framer-motion';
 import { useWindowSize } from 'react-use';
+import { X } from 'lucide-react';
+
 
 function Leaderboard() {
   const [students, setStudents] = useState([]);
@@ -83,8 +84,9 @@ function Leaderboard() {
 
       <div className="pt-6 px-4 pb-6 relative z-10">
         <div className="absolute top-6 right-6">
-          <button onClick={() => navigate(-1)} className="bg-[#1c2b6c] rounded-full p-1 shadow-lg hover:scale-105 transition">
-            <img src={exit} alt="Close" className="w-6 h-6 cursor-pointer" />
+          <button onClick={() => navigate(-1)}className="p-2 rounded-full bg-red-600 hover:bg-red-700 transition duration-200"
+>
+             <X className="w-6 h-6 text-white" />
           </button>
         </div>
 
