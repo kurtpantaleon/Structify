@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Code, CheckCircle2, Clock, Trophy, AlertTriangle, Terminal, Heart, Zap, ArrowLeft } from 'lucide-react';
 import { getSocket, reconnectSocket } from '../../services/socketService';
- 
+import { recordMatch } from '../../utils/recordMatch';
+
 const challenges = [
   {
     id: 1,
@@ -261,6 +262,21 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
         if (data.completed && !winner) {
           setWinner(opponent.name);
           setChallengeComplete(true);
+
+          // Calculate completion time in seconds
+          const endTime = Date.now();
+          const timeTaken = Math.floor((endTime - (startTime || endTime)) / 1000);
+          setCompletionTime(timeTaken);
+
+          // Record match in Firestore
+          recordMatch({
+            player1: { uid: currentUser?.uid, name: currentUser?.name || 'You' },
+            player2: { uid: opponent?.userId, name: opponent?.name },
+            winnerUid: opponent?.userId,
+            challengeId: challenge?.id,
+            difficulty: challenge?.difficulty,
+            completionTime: timeTaken,
+          });
         }
       }
     };
@@ -307,6 +323,16 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
           if (onCompleteChallenge) {
             onCompleteChallenge(true, 'opponent_quit', challenge, timeTaken);
           }
+
+          // Record match in Firestore
+          recordMatch({
+            player1: { uid: currentUser?.uid, name: currentUser?.name || 'You' },
+            player2: { uid: opponent?.userId, name: opponent?.name },
+            winnerUid: currentUser?.uid,
+            challengeId: challenge?.id,
+            difficulty: challenge?.difficulty,
+            completionTime: timeTaken,
+          });
         }
       }, 30000); // 30 seconds wait for reconnection
     }
@@ -360,6 +386,16 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
             
             // Call onTimeUp handler with challenge data
             if (onTimeUp) onTimeUp(challenge, timeTaken);
+
+            // Record match in Firestore (opponent wins by timeout)
+            recordMatch({
+              player1: { uid: currentUser?.uid, name: currentUser?.name || 'You' },
+              player2: { uid: opponent?.userId, name: opponent?.name },
+              winnerUid: opponent?.userId,
+              challengeId: challenge?.id,
+              difficulty: challenge?.difficulty,
+              completionTime: timeTaken,
+            });
           }
           return 0;
         }
@@ -456,6 +492,16 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
         if (onCompleteChallenge) {
           onCompleteChallenge(true, 'solved', challenge, timeTaken);
         }
+
+        // Record match in Firestore
+        recordMatch({
+          player1: { uid: currentUser?.uid, name: currentUser?.name || 'You' },
+          player2: { uid: opponent?.userId, name: opponent?.name },
+          winnerUid: currentUser?.uid,
+          challengeId: challenge?.id,
+          difficulty: challenge?.difficulty,
+          completionTime: timeTaken,
+        });
       }
       
     } catch (err) {

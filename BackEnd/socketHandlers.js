@@ -297,6 +297,10 @@ function initializeSocket(io) {
         });
           // If challenge completed, update match state
         if (completed) {
+          // Notify both players that the match has ended
+          io.to(player1).emit('matchEnded', { matchId, winnerUid: userId });
+          io.to(player2).emit('matchEnded', { matchId, winnerUid: userId });
+
           activeMatches.delete(matchId); // Close the match
           matchChallenges.delete(matchId); // Clean up challenge data
         }

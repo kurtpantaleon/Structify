@@ -6,7 +6,7 @@ import '../../App.css'; // Import the main CSS file
 import CodingChallenge from './CodingChallenge';
 import { getSocket, reconnectSocket } from '../../services/socketService';
 import { initTestingModule } from '../../utils/challengeSync';
- 
+
 // Initialize challenge testing module for development
 if (process.env.NODE_ENV !== 'production') {
   // Make testing functions available in browser console
@@ -92,6 +92,15 @@ export default function Match() {
 
     return () => clearInterval(timer);
   }, [matchId, opponent, navigate]);
+  
+  useEffect(() => {
+    const socket = getSocket();
+    const handleMatchEnded = (data) => {
+      navigate('/CodeChallengeLobby', { state: { winnerUid: data.winnerUid } });
+    };
+    socket.on('matchEnded', handleMatchEnded);
+    return () => socket.off('matchEnded', handleMatchEnded);
+  }, [navigate]);
   
   // If there's no match ID or opponent data, show a loading state
   if (!matchId || !opponent) {
@@ -191,7 +200,7 @@ export default function Match() {
                     success,
                     matchId,
                     challengeData,
-                    opponent?.userId,
+                    opponent?.userId || 'unknown',
                     completionTime,
                     reason
                   );
@@ -199,8 +208,8 @@ export default function Match() {
                   // Record the match result globally
                   recordMatchResult(matchId, {
                     player1: currentUser.uid,
-                    player2: opponent?.userId,
-                    winner: success ? currentUser.uid : opponent?.userId,
+                    player2: opponent?.userId || 'unknown',
+                    winner: success ? currentUser.uid : (opponent?.userId || 'unknown'),
                     challengeId: challengeData?.id,
                     difficulty: challengeData?.difficulty,
                     completionTime,
@@ -221,7 +230,7 @@ export default function Match() {
                     false,  // Not a winner
                     matchId,
                     challenge,
-                    opponent?.userId,
+                    opponent?.userId || 'unknown',
                     completionTime,
                     'time_up'
                   );

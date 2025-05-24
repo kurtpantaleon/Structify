@@ -1,9 +1,9 @@
 // filepath: f:\repo\Structify\Structify\src\components\CodeChallengeLobby.jsx
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { db } from '../services/firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -55,6 +55,9 @@ export default function CodeChallengeLobby() {
   const [_historyLoading, setHistoryLoading] = useState(false);
   const navigate = useNavigate();
   const { currentUser: user } = useAuth();
+  const location = useLocation();
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
   
   // Fetch user stats and match history
   useEffect(() => {
@@ -84,38 +87,39 @@ export default function CodeChallengeLobby() {
             });
           }
           
-          // Try to fetch match history
+          // Fetch real match history from Firestore
           setHistoryLoading(true);
           try {
-            // In a real implementation, you would fetch match history from Firestore
-            // For now, we'll use the default matches with the user's name
-            const userDisplayName = userDoc.exists() ? 
-              userDoc.data().name || user.email?.split('@')[0] :
-              user.email?.split('@')[0] || 'User';
-            
-            setMatchHistory(defaultMatches.map(match => ({
-              ...match,
-              player1: match.player1.name === 'Bretana' ? 
-                { ...match.player1, name: userDisplayName, avatar: userDoc.exists() ? userDoc.data().avatar || profile : profile } : 
-                match.player1
-            })));
+            const matchesRef = collection(db, 'matches');
+            const q1 = query(matchesRef, where('player1.uid', '==', user.uid));
+            const q2 = query(matchesRef, where('player2.uid', '==', user.uid));
+            const [snap1, snap2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+            const matches = [];
+            snap1.forEach(doc => matches.push({ id: doc.id, ...doc.data(), isPlayer1: true }));
+            snap2.forEach(doc => matches.push({ id: doc.id, ...doc.data(), isPlayer1: false }));
+            // Sort by endedAt descending
+            matches.sort((a, b) => {
+              const aTime = a.endedAt?.seconds || 0;
+              const bTime = b.endedAt?.seconds || 0;
+              return bTime - aTime;
+            });
+            setMatchHistory(matches);
           } catch (historyError) {
             console.error('Error fetching match history:', historyError);
-            // Fall back to default matches if history fetch fails
-            setMatchHistory(defaultMatches);
+            setMatchHistory([]);
           } finally {
             setHistoryLoading(false);
           }
         } catch (error) {
           console.error('Error fetching user stats:', error);
           setError('Failed to load user data');
-          setMatchHistory(defaultMatches);
+          setMatchHistory([]);
         } finally {
           setLoading(false);
         }
       } else {
         setLoading(false);
-        setMatchHistory(defaultMatches);
+        setMatchHistory([]);
       }
     };
 
@@ -287,6 +291,19 @@ export default function CodeChallengeLobby() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
   
+  useEffect(() => {
+    if (location.state && location.state.winnerUid) {
+      if (user && location.state.winnerUid === user.uid) {
+        setModalType('win');
+      } else {
+        setModalType('lose');
+      }
+      setShowModal(true);
+      // Optionally clear the state after showing the modal
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, user]);
+  
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-[#0c1836] text-white p-4">
@@ -430,7 +447,7 @@ export default function CodeChallengeLobby() {
           </motion.button>
         </div>
       </div>
-      
+       
       <div 
         className="bg-[#1e2a6b] rounded-2xl shadow-xl p-8 w-full max-w-2xl space-y-4 border-4 border-blue-800 mt-6 animate-fadeIn"
       >
@@ -464,59 +481,63 @@ export default function CodeChallengeLobby() {
             <p className="text-sm mt-2">Play some matches to see your history here!</p>
           </div>
         ) : (
-          matchHistory.map((match, idx) => (
-            <motion.div
-              key={idx}
-              whileHover={{ scale: 1.02 }}
-              className="relative border-2 border-blue-600 rounded-xl p-4 bg-cover bg-center shadow-md overflow-hidden"
-              style={{ backgroundImage: `url(${HistoryBg})` }}
-            >
-              <div className="absolute inset-0 bg-opacity-50 rounded-xl"></div>
-              <div className="relative z-10 flex justify-between items-center">
-                <div className="flex items-center space-x-3">
-                  <img src={match.player1.avatar} alt={match.player1.name} className="w-10 h-10 rounded-full border-2 border-white" />
-                  <span className={`font-bold text-lg ${match.winner === 'player1' ? 'text-yellow-300' : ''}`}>
-                    {match.player1.name} {match.winner === 'player1' ? '👑' : ''}
-                  </span>
-                  <div className="flex items-center space-x-1 text-lg text-white-400">
-                    <img src={fireIcon} alt="rank" className="w-10 h-10" />
-                    <span>{match.player1.rank}</span>
+          matchHistory.map((match, idx) => {
+            const isWinner = match.winnerUid === user?.uid;
+            const opponent = match.isPlayer1 ? match.player2 : match.player1;
+            return (
+              <motion.div
+                key={match.id}
+                whileHover={{ scale: 1.02 }}
+                className="relative border-2 border-blue-600 rounded-xl p-4 bg-cover bg-center shadow-md overflow-hidden mb-4"
+                style={{ backgroundImage: `url(${HistoryBg})` }}
+              >
+                <div className="absolute inset-0 bg-opacity-50 rounded-xl"></div>
+                <div className="relative z-10 flex justify-between items-center">
+                  {/* User */}
+                  <div className="flex flex-col items-center">
+                    <img src={userStats?.avatar || profile} alt={userStats?.name} className="w-10 h-10 rounded-full border-2 border-white" />
+                    <span className="font-bold text-lg text-yellow-300">{userStats?.name} {isWinner ? '👑' : ''}</span>
+                    <div className="flex items-center mt-1">
+                      <img src={fireIcon} alt="rank" className="w-5 h-5 mr-1" />
+                      <span className="font-semibold text-white text-sm">{userStats?.rank}</span>
+                    </div>
+                  </div>
+                  {/* VS */}
+                  <div className="px-4 py-1 bg-blue-900/50 rounded-full border border-blue-500/30 text-lg font-bold text-white mx-3">
+                    VS
+                  </div>
+                  {/* Opponent */}
+                  <div className="flex flex-col items-center">
+                    <img src={opponent?.avatar || profile} alt={opponent?.name} className="w-10 h-10 rounded-full border-2 border-white" />
+                    <span className="font-bold text-lg">{opponent?.name} {(!isWinner && match.winnerUid) ? '👑' : ''}</span>
+                    <div className="flex items-center mt-1">
+                      <img src={fireIcon} alt="rank" className="w-5 h-5 mr-1" />
+                      <span className="font-semibold text-white text-sm">{opponent?.rank || ''}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="px-4 py-1 bg-blue-900/50 rounded-full border border-blue-500/30 text-sm font-medium">
-                  VS
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-1 text-lg text-white-400">
-                    <span>{match.player2.rank}</span>
-                    <img src={fireIcon} alt="rank" className="w-10 h-10" />
+                <div className="mt-3 flex justify-between items-center text-xs">
+                  <div className="text-left text-blue-300">
+                    {match.difficulty && (
+                      <span className="bg-blue-800/60 px-2 py-1 rounded-md mr-2">
+                        {match.difficulty}
+                      </span>
+                    )}
+                    {match.completionTime && (
+                      <span className="bg-indigo-800/60 px-2 py-1 rounded-md">
+                        Time: {match.completionTime}s
+                      </span>
+                    )}
                   </div>
-                  <span className={`font-bold text-lg ${match.winner === 'player2' ? 'text-yellow-300' : ''}`}>
-                    {match.player2.name} {match.winner === 'player2' ? '👑' : ''}
-                  </span>
-                  <img src={match.player2.avatar} alt={match.player2.name} className="w-10 h-10 rounded-full border-2 border-white" />
+                  <div className="text-right text-blue-300">
+                    {match.endedAt && match.endedAt.seconds && (
+                      new Date(match.endedAt.seconds * 1000).toLocaleDateString()
+                    )}
+                  </div>
                 </div>
-              </div>
-              
-              <div className="mt-3 flex justify-between items-center text-xs">
-                <div className="text-left text-blue-300">
-                  {match.language && (
-                    <span className="bg-blue-800/60 px-2 py-1 rounded-md mr-2">
-                      Lang: {match.language || 'javascript'}
-                    </span>
-                  )}
-                  {match.completionTime && (
-                    <span className="bg-indigo-800/60 px-2 py-1 rounded-md">
-                      Time: {Math.floor(match.completionTime / 60)}:{(match.completionTime % 60).toString().padStart(2, '0')}
-                    </span>
-                  )}
-                </div>
-                <div className="text-right text-blue-300">
-                  {new Date(match.date).toLocaleDateString()}
-                </div>
-              </div>
-            </motion.div>
-          ))
+              </motion.div>
+            );
+          })
         )}
       </div>
 
@@ -530,6 +551,30 @@ export default function CodeChallengeLobby() {
           <X className="w-6 h-6 text-white" />
         </button>
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-sm mx-auto">
+            {modalType === 'win' ? (
+              <>
+                <h2 className="text-2xl font-bold text-green-600 mb-2">Congratulations!</h2>
+                <p className="text-lg text-gray-800 mb-4">You won the match!</p>
+              </>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-red-600 mb-2">Better Luck Next Time!</h2>
+                <p className="text-lg text-gray-800 mb-4">You lost the match. Keep practicing!</p>
+              </>
+            )}
+            <button
+              className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
+              onClick={() => setShowModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
