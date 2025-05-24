@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { openai } from "../../services/openaiConfig";
 import { snippetService } from "../../services/snippetService";
+import { X } from 'lucide-react';
+
 
 const DSA_CATEGORIES = [
   { 
@@ -691,9 +693,10 @@ function CodePlayground() {
       <div className="flex-1 flex flex-col p-4 relative order-1 lg:order-2 h-[50vh] lg:h-full">
         <button
           onClick={() => navigate('/mainPage')}
-          className="absolute top-4 right-4 text-white hover:text-gray-300 transition-all duration-300"
+          className="absolute top-4 right-4 p-2 rounded-full bg-red-600 hover:bg-red-700 transition duration-20"
         >
-          <i className="far fa-times text-xl"></i>
+          <X className="w-6 h-6 text-white" />
+
         </button>
 
         <h2 className="text-3xl font-bold mb-6 text-center text-cyan-400">
