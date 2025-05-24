@@ -6,9 +6,9 @@ import '../../App.css'; // Import the main CSS file
 import CodingChallenge from './CodingChallenge';
 import { getSocket, reconnectSocket } from '../../services/socketService';
 import { initTestingModule } from '../../utils/challengeSync';
-
+ 
 // Initialize challenge testing module for development
-if (import.meta.env.MODE !== 'production') {
+if (process.env.NODE_ENV !== 'production') {
   // Make testing functions available in browser console
   setTimeout(() => {
     initTestingModule();

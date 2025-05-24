@@ -109,7 +109,14 @@ function CodePlayground() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [language, setLanguage] = useState('javascript');
-  const [availableLanguages, setAvailableLanguages] = useState([]);
+  const [availableLanguages] = useState([
+    { id: 'javascript', name: 'JavaScript' },
+    { id: 'csharp', name: 'C#' },
+    { id: 'java', name: 'Java' },
+    { id: 'c', name: 'C' },
+    { id: 'cpp', name: 'C++' },
+    { id: 'python', name: 'Python' }
+  ]);
 
   // Memoized helper functions
   const extractComplexityInfo = useCallback((code) => {
@@ -164,7 +171,6 @@ function CodePlayground() {
 
   // Store editor instance
   const handleEditorDidMount = useCallback((editor, monaco) => {
-    setAvailableLanguages(monaco.languages.getLanguages());
     editorRef.current = editor;
   }, []);
   // Function to execute code
@@ -708,7 +714,7 @@ function CodePlayground() {
           >
             {availableLanguages.map(lang => (
               <option key={lang.id} value={lang.id}>
-                {lang.id}
+                {lang.name}
               </option>
             ))}
           </select>
