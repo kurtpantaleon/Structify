@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Code, CheckCircle2, Clock, Trophy, AlertTriangle, Terminal, Heart, Zap, ArrowLeft } from 'lucide-react';
 import { getSocket, reconnectSocket } from '../../services/socketService';
 import { recordMatch } from '../../utils/recordMatch';
+import { useGameStats } from '../../context/gameStatsContext';
 
 const challenges = [
   {
@@ -130,7 +131,9 @@ const challenges = [
 ];
 
 export default function CodingChallenge({ matchId, opponent, currentUser, onCompleteChallenge, onTimeUp, difficulty = 'Easy' }) {
-  const navigate = useNavigate();    const [challenge, setChallenge] = useState(null);
+  const navigate = useNavigate();
+  const { addRankPoints } = useGameStats();
+  const [challenge, setChallenge] = useState(null);
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -144,6 +147,9 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
   const [isLoadingChallenge, setIsLoadingChallenge] = useState(true);
   const [startTime, setStartTime] = useState(null);
   const [completionTime, setCompletionTime] = useState(null);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [completionMessage, setCompletionMessage] = useState('');
+  const [completionType, setCompletionType] = useState(''); // 'win', 'lose', or 'timeout'
     // Request challenge assignment when the component mounts
   useEffect(() => {
     // Make sure we have a working socket connection
@@ -242,6 +248,9 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
         if (data.completed && !winner) {
           setWinner(opponent.name);
           setChallengeComplete(true);
+          setCompletionType('lose');
+          setCompletionMessage(`${opponent.name} completed the challenge first!`);
+          setShowCompletionModal(true);
         }
       }
     };
@@ -251,6 +260,12 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
         setOpponentQuit(true);
         setWinner(currentUser.name);
         setChallengeComplete(true);
+        setCompletionType('win');
+        setCompletionMessage('Your opponent left the match. Victory by forfeit!');
+        setShowCompletionModal(true);
+        if (typeof addRankPoints === 'function') {
+          addRankPoints(50);
+        }
       }
     };
     
@@ -285,7 +300,8 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
     // Timer countdown
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {        if (prev <= 1) {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
           clearInterval(timer);
           if (!challengeComplete) {
             setChallengeComplete(true);
@@ -307,6 +323,11 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
               difficulty: challenge?.difficulty,
               completionTime: timeTaken,
             });
+
+            // Show timeout modal
+            setCompletionType('timeout');
+            setCompletionMessage('Time\'s up! Keep practicing to improve your speed!');
+            setShowCompletionModal(true);
           }
           return 0;
         }
@@ -316,6 +337,26 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
     
     return () => clearInterval(timer);
   }, [challengeComplete, onTimeUp, challenge, startTime]);
+  
+  // Listen for matchEnded event to lock the editor and show modal if opponent wins
+  useEffect(() => {
+    const socket = getSocket();
+    const handleMatchEnded = (data) => {
+      // Only act if the matchId matches
+      if (data.matchId === matchId) {
+        // If current user is not the winner, show lose modal
+        if (data.winnerUid !== currentUser?.uid) {
+          setChallengeComplete(true);
+          setWinner(opponent?.name || 'Opponent');
+          setCompletionType('lose');
+          setCompletionMessage(`${opponent?.name || 'Opponent'} completed the challenge first!`);
+          setShowCompletionModal(true);
+        }
+      }
+    };
+    socket.on('matchEnded', handleMatchEnded);
+    return () => socket.off('matchEnded', handleMatchEnded);
+  }, [matchId, currentUser, opponent]);
   
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -390,10 +431,14 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
         progress,
         completed: passed === challenge.testCases.length
       });
-        // If all tests passed, mark challenge as complete
+      
+      // If all tests passed, show completion modal
       if (passed === challenge.testCases.length) {
         setChallengeComplete(true);
         setWinner(currentUser?.name || 'You');
+        setCompletionType('win');
+        setCompletionMessage('Congratulations! You completed the challenge first!');
+        setShowCompletionModal(true);
         
         // Calculate completion time in seconds
         const endTime = Date.now();
@@ -413,6 +458,11 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
           difficulty: challenge?.difficulty,
           completionTime: timeTaken,
         });
+
+        // Award 50 rank points to the winner
+        if (typeof addRankPoints === 'function') {
+          addRankPoints(50);
+        }
       }
       
     } catch (err) {
@@ -624,6 +674,41 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
           </div>
         </div>
       </div>
+
+      {/* Completion Modal */}
+      {showCompletionModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-lg z-50">
+          <div className="backdrop-blur-lg bg-white/20 border border-blue-300/40 shadow-2xl rounded-2xl p-8 max-w-md w-full mx-4" style={{boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)'}}>
+            <div className="text-center">
+              {completionType === 'win' ? (
+                <>
+                  <Trophy className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+                  <h2 className="text-2xl font-bold text-green-400 mb-2">Victory!</h2>
+                  <p className="text-lg text-blue-200 mb-6">{completionMessage}</p>
+                </>
+              ) : completionType === 'lose' ? (
+                <>
+                  <Zap className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+                  <h2 className="text-2xl font-bold text-blue-400 mb-2">Challenge Complete</h2>
+                  <p className="text-lg text-blue-200 mb-6">{completionMessage}</p>
+                </>
+              ) : (
+                <>
+                  <Clock className="w-16 h-16 text-red-400 mx-auto mb-4" />
+                  <h2 className="text-2xl font-bold text-red-400 mb-2">Time's Up!</h2>
+                  <p className="text-lg text-blue-200 mb-6">{completionMessage}</p>
+                </>
+              )}
+              <button
+                onClick={() => navigate('/CodeChallengeLobby')}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+              >
+                Return to Lobby
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
