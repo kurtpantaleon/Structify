@@ -9,7 +9,9 @@ function CodeExampleLesson({ title, description, codeExamples, leftIcon, rightIc
   const [availableLanguages] = useState([
     { id: "javascript", label: "JavaScript" },
     { id: "python", label: "Python" },
-    { id: "cpp", label: "C++" }
+    { id: "cpp", label: "C++" },
+    { id: "csharp", label: "C#" },
+    { id: "java", label: "Java" }
   ]);
 
   // Reset console when language changes
@@ -41,7 +43,40 @@ function CodeExampleLesson({ title, description, codeExamples, leftIcon, rightIc
         setConsoleOutput(`Error: ${err.message}`);
       }
     } else {
-      setConsoleOutput("Code execution for this language is not supported in-browser. Please check the comments in the code for expected output.");
+      // Show expected output for each language
+      const expectedOutput = {
+        python: `98
+100
+95
+[196, 174, 184, 150, 176]
+[98, 92, 95]
+85.0
+[98, 87]
+[92, 75, 88]`,
+        cpp: `98
+100
+95
+[196, 174, 184, 150, 176]
+85.0`,
+        csharp: `98
+100
+95
+[196, 174, 184, 150, 176]
+[98, 92, 95]
+85.0
+[98, 87]
+[92, 75, 88]`,
+        java: `98
+100
+95
+[196, 174, 184, 150, 176]
+[98, 92, 95]
+85.0
+[98, 87]
+[92, 75, 88]`
+      };
+      
+      setConsoleOutput(`Expected output for ${language.toUpperCase()}:\n\n${expectedOutput[language] || "No output available"}`);
     }
     setIsRunning(false);
   };

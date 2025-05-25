@@ -21,9 +21,169 @@ export default function L2Page1() {
   // Array code example for slide 3
   const arrayCodeExample = [
     {
-      javascript: `// Array Example\nconst scores = [98, 87, 92, 75, 88];\n\n// Accessing elements\nconsole.log(scores[0]); // Output: 98\n\n// Adding a score\nscores.push(100);\n\n// Removing the last score\nscores.pop();\n\n// Looping through scores\nscores.forEach(score => console.log(score));`,
-      python: `# Array Example\nscores = [98, 87, 92, 75, 88]\n\n# Accessing elements\nprint(scores[0])  # Output: 98\n\n# Adding a score\nscores.append(100)\n\n# Removing the last score\nscores.pop()\n\n# Looping through scores\nfor score in scores:\n    print(score)`,
-      cpp: `// Array Example\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> scores = {98, 87, 92, 75, 88};\n    // Accessing elements\n    cout << scores[0] << endl; // Output: 98\n    // Adding a score\n    scores.push_back(100);\n    // Removing the last score\n    scores.pop_back();\n    // Looping through scores\n    for (int score : scores) {\n        cout << score << endl;\n    }\n    return 0;\n}`
+      javascript: `// JavaScript Array Example
+// Modern array operations with ES6+ features
+const scores = [98, 87, 92, 75, 88];
+
+// Accessing elements
+console.log(scores[0]); // Output: 98
+
+// Adding elements
+scores.push(100); // Add to end
+scores.unshift(95); // Add to beginning
+
+// Removing elements
+scores.pop(); // Remove from end
+scores.shift(); // Remove from beginning
+
+// Modern array methods
+const doubledScores = scores.map(score => score * 2);
+const highScores = scores.filter(score => score >= 90);
+const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+
+// Array destructuring
+const [first, second, ...rest] = scores;`,
+
+      python: `# Python List Example
+# Python's list is a dynamic array implementation
+scores = [98, 87, 92, 75, 88]
+
+# Accessing elements
+print(scores[0])  # Output: 98
+print(scores[-1])  # Last element: 88
+
+# Adding elements
+scores.append(100)  # Add to end
+scores.insert(0, 95)  # Add to beginning
+
+# Removing elements
+scores.pop()  # Remove from end
+scores.pop(0)  # Remove from beginning
+
+# List comprehensions
+doubled_scores = [score * 2 for score in scores]
+high_scores = [score for score in scores if score >= 90]
+average_score = sum(scores) / len(scores)
+
+# List slicing
+first_two = scores[:2]
+last_three = scores[-3:]`,
+
+      cpp: `// C++ Vector Example
+// Using std::vector for dynamic arrays
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <numeric>
+
+int main() {
+    std::vector<int> scores = {98, 87, 92, 75, 88};
+    
+    // Accessing elements
+    std::cout << scores[0] << std::endl;  // Output: 98
+    
+    // Adding elements
+    scores.push_back(100);  // Add to end
+    scores.insert(scores.begin(), 95);  // Add to beginning
+    
+    // Removing elements
+    scores.pop_back();  // Remove from end
+    scores.erase(scores.begin());  // Remove from beginning
+    
+    // Vector operations
+    std::vector<int> doubled_scores;
+    std::transform(scores.begin(), scores.end(), 
+                  std::back_inserter(doubled_scores),
+                  [](int score) { return score * 2; });
+    
+    // Calculate average
+    double average = std::accumulate(scores.begin(), scores.end(), 0.0) / scores.size();
+    
+    return 0;
+}`,
+
+      csharp: `// C# List Example
+// Using List<T> for dynamic arrays
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Program {
+    static void Main() {
+        // Initialize list
+        List<int> scores = new List<int> { 98, 87, 92, 75, 88 };
+        
+        // Accessing elements
+        Console.WriteLine(scores[0]);  // Output: 98
+        
+        // Adding elements
+        scores.Add(100);  // Add to end
+        scores.Insert(0, 95);  // Add to beginning
+        
+        // Removing elements
+        scores.RemoveAt(scores.Count - 1);  // Remove from end
+        scores.RemoveAt(0);  // Remove from beginning
+        
+        // LINQ operations
+        var doubledScores = scores.Select(score => score * 2).ToList();
+        var highScores = scores.Where(score => score >= 90).ToList();
+        double averageScore = scores.Average();
+        
+        // Collection initializer
+        var firstTwo = scores.Take(2).ToList();
+        var lastThree = scores.Skip(Math.Max(0, scores.Count - 3)).ToList();
+    }
+}`,
+
+      java: `// Java ArrayList Example
+// Using ArrayList for dynamic arrays
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class Main {
+    public static void main(String[] args) {
+        // Initialize list
+        List<Integer> scores = new ArrayList<>();
+        scores.add(98);
+        scores.add(87);
+        scores.add(92);
+        scores.add(75);
+        scores.add(88);
+        
+        // Accessing elements
+        System.out.println(scores.get(0));  // Output: 98
+        
+        // Adding elements
+        scores.add(100);  // Add to end
+        scores.add(0, 95);  // Add to beginning
+        
+        // Removing elements
+        scores.remove(scores.size() - 1);  // Remove from end
+        scores.remove(0);  // Remove from beginning
+        
+        // Stream operations
+        List<Integer> doubledScores = scores.stream()
+            .map(score -> score * 2)
+            .collect(Collectors.toList());
+            
+        List<Integer> highScores = scores.stream()
+            .filter(score -> score >= 90)
+            .collect(Collectors.toList());
+            
+        double averageScore = scores.stream()
+            .mapToInt(Integer::intValue)
+            .average()
+            .orElse(0.0);
+            
+        // Sublist operations
+        List<Integer> firstTwo = scores.subList(0, Math.min(2, scores.size()));
+        List<Integer> lastThree = scores.subList(
+            Math.max(0, scores.size() - 3), 
+            scores.size()
+        );
+    }
+}`
     }
   ];
 
