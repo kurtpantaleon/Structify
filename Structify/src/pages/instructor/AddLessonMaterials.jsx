@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
 import { useAuth } from '../../context/authContextProvider';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,7 @@ import ActivityForm from './ActivityForm';
 import QuizForm from './QuizForm';
 import useFileUpload from './useFileUpload';
 import { getStorage, ref, deleteObject } from 'firebase/storage';
-import { BookOpen, FileText, HelpCircle, Plus, Loader, CheckCircle, AlertCircle, X } from 'lucide-react';
+import { BookOpen, FileText, HelpCircle, Plus, Loader, CheckCircle, AlertCircle, X, BarChart2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AddLessonMaterials = () => {
@@ -66,6 +66,13 @@ const AddLessonMaterials = () => {
 
     const storage = getStorage();
 
+    // Scores state
+    const [scoresData, setScoresData] = useState({
+        quizzes: [],
+        activities: []
+    });
+    const [isLoadingScores, setIsLoadingScores] = useState(false);
+
     // Add question handler
     const handleAddQuestion = () => {
         if (activeTab === 'activities') {
@@ -95,7 +102,7 @@ const AddLessonMaterials = () => {
             setNotification(prev => ({ ...prev, show: false }));
         }, 5000);
     };
-
+ 
     // Lesson submit with enhanced feedback
     const handleLessonSubmit = async (e) => {
         e.preventDefault();
@@ -249,6 +256,50 @@ const AddLessonMaterials = () => {
         }
     };
 
+    // Fetch scores data
+    const fetchScores = async () => {
+        setIsLoadingScores(true);
+        try {
+            // Fetch quiz scores
+            const quizScoresQuery = query(
+                collection(db, 'quiz_submissions'),
+                where('instructorId', '==', currentUser.uid)
+            );
+            const quizScoresSnapshot = await getDocs(quizScoresQuery);
+            const quizScores = quizScoresSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            // Fetch activity scores
+            const activityScoresQuery = query(
+                collection(db, 'activity_submissions'),
+                where('instructorId', '==', currentUser.uid)
+            );
+            const activityScoresSnapshot = await getDocs(activityScoresQuery);
+            const activityScores = activityScoresSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            setScoresData({
+                quizzes: quizScores,
+                activities: activityScores
+            });
+        } catch (error) {
+            showNotification('error', 'Failed to fetch scores');
+        } finally {
+            setIsLoadingScores(false);
+        }
+    };
+
+    // Fetch scores when scores tab is active
+    useEffect(() => {
+        if (activeTab === 'scores') {
+            fetchScores();
+        }
+    }, [activeTab]);
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200">
             <Header />
@@ -334,6 +385,17 @@ const AddLessonMaterials = () => {
                                     <HelpCircle size={18} />
                                     <span>Quizzes</span>
                                 </button>
+                                <button
+                                    className={`px-4 py-3 rounded-t-lg flex items-center space-x-2 font-medium transition-all ${
+                                        activeTab === 'scores' ? 
+                                        'bg-white text-orange-600 shadow-sm border-t border-r border-l border-gray-200' : 
+                                        'text-gray-600 hover:bg-gray-100'
+                                    }`}
+                                    onClick={() => setActiveTab('scores')}
+                                >
+                                    <BarChart2 size={18} />
+                                    <span>Scores</span>
+                                </button>
                             </div>
                         </div>
                         
@@ -357,15 +419,20 @@ const AddLessonMaterials = () => {
                             <div className="mb-6">
                                 <h2 className={`text-2xl font-bold ${
                                     activeTab === 'lessons' ? 'text-blue-700' : 
-                                    activeTab === 'activities' ? 'text-purple-700' : 'text-green-700'
+                                    activeTab === 'activities' ? 'text-purple-700' : 
+                                    activeTab === 'quizzes' ? 'text-green-700' :
+                                    'text-orange-700'
                                 }`}>
                                     {activeTab === 'lessons' ? 'Create New Lesson' : 
-                                    activeTab === 'activities' ? 'Create New Activity' : 'Create New Quiz'}
+                                    activeTab === 'activities' ? 'Create New Activity' : 
+                                    activeTab === 'quizzes' ? 'Create New Quiz' :
+                                    'View Scores & Results'}
                                 </h2>
                                 <p className="text-gray-600 mt-1">
                                     {activeTab === 'lessons' ? 'Add lesson content, media, and resources for your students.' : 
                                     activeTab === 'activities' ? 'Create interactive activities for skill practice.' : 
-                                    'Build assessments to test student knowledge.'}
+                                    activeTab === 'quizzes' ? 'Build assessments to test student knowledge.' :
+                                    'Monitor student performance and track progress.'}
                                 </p>
                             </div>
                             
@@ -425,43 +492,135 @@ const AddLessonMaterials = () => {
                                         />
                                     </motion.div>
                                 )}
+                                {activeTab === 'scores' && (
+                                    <motion.div
+                                        key="scores"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                    >
+                                        {isLoadingScores ? (
+                                            <div className="flex items-center justify-center h-64">
+                                                <Loader className="animate-spin text-orange-600" size={32} />
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-6">
+                                                {/* Quiz Scores Section */}
+                                                <div className="bg-white rounded-lg shadow p-6">
+                                                    <h3 className="text-xl font-semibold text-green-700 mb-4">Quiz Results</h3>
+                                                    {scoresData.quizzes.length === 0 ? (
+                                                        <p className="text-gray-500">No quiz submissions yet.</p>
+                                                    ) : (
+                                                        <div className="overflow-x-auto">
+                                                            <table className="min-w-full divide-y divide-gray-200">
+                                                                <thead className="bg-gray-50">
+                                                                    <tr>
+                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quiz Title</th>
+                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody className="bg-white divide-y divide-gray-200">
+                                                                    {scoresData.quizzes.map((quiz) => (
+                                                                        <tr key={quiz.id}>
+                                                                            <td className="px-6 py-4 whitespace-nowrap">{quiz.studentName}</td>
+                                                                            <td className="px-6 py-4 whitespace-nowrap">{quiz.quizTitle}</td>
+                                                                            <td className="px-6 py-4 whitespace-nowrap">{quiz.score}%</td>
+                                                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                                                {new Date(quiz.submittedAt?.toDate()).toLocaleDateString()}
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Activity Scores Section */}
+                                                <div className="bg-white rounded-lg shadow p-6">
+                                                    <h3 className="text-xl font-semibold text-purple-700 mb-4">Activity Results</h3>
+                                                    {scoresData.activities.length === 0 ? (
+                                                        <p className="text-gray-500">No activity submissions yet.</p>
+                                                    ) : (
+                                                        <div className="overflow-x-auto">
+                                                            <table className="min-w-full divide-y divide-gray-200">
+                                                                <thead className="bg-gray-50">
+                                                                    <tr>
+                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity Title</th>
+                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody className="bg-white divide-y divide-gray-200">
+                                                                    {scoresData.activities.map((activity) => (
+                                                                        <tr key={activity.id}>
+                                                                            <td className="px-6 py-4 whitespace-nowrap">{activity.studentName}</td>
+                                                                            <td className="px-6 py-4 whitespace-nowrap">{activity.activityTitle}</td>
+                                                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                                                                    activity.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                                                                    activity.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' : 
+                                                                                    'bg-gray-100 text-gray-800'
+                                                                                }`}>
+                                                                                    {activity.status}
+                                                                                </span>
+                                                                            </td>
+                                                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                                                {new Date(activity.submittedAt?.toDate()).toLocaleDateString()}
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
                             </AnimatePresence>
                             
                             {/* Submit button footer */}
-                            <div className="mt-8 pt-6 border-t border-gray-200 flex justify-end">
-                                <button
-                                    onClick={() => {
-                                        if (activeTab === 'lessons') {
-                                            document.getElementById('lesson-form').requestSubmit();
-                                        } else if (activeTab === 'activities') {
-                                            document.getElementById('activity-form').requestSubmit();
-                                        } else {
-                                            document.getElementById('quiz-form').requestSubmit();
-                                        }
-                                    }}
-                                    disabled={isSubmitting}
-                                    className={`px-6 py-3 rounded-lg font-medium text-white flex items-center space-x-2 ${
-                                        activeTab === 'lessons' ? 'bg-blue-600 hover:bg-blue-700' : 
-                                        activeTab === 'activities' ? 'bg-purple-600 hover:bg-purple-700' : 
-                                        'bg-green-600 hover:bg-green-700'
-                                    } disabled:opacity-70 transition-all duration-200`}
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <Loader className="animate-spin" size={18} />
-                                            <span>Submitting...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Plus size={18} />
-                                            <span>{`Create ${
-                                                activeTab === 'lessons' ? 'Lesson' : 
-                                                activeTab === 'activities' ? 'Activity' : 'Quiz'
-                                            }`}</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
+                            {activeTab !== 'scores' && (
+                                <div className="mt-8 pt-6 border-t border-gray-200 flex justify-end">
+                                    <button
+                                        onClick={() => {
+                                            if (activeTab === 'lessons') {
+                                                document.getElementById('lesson-form').requestSubmit();
+                                            } else if (activeTab === 'activities') {
+                                                document.getElementById('activity-form').requestSubmit();
+                                            } else {
+                                                document.getElementById('quiz-form').requestSubmit();
+                                            }
+                                        }}
+                                        disabled={isSubmitting}
+                                        className={`px-6 py-3 rounded-lg font-medium text-white flex items-center space-x-2 ${
+                                            activeTab === 'lessons' ? 'bg-blue-600 hover:bg-blue-700' : 
+                                            activeTab === 'activities' ? 'bg-purple-600 hover:bg-purple-700' : 
+                                            'bg-green-600 hover:bg-green-700'
+                                        } disabled:opacity-70 transition-all duration-200`}
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <Loader className="animate-spin" size={18} />
+                                                <span>Submitting...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Plus size={18} />
+                                                <span>{`Create ${
+                                                    activeTab === 'lessons' ? 'Lesson' : 
+                                                    activeTab === 'activities' ? 'Activity' : 'Quiz'
+                                                }`}</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                     
@@ -497,6 +656,14 @@ const AddLessonMaterials = () => {
                                                 <li>Include a mix of difficulty levels</li>
                                                 <li>Assign appropriate point values to questions</li>
                                                 <li>Create clear and unambiguous question text</li>
+                                            </>
+                                        )}
+                                        {activeTab === 'scores' && (
+                                            <>
+                                                <li>Monitor student performance across all assessments</li>
+                                                <li>Track completion rates for activities</li>
+                                                <li>Identify areas where students may need additional support</li>
+                                                <li>Use the data to improve future lessons and activities</li>
                                             </>
                                         )}
                                     </ul>
