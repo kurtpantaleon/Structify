@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Menu from '../assets/images/Threedot Icon.png';
-import { Users, BookOpen, UserCheck } from 'lucide-react';
+import { Users, BookOpen, UserCheck, Calendar } from 'lucide-react';
 
-function SectionCard({ sectionName, instructor, studentCount, academicYear, onClick, onEdit, onDelete, hideMenu = false }) {
+function SectionCard({ sectionName, instructor, studentCount, academicYear, students = [], isAllYearsView = false, onClick, onEdit, onDelete, hideMenu = false }) {
   const [showMenu, setShowMenu] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -55,6 +55,14 @@ function SectionCard({ sectionName, instructor, studentCount, academicYear, onCl
           <div className="absolute inset-0 bg-white opacity-10 pattern-grid-lg"></div>
         </div>
         
+        {/* Academic Year Badge - Always visible */}
+        <div className="absolute top-3 left-3">
+          <div className="bg-white/20 backdrop-blur-md px-2 py-1 rounded-md flex items-center">
+            <Calendar className="w-3 h-3 text-white mr-1" />
+            <span className="text-xs font-medium text-white">{academicYear}</span>
+          </div>
+        </div>
+        
         {/* Section Name */}
         <div className="absolute bottom-4 left-4 right-4">
           <h3 className="text-xl font-bold text-white truncate">
@@ -97,25 +105,26 @@ function SectionCard({ sectionName, instructor, studentCount, academicYear, onCl
       {/* Info Section */}
       <div className="p-4 bg-white border-t border-gray-200">
         <div className="flex items-center text-gray-600 mb-2">
-          <UserCheck className="w-4 h-4 mr-2 text-blue-600" />
+          <UserCheck className="w-4 h-4 mr-2 text-blue-600 flex-shrink-0" />
           <p className="text-sm">
-            <span className="font-medium">Instructor:</span> <span className="text-gray-700">{instructor}</span>
+            <span className="font-medium">Instructor:</span> <span className="text-gray-700 truncate">{instructor}</span>
           </p>
         </div>
-        <div className="flex items-center text-gray-600">
-          <Users className="w-4 h-4 mr-2 text-blue-600" />
+        <div className="flex items-center text-gray-600 mb-2">
+          <Users className="w-4 h-4 mr-2 text-blue-600 flex-shrink-0" />
           <p className="text-sm">
             <span className="font-medium">Students:</span> <span className="text-gray-700">{studentCount}</span>
           </p>
         </div>
-        {academicYear && (
-          <div className="flex items-center text-gray-600">
-            <span className="font-medium mr-1.5">Year:</span> 
-            <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md text-xs font-medium">
+        {/* <div className="flex items-center text-gray-600">
+          <Calendar className="w-4 h-4 mr-2 text-blue-600 flex-shrink-0" />
+          <p className="text-sm flex flex-wrap items-center">
+            <span className="font-medium mr-1">Year:</span> 
+            <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md text-xs font-medium max-w-[150px] truncate">
               {academicYear}
             </span>
-          </div>
-        )}
+          </p>
+        </div> */}
       </div>
     </div>
   );

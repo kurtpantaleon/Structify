@@ -86,8 +86,27 @@ function ViewStudentsPage() {
         const q = query(collection(db, 'users'), where('role', '==', 'student'));
         const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setStudents(data);
-        setFilteredStudents(data);
+        
+        // Fetch all class information to get academic years
+        const classesSnapshot = await getDocs(collection(db, 'classes'));
+        const classesData = {};
+        classesSnapshot.docs.forEach(doc => {
+          const classData = doc.data();
+          if (classData.sectionName) {
+            classesData[classData.sectionName] = {
+              academicYear: classData.academicYear || 'Not specified'
+            };
+          }
+        });
+        
+        // Attach academic year information to each student
+        const enhancedData = data.map(student => ({
+          ...student,
+          academicYear: student.section ? classesData[student.section]?.academicYear || 'Not specified' : ''
+        }));
+        
+        setStudents(enhancedData);
+        setFilteredStudents(enhancedData);
       } catch (error) {
         console.error('Error fetching students:', error);
       } finally {
@@ -1107,7 +1126,14 @@ function ViewStudentsPage() {
                           <Layers className="w-5 h-5" />
                         }
                       </div>
-                      <h3 className="text-lg font-bold text-[#141a35]">{section}</h3>
+                      <div>
+                        <h3 className="text-lg font-bold text-[#141a35]">{section}</h3>
+                        {section !== 'Unassigned' && studentsInSection.length > 0 && studentsInSection[0].academicYear && (
+                          <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                            {studentsInSection[0].academicYear}
+                          </span>
+                        )}
+                      </div>
                       <div className="ml-2 bg-gray-200 text-gray-700 text-xs font-medium px-2.5 py-0.5 rounded-full">
                         {studentsInSection.length}
                       </div>
@@ -1164,7 +1190,7 @@ function ViewStudentsPage() {
                               </button>
                             </div>
                           ) : (
-                            <div className="text-sm text-gray-500">
+                            <div className="flex items-center gap-2">
                               {student.section ? 
                                 <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
                                   {student.section}
@@ -1173,6 +1199,11 @@ function ViewStudentsPage() {
                                   Unassigned
                                 </span>
                               }
+                              {student.academicYear && (
+                                <span className="bg-emerald-50 text-emerald-700 text-xs px-2 py-0.5 rounded-full">
+                                  {student.academicYear}
+                                </span>
+                              )}
                             </div>
                           )}
                         </div>
