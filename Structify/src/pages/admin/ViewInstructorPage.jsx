@@ -9,7 +9,7 @@ import { deleteDoc } from 'firebase/firestore';
 import { 
   UserPlus, Upload, Users, UserCheck, Trash2, Edit3, 
   CheckCircle, XCircle, AlertCircle, FileText, Download, 
-  Search, Mail, ShieldCheck
+  Search, Mail, ShieldCheck, CheckSquare, Square, UserMinus
 } from 'lucide-react';
 
 function ViewInstructorPage() {
@@ -40,6 +40,14 @@ function ViewInstructorPage() {
   const [bulkUploadErrors, setBulkUploadErrors] = useState([]);
   const [isLoadingSections, setIsLoadingSections] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Add new states for bulk selection
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedInstructors, setSelectedInstructors] = useState([]);
+  const [bulkActionType, setBulkActionType] = useState(null); // 'reassign' or 'delete'
+  const [bulkReassignSection, setBulkReassignSection] = useState('');
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
+
   useEffect(() => {
     const fetchInstructors = async () => {
       setIsLoading(true);
@@ -560,6 +568,241 @@ function ViewInstructorPage() {
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
   };
+
+  // Toggle edit mode with selection
+  const toggleEditMode = async () => {
+    if (!isEditMode) {
+      // Load available sections when entering edit mode
+      try {
+        setIsLoading(true);
+        const classesSnapshot = await getDocs(collection(db, 'classes'));
+        const classList = classesSnapshot.docs.map((doc) => doc.data().sectionName);
+        
+        const instructorsSnapshot = await getDocs(
+          query(collection(db, 'users'), where('role', '==', 'instructor'))
+        );
+        const usedSections = instructorsSnapshot.docs.map((doc) => doc.data().section);
+
+        const available = classList.filter(section => 
+          !usedSections.includes(section) || !section // Include empty sections
+        );
+        
+        setAvailableSections(available);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error loading sections:', error);
+        setIsLoading(false);
+      }
+    }
+    setIsEditMode(!isEditMode);
+    setSelectedInstructors([]);
+  };
+
+  // Toggle instructor selection
+  const toggleInstructorSelection = (instructorId) => {
+    setSelectedInstructors(prev => {
+      if (prev.includes(instructorId)) {
+        return prev.filter(id => id !== instructorId);
+      } else {
+        return [...prev, instructorId];
+      }
+    });
+  };
+
+  // Select all instructors
+  const selectAllInstructors = () => {
+    if (selectedInstructors.length === filteredInstructors.length) {
+      // Deselect all
+      setSelectedInstructors([]);
+    } else {
+      // Select all
+      setSelectedInstructors(filteredInstructors.map(instructor => instructor.id));
+    }
+  };
+  
+  // Exit edit mode and clear selections
+  const exitEditMode = () => {
+    setIsEditMode(false);
+    setSelectedInstructors([]);
+    setBulkActionType(null);
+  };
+
+  // Get selected instructor objects
+  const getSelectedInstructorObjects = () => {
+    return instructors.filter(instructor => selectedInstructors.includes(instructor.id));
+  };
+  
+  // Bulk reassign instructors
+  const handleBulkReassign = async () => {
+    if (selectedInstructors.length === 0 || !bulkReassignSection) return;
+    
+    setIsLoading(true);
+    try {
+      const selectedInstructorObjects = getSelectedInstructorObjects();
+      const newSection = bulkReassignSection === '__unassign__' ? '' : bulkReassignSection;
+      
+      // Update each instructor document and associated class
+      for (const instructor of selectedInstructorObjects) {
+        // 1. If instructor has a section, update the class document to remove instructor
+        if (instructor.section) {
+          const oldClassQuery = query(
+            collection(db, 'classes'),
+            where('sectionName', '==', instructor.section)
+          );
+          const oldClassSnapshot = await getDocs(oldClassQuery);
+          
+          if (!oldClassSnapshot.empty) {
+            const oldClassId = oldClassSnapshot.docs[0].id;
+            await setDoc(doc(db, 'classes', oldClassId), {
+              ...oldClassSnapshot.docs[0].data(),
+              instructor: '', // Remove instructor reference
+            });
+          }
+        }
+        
+        // 2. Update instructor document
+        await setDoc(doc(db, 'users', instructor.id), {
+          ...instructor,
+          section: newSection,
+        });
+        
+        // 3. If new section is specified, update the class document
+        if (newSection) {
+          const newClassQuery = query(
+            collection(db, 'classes'),
+            where('sectionName', '==', newSection)
+          );
+          const newClassSnapshot = await getDocs(newClassQuery);
+          
+          if (!newClassSnapshot.empty) {
+            const newClassId = newClassSnapshot.docs[0].id;
+            await setDoc(doc(db, 'classes', newClassId), {
+              ...newClassSnapshot.docs[0].data(),
+              instructor: instructor.name, 
+            });
+          }
+        }
+      }
+      
+      // Update local state
+      const updatedInstructors = instructors.map(instructor => {
+        if (selectedInstructors.includes(instructor.id)) {
+          return { ...instructor, section: newSection };
+        }
+        return instructor;
+      });
+      
+      setInstructors(updatedInstructors);
+      setFilteredInstructors(updatedInstructors);
+      
+      // Clear selection and reset UI
+      setShowBulkConfirmModal(false);
+      setSelectedInstructors([]);
+      setBulkActionType(null);
+      setBulkReassignSection('');
+      
+      // Show success message
+      const successMessage = document.createElement('div');
+      successMessage.className = 'fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md z-50 flex items-center';
+      successMessage.innerHTML = `
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span>Successfully reassigned ${selectedInstructorObjects.length} instructors</span>
+      `;
+      document.body.appendChild(successMessage);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        document.body.removeChild(successMessage);
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error reassigning instructors:', error);
+      alert('Failed to reassign instructors');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Bulk delete instructors
+  const handleBulkDelete = async () => {
+    if (selectedInstructors.length === 0) return;
+    
+    setIsLoading(true);
+    try {
+      const selectedInstructorObjects = getSelectedInstructorObjects();
+      
+      for (const instructor of selectedInstructorObjects) {
+        // 1. If instructor has a section, update the class document to remove instructor
+        if (instructor.section) {
+          const classQuery = query(
+            collection(db, 'classes'),
+            where('sectionName', '==', instructor.section)
+          );
+          const classSnapshot = await getDocs(classQuery);
+          
+          if (!classSnapshot.empty) {
+            const classDoc = classSnapshot.docs[0];
+            const classId = classDoc.id;
+            
+            // Update the class document to remove instructor reference
+            await setDoc(doc(db, 'classes', classId), {
+              ...classDoc.data(),
+              instructor: '', // Remove instructor reference
+            });
+          }
+        }
+        
+        // 2. Delete instructor content (lessons, activities, etc)
+        const contentCollections = ['lessons', 'activities', 'quizzes', 'posts'];
+        
+        for (const collectionName of contentCollections) {
+          const contentQuery = query(
+            collection(db, collectionName),
+            where('createdBy', '==', instructor.id)
+          );
+          const contentSnapshot = await getDocs(contentQuery);
+          
+          const contentDeletionPromises = contentSnapshot.docs.map(contentDoc => 
+            deleteDoc(doc(db, collectionName, contentDoc.id))
+          );
+          
+          if (contentDeletionPromises.length > 0) {
+            await Promise.all(contentDeletionPromises);
+          }
+        }
+        
+        // 3. Delete instructor document
+        await deleteDoc(doc(db, 'users', instructor.id));
+        
+        // 4. Delete auth record
+        try {
+          await adminDeleteUser(null, null, instructor.id);
+        } catch (authError) {
+          console.error('Error deleting auth record:', authError);
+        }
+      }
+      
+      // Update local state
+      const remainingInstructors = instructors.filter(instructor => !selectedInstructors.includes(instructor.id));
+      setInstructors(remainingInstructors);
+      setFilteredInstructors(remainingInstructors);
+      
+      // Clear selection and reset UI
+      setShowBulkConfirmModal(false);
+      setSelectedInstructors([]);
+      setBulkActionType(null);
+      
+      setShowDeleteSuccessModal(true);
+    } catch (error) {
+      console.error('Error deleting instructors:', error);
+      alert('Failed to delete instructors');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
@@ -579,24 +822,45 @@ function ViewInstructorPage() {
               {instructors.length} Total
             </div>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setShowBulkUploadModal(true)}
-              className="bg-emerald-600 text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-emerald-700 transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
-            >
-              <Upload className="w-4 h-4" />
-              <span className="hidden sm:inline">Bulk Upload</span>
-              <span className="sm:hidden">Upload</span>
-            </button>
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-[#141a35] text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-[#1f274d] transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
-            >
-              <UserPlus className="w-4 h-4" />
-              <span className="hidden sm:inline">Add Instructor</span>
-              <span className="sm:hidden">Add</span>
-            </button>
-          </div>
+          {!isEditMode ? (
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowBulkUploadModal(true)}
+                className="bg-emerald-600 text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-emerald-700 transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
+              >
+                <Upload className="w-4 h-4" />
+                <span className="hidden sm:inline">Bulk Upload</span>
+                <span className="sm:hidden">Upload</span>
+              </button>
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-[#141a35] text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-[#1f274d] transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span className="hidden sm:inline">Add Instructor</span>
+                <span className="sm:hidden">Add</span>
+              </button>
+              <button
+                onClick={toggleEditMode}
+                className="border border-gray-300 bg-white text-gray-700 text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-gray-50 transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
+              >
+                <Edit3 className="w-4 h-4" />
+                <span>Edit</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-600">
+                {selectedInstructors.length} selected
+              </span>
+              <button
+                onClick={exitEditMode}
+                className="px-3 py-1.5 text-gray-700 border border-gray-300 bg-white rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
         
         <div className="relative mb-4 flex">
@@ -618,7 +882,41 @@ function ViewInstructorPage() {
               <XCircle className="w-4 h-4" />
             </button>
           )}
-        </div>        <div className="overflow-y-auto pr-3 flex-grow">
+        </div>
+        
+        {/* Bulk actions toolbar */}
+        {isEditMode && selectedInstructors.length > 0 && (
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-2 mb-4 flex justify-between items-center">
+            <div className="flex items-center gap-2 ml-2">
+              <CheckSquare className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-medium">{selectedInstructors.length} instructors selected</span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setBulkActionType('reassign');
+                  setShowBulkConfirmModal(true);
+                }}
+                className="bg-blue-600 text-white text-sm font-medium px-3 py-1.5 rounded-md hover:bg-blue-700 transition-all flex items-center gap-1.5"
+              >
+                <Users className="w-3.5 h-3.5" />
+                Reassign
+              </button>
+              <button
+                onClick={() => {
+                  setBulkActionType('delete');
+                  setShowBulkConfirmModal(true);
+                }}
+                className="bg-red-600 text-white text-sm font-medium px-3 py-1.5 rounded-md hover:bg-red-700 transition-all flex items-center gap-1.5"
+              >
+                <UserMinus className="w-3.5 h-3.5" />
+                Delete
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="overflow-y-auto pr-3 flex-grow">
           {isLoading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#141a35]"></div>
@@ -656,6 +954,18 @@ function ViewInstructorPage() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
+                      {isEditMode && (
+                        <div 
+                          className="mr-3 cursor-pointer"
+                          onClick={() => toggleInstructorSelection(item.id)}
+                        >
+                          {selectedInstructors.includes(item.id) ? (
+                            <CheckSquare className="h-5 w-5 text-blue-600" />
+                          ) : (
+                            <Square className="h-5 w-5 text-gray-400" />
+                          )}
+                        </div>
+                      )}
                       <div className={`rounded-full p-2 mr-3 ${
                         item.section 
                           ? 'bg-blue-100' 
@@ -687,26 +997,28 @@ function ViewInstructorPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        className={`p-2 rounded-full transition-colors ${
-                          item.section === '' 
-                            ? 'text-green-600 hover:bg-green-50' 
-                            : 'text-blue-600 hover:bg-blue-50'
-                        }`}
-                        onClick={() => openReassignModal(item)}
-                        title={item.section === '' ? 'Assign Section' : 'Re-assign Section'}
-                      >
-                        <Edit3 className="w-5 h-5" />
-                      </button>
-                      <button 
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                        onClick={() => { setInstructorToDelete(item); setShowDeleteModal(true); }}
-                        title="Delete Account"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </div>
+                    {!isEditMode && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          className={`p-2 rounded-full transition-colors ${
+                            item.section === '' 
+                              ? 'text-green-600 hover:bg-green-50' 
+                              : 'text-blue-600 hover:bg-blue-50'
+                          }`}
+                          onClick={() => openReassignModal(item)}
+                          title={item.section === '' ? 'Assign Section' : 'Re-assign Section'}
+                        >
+                          <Edit3 className="w-5 h-5" />
+                        </button>
+                        <button 
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                          onClick={() => { setInstructorToDelete(item); setShowDeleteModal(true); }}
+                          title="Delete Account"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1119,6 +1431,96 @@ function ViewInstructorPage() {
                   className="px-5 py-2.5 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                 >
                   Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Confirmation Modal */}
+      {showBulkConfirmModal && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white px-8 py-6 rounded-xl shadow-xl w-full max-w-md animate-fade-scale">
+            <div className="flex flex-col items-center text-center">
+              <div className="mx-auto w-16 h-16 flex items-center justify-center bg-blue-100 rounded-full mb-4">
+                {bulkActionType === 'delete' ? (
+                  <Trash2 className="h-8 w-8 text-red-600" />
+                ) : (
+                  <Users className="h-8 w-8 text-blue-600" />
+                )}
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                {bulkActionType === 'delete' 
+                  ? 'Confirm Bulk Deletion' 
+                  : 'Reassign Instructors'}
+              </h3>
+              <p className="text-gray-600 mb-4">
+                {bulkActionType === 'delete' 
+                  ? `Are you sure you want to delete ${selectedInstructors.length} selected instructors? This action cannot be undone.`
+                  : `Select a section to assign for ${selectedInstructors.length} instructors:`}
+              </p>
+
+              {bulkActionType === 'reassign' && (
+                <div className="w-full mb-4">
+                  {isLoading ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                      <span className="text-blue-500">Loading sections...</span>
+                    </div>
+                  ) : (
+                    <select
+                      value={bulkReassignSection}
+                      onChange={(e) => setBulkReassignSection(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+                    >
+                      <option value="">-- Select Section --</option>
+                      {availableSections.map((section, idx) => (
+                        <option key={idx} value={section}>{section}</option>
+                      ))}
+                      <option value="__unassign__" className="font-medium text-orange-600">
+                        Remove from current section
+                      </option>
+                    </select>
+                  )}
+                  <p className="mt-2 text-xs text-gray-500">
+                    Note: Only one instructor can be assigned to a section.
+                  </p>
+                </div>
+              )}
+
+              <div className="flex gap-3 mt-4 w-full">
+                <button
+                  onClick={() => {
+                    setShowBulkConfirmModal(false);
+                    setBulkActionType(null);
+                  }}
+                  className="flex-1 px-4 py-2.5 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={bulkActionType === 'delete' ? handleBulkDelete : handleBulkReassign}
+                  disabled={bulkActionType === 'reassign' && !bulkReassignSection}
+                  className={`flex-1 px-4 py-2.5 ${
+                    bulkActionType === 'delete' 
+                      ? 'bg-red-600 hover:bg-red-700' 
+                      : 'bg-blue-600 hover:bg-blue-700'
+                  } text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2 ${
+                    (bulkActionType === 'reassign' && !bulkReassignSection) ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {bulkActionType === 'delete' ? (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      Reassign
+                    </>
+                  )}
                 </button>
               </div>
             </div>

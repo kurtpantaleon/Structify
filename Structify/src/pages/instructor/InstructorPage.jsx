@@ -5,6 +5,7 @@ import { db } from '../../services/firebaseConfig';
 import { useAuth } from '../../context/authContextProvider';
 import Header from '../../components/AdminHeader';
 import AdminSubHeading from '../../components/AdminSubHeading';
+import { motion, AnimatePresence } from 'framer-motion';
 import AdminNavigationBar from '../../components/InstructorNavigationBar';
 import SectionCard from '../../components/AdminSectionCard';
 import { BookOpen, Users, FileText, Menu, Plus, Calendar, Search } from 'lucide-react';
@@ -74,7 +75,8 @@ function InstructorPage() {
               studentCount,
               activitiesCount: activitiesSnapshot.size,
               lessonsCount: lessonsSnapshot.size,
-              lastActive: section.lastUpdated || new Date().toISOString()
+              lastActive: section.lastUpdated || new Date().toISOString(),
+              academicYear: section.academicYear || 'Not specified' // Ensure academic year is included
             };
           })
         );
@@ -91,8 +93,10 @@ function InstructorPage() {
     fetchInstructorSections();
   }, [currentUser]);  
 
+  // Update filtered sections to include academic year in search
   const filteredSections = sections.filter(section =>
-    section.sectionName.toLowerCase().includes(searchTerm.toLowerCase())
+    section.sectionName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    section.academicYear.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSectionClick = (section) => {
@@ -103,22 +107,29 @@ function InstructorPage() {
   
   const handleClassMaterialsClick = (e, section) => {
     e.stopPropagation();
-    navigate('/class-field', { 
+    navigate('/ClassField', { 
       state: { section: section.sectionName } 
     });
   };
 
-  return (
+ return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200">
       <Header />
       <AdminSubHeading toggleNav={() => setIsNavOpen(!isNavOpen)} title="My Classes" />
       
-      <div className="flex">
-        {isNavOpen && (
-          <div className="w-64 bg-[#141a35] text-white h-[calc(100vh-120px)] p-4 transition-all duration-300">
-            <AdminNavigationBar />
-          </div>
-        )}
+      <div className="flex min-h-[calc(100vh-120px)]">
+        <AnimatePresence>
+          {isNavOpen && (
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: '16rem' }}
+              exit={{ width: 0 }}
+              className="h-full bg-[#141a35] text-white overflow-hidden transition-all duration-300"
+            >
+              <AdminNavigationBar />
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         <div className={`flex-1 transition-all duration-300 ${isNavOpen ? 'ml-0' : 'ml-0'}`}>
           <div className="max-w-7xl mx-auto p-4 sm:p-6">
@@ -128,7 +139,7 @@ function InstructorPage() {
                   <div className="flex items-center mb-4 sm:mb-0">
                     <BookOpen className="h-7 w-7 text-blue-500 mr-3" />
                     <h2 className="text-2xl font-bold text-gray-800">My Classes</h2>
-                    <span className="ml-3 bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    <span className="ml-3 from-[#141a35] to-[#2a3363] text-xs font-medium px-2.5 py-0.5 rounded-full">
                       {sections.length} {sections.length === 1 ? 'class' : 'classes'}
                     </span>
                   </div>
@@ -172,7 +183,7 @@ function InstructorPage() {
 
                 {loading && (
                   <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 from-[#141a35] to-[#2a3363]"></div>
                   </div>
                 )}
                 
@@ -213,7 +224,7 @@ function InstructorPage() {
                         className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col cursor-pointer group"
                         onClick={() => handleSectionClick(section)}
                       >
-                        <div className="h-24 bg-gradient-to-r from-blue-500 to-blue-700 p-4 flex items-center justify-between">
+                        <div className="h-24 bg-gradient-to-r from-[#141a35] to-[#2a3363] p-4 flex items-center justify-between">
                           <h3 className="text-xl font-bold text-white group-hover:scale-105 transition-transform duration-200">
                             {section.sectionName}
                           </h3>
@@ -222,6 +233,10 @@ function InstructorPage() {
                           <div className="flex items-center text-gray-700 mb-3">
                             <Users className="w-4 h-4 mr-2" />
                             <span className="text-sm">{section.studentCount} students</span>
+                          </div>
+                          <div className="flex items-center text-gray-700 mb-3">
+                            <Calendar className="w-4 h-4 mr-2" />
+                            <span className="text-sm">{section.academicYear}</span>
                           </div>
                           <div className="flex flex-wrap gap-2 mb-4">
                             <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full flex items-center">
@@ -267,6 +282,9 @@ function InstructorPage() {
                             Students
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Academic Year
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Materials
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -294,6 +312,14 @@ function InstructorPage() {
                               <div className="flex items-center">
                                 <Users className="h-4 w-4 text-gray-500 mr-2" />
                                 <div className="text-sm text-gray-900">{section.studentCount}</div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <Calendar className="h-4 w-4 text-gray-500 mr-2" />
+                                <span className="text-sm bg-blue-50 text-blue-700 px-2 py-0.5 rounded">
+                                  {section.academicYear}
+                                </span>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">

@@ -27,6 +27,13 @@ function ViewClassPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState({ visible: false, message: '' });
   
+  // Add bulk selection state
+  const [selectedStudents, setSelectedStudents] = useState([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [bulkAction, setBulkAction] = useState(null); // 'delete' or 'reassign'
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
+  const [bulkTargetSection, setBulkTargetSection] = useState('');
+  
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -316,6 +323,190 @@ function ViewClassPage() {
       setFilteredStudents(filtered);
     }
   }, [searchQuery, students]);
+  
+  // Toggle selection of a student
+  const toggleStudentSelection = (studentId) => {
+    setSelectedStudents(prev => {
+      if (prev.includes(studentId)) {
+        return prev.filter(id => id !== studentId);
+      } else {
+        return [...prev, studentId];
+      }
+    });
+  };
+  
+  // Toggle all students selection
+  const toggleAllStudents = () => {
+    if (selectedStudents.length === filteredStudents.length) {
+      // Deselect all
+      setSelectedStudents([]);
+    } else {
+      // Select all
+      setSelectedStudents(filteredStudents.map(student => student.id));
+    }
+  };
+  
+  // Reset student selection when edit mode changes
+  useEffect(() => {
+    if (!isEditMode) {
+      setSelectedStudents([]);
+      setShowBulkActions(false);
+      setBulkAction(null);
+    }
+  }, [isEditMode]);
+  
+  // Show bulk actions when students are selected
+  useEffect(() => {
+    setShowBulkActions(selectedStudents.length > 0);
+  }, [selectedStudents]);
+  
+  // Bulk reassign students
+  const handleBulkReassign = async () => {
+    if (selectedStudents.length === 0 || !bulkTargetSection) return;
+    
+    try {
+      setIsLoading(true);
+      
+      // Selected student objects
+      const studentsToReassign = filteredStudents.filter(student => 
+        selectedStudents.includes(student.id)
+      );
+      
+      // Update each student document
+      const updatePromises = studentsToReassign.map(student => 
+        updateDoc(doc(db, 'users', student.id), {
+          section: bulkTargetSection
+        })
+      );
+      
+      await Promise.all(updatePromises);
+      
+      // Update student count in current section
+      const currentClassQuery = query(
+        collection(db, 'classes'),
+        where('sectionName', '==', section.sectionName)
+      );
+      const currentClassSnapshot = await getDocs(currentClassQuery);
+      
+      if (!currentClassSnapshot.empty) {
+        const currentClassDoc = currentClassSnapshot.docs[0];
+        const currentClassId = currentClassDoc.id;
+        
+        // Update count (current count - selected students)
+        await updateDoc(doc(db, 'classes', currentClassId), {
+          studentCount: Math.max(0, (currentClassDoc.data().studentCount || 0) - selectedStudents.length)
+        });
+      }
+      
+      // Update student count in new section
+      const newClassQuery = query(
+        collection(db, 'classes'),
+        where('sectionName', '==', bulkTargetSection)
+      );
+      const newClassSnapshot = await getDocs(newClassQuery);
+      
+      if (!newClassSnapshot.empty) {
+        const newClassDoc = newClassSnapshot.docs[0];
+        const newClassId = newClassDoc.id;
+        
+        // Update count (current count + selected students)
+        await updateDoc(doc(db, 'classes', newClassId), {
+          studentCount: (newClassDoc.data().studentCount || 0) + selectedStudents.length
+        });
+      }
+      
+      // Update local state
+      const remainingStudents = students.filter(student => !selectedStudents.includes(student.id));
+      setStudents(remainingStudents);
+      setFilteredStudents(remainingStudents);
+      
+      setShowBulkConfirmModal(false);
+      setSelectedStudents([]);
+      setBulkAction(null);
+      setBulkTargetSection('');
+      
+      setShowSuccessToast({
+        visible: true,
+        message: `${selectedStudents.length} students reassigned successfully`
+      });
+      setTimeout(() => {
+        setShowSuccessToast({ visible: false, message: '' });
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error in bulk reassignment:', error);
+      alert('Failed to reassign students');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Bulk delete students
+  const handleBulkDelete = async () => {
+    if (selectedStudents.length === 0) return;
+    
+    try {
+      setIsLoading(true);
+      
+      // Selected student objects
+      const studentsToDelete = filteredStudents.filter(student => 
+        selectedStudents.includes(student.id)
+      );
+      
+      // Delete each student document and auth record
+      for (const student of studentsToDelete) {
+        // Delete student document
+        await deleteDoc(doc(db, 'users', student.id));
+        
+        // Delete auth record
+        try {
+          await adminDeleteUser(null, null, student.id);
+        } catch (authError) {
+          console.error('Error deleting auth record:', authError);
+        }
+      }
+      
+      // Update class document student count
+      const classQuery = query(
+        collection(db, 'classes'),
+        where('sectionName', '==', section.sectionName)
+      );
+      const classSnapshot = await getDocs(classQuery);
+      
+      if (!classSnapshot.empty) {
+        const classDoc = classSnapshot.docs[0];
+        const classId = classDoc.id;
+        
+        await updateDoc(doc(db, 'classes', classId), {
+          studentCount: Math.max(0, (classDoc.data().studentCount || 0) - selectedStudents.length)
+        });
+      }
+      
+      // Update local state
+      const remainingStudents = students.filter(student => !selectedStudents.includes(student.id));
+      setStudents(remainingStudents);
+      setFilteredStudents(remainingStudents);
+      
+      setShowBulkConfirmModal(false);
+      setSelectedStudents([]);
+      setBulkAction(null);
+      
+      setShowSuccessToast({
+        visible: true,
+        message: `${selectedStudents.length} students deleted successfully`
+      });
+      setTimeout(() => {
+        setShowSuccessToast({ visible: false, message: '' });
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error in bulk deletion:', error);
+      alert('Failed to delete students');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
@@ -405,7 +596,7 @@ function ViewClassPage() {
                   {isEditMode ? (
                     <>
                       <X className="h-4 w-4 mr-1.5" />
-                      Cancel Editing
+                      {selectedStudents.length > 0 ? 'Cancel Selection' : 'Cancel Editing'}
                     </>
                   ) : (
                     <>
@@ -448,6 +639,42 @@ function ViewClassPage() {
               )}
             </div>
 
+            {/* Bulk Actions Bar */}
+            {isEditMode && selectedStudents.length > 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="bg-blue-100 rounded-full h-8 w-8 flex items-center justify-center mr-3">
+                    <Users className="h-4 w-4 text-blue-700" />
+                  </div>
+                  <span className="font-medium text-blue-900">
+                    {selectedStudents.length} student{selectedStudents.length !== 1 ? 's' : ''} selected
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setBulkAction('reassign');
+                      setShowBulkConfirmModal(true);
+                    }}
+                    className="bg-blue-600 text-white text-sm font-medium px-3 py-1.5 rounded-md hover:bg-blue-700 transition-all flex items-center gap-1.5"
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    Reassign
+                  </button>
+                  <button
+                    onClick={() => {
+                      setBulkAction('delete');
+                      setShowBulkConfirmModal(true);
+                    }}
+                    className="bg-red-600 text-white text-sm font-medium px-3 py-1.5 rounded-md hover:bg-red-700 transition-all flex items-center gap-1.5"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Students Card */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
@@ -481,6 +708,26 @@ function ViewClassPage() {
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                           <tr>
+                            {isEditMode && (
+                              <th className="px-6 py-3 text-left">
+                                <div className="flex items-center">
+                                  <div
+                                    onClick={toggleAllStudents}
+                                    className="h-4 w-4 rounded border border-gray-300 flex items-center justify-center cursor-pointer"
+                                    style={{
+                                      backgroundColor: 
+                                        selectedStudents.length === filteredStudents.length && filteredStudents.length > 0
+                                          ? '#141a35' 
+                                          : 'transparent',
+                                    }}
+                                  >
+                                    {selectedStudents.length === filteredStudents.length && filteredStudents.length > 0 && (
+                                      <div className="text-white text-xs">✓</div>
+                                    )}
+                                  </div>
+                                </div>
+                              </th>
+                            )}
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               Student
                             </th>
@@ -495,6 +742,23 @@ function ViewClassPage() {
                         <tbody className="bg-white divide-y divide-gray-200">
                           {filteredStudents.map((student, index) => (
                             <tr key={student.id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                              {isEditMode && (
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div
+                                    onClick={() => toggleStudentSelection(student.id)}
+                                    className="h-4 w-4 rounded border border-gray-300 flex items-center justify-center cursor-pointer"
+                                    style={{
+                                      backgroundColor: selectedStudents.includes(student.id)
+                                        ? '#141a35'
+                                        : 'transparent',
+                                    }}
+                                  >
+                                    {selectedStudents.includes(student.id) && (
+                                      <div className="text-white text-xs">✓</div>
+                                    )}
+                                  </div>
+                                </td>
+                              )}
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
                                   <div className="h-8 w-8 rounded-full bg-[#141a35] text-white flex items-center justify-center font-medium text-sm">
@@ -910,6 +1174,90 @@ function ViewClassPage() {
             <CheckCircle className="h-5 w-5" />
           </div>
           <span>{showSuccessToast.message}</span>
+        </div>
+      )}
+
+      {/* Bulk Confirm Modal */}
+      {showBulkConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+                {bulkAction === 'delete' ? (
+                  <AlertTriangle className="h-8 w-8 text-red-600" />
+                ) : (
+                  <Users className="h-8 w-8 text-blue-600" />
+                )}
+              </div>
+              <h2 className="text-xl font-bold text-gray-800 mb-2">
+                {bulkAction === 'delete' ? 'Delete Students' : 'Reassign Students'}
+              </h2>
+              <p className="text-gray-600 mb-6">
+                {bulkAction === 'delete'
+                  ? `Are you sure you want to delete ${selectedStudents.length} students? This action cannot be undone.`
+                  : `Choose a new class for ${selectedStudents.length} students:`}
+              </p>
+            </div>
+            
+            {bulkAction === 'reassign' && (
+              <div className="mb-6">
+                <label htmlFor="bulkSectionSelect" className="block text-sm font-medium text-gray-700 mb-1">
+                  Select New Class
+                </label>
+                <select
+                  id="bulkSectionSelect"
+                  value={bulkTargetSection}
+                  onChange={(e) => setBulkTargetSection(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select a class...</option>
+                  {availableSections.map((sectionName, index) => (
+                    <option key={index} value={sectionName}>
+                      {sectionName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            
+            <div className="flex justify-end space-x-3">
+              <button 
+                onClick={() => {
+                  setShowBulkConfirmModal(false);
+                  setBulkAction(null);
+                  setBulkTargetSection('');
+                }}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={bulkAction === 'delete' ? handleBulkDelete : handleBulkReassign}
+                disabled={isLoading || (bulkAction === 'reassign' && !bulkTargetSection)}
+                className={`px-4 py-2 ${
+                  bulkAction === 'delete' 
+                    ? 'bg-red-600 hover:bg-red-700' 
+                    : 'bg-blue-600 hover:bg-blue-700'
+                } text-white rounded-md flex items-center ${
+                  (bulkAction === 'reassign' && !bulkTargetSection) ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isLoading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 mr-2 border-t-2 border-b-2 border-white"></div>
+                ) : bulkAction === 'delete' ? (
+                  <>
+                    <Trash2 className="h-4 w-4 mr-1.5" />
+                    Delete Students
+                  </>
+                ) : (
+                  <>
+                    <Users className="h-4 w-4 mr-1.5" />
+                    Reassign Students
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

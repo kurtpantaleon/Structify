@@ -6,7 +6,8 @@ import Header from '../../components/AdminHeader';
 import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
 import SectionCard from '../../components/AdminSectionCard';
-import { Search, Plus, RefreshCw, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import AcademicYearEditor from '../../components/AcademicYearEditor';
+import { Search, Plus, RefreshCw, AlertTriangle, CheckCircle, XCircle, Calendar, Filter, X, Layers } from 'lucide-react';
  
 function AdminPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -18,15 +19,24 @@ function AdminPage() {
   const [newClassName, setNewClassName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [newAcademicYear, setNewAcademicYear] = useState(''); // Add state for new academic year
+  const [academicYears, setAcademicYears] = useState([]); // Store available academic years
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editedSection, setEditedSection] = useState(null);
   const [editedName, setEditedName] = useState('');
+  const [editedAcademicYear, setEditedAcademicYear] = useState(''); // Add state for edited academic year
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [sectionToDelete, setSectionToDelete] = useState(null);
   
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const [academicYearFilter, setAcademicYearFilter] = useState('');
+  const [isYearEditorOpen, setIsYearEditorOpen] = useState(false);
+  const [yearToEdit, setYearToEdit] = useState(null);
+  const [newYearName, setNewYearName] = useState('');
+
+  const [activeTab, setActiveTab] = useState('classes'); // Add state for active tab
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,9 +71,16 @@ function AdminPage() {
               ...section,
               instructor: instructorName,
               studentCount: studentCount,
+              academicYear: section.academicYear || 'Not specified', // Default value if not present
             };
           })
         );
+
+        // Extract unique academic years for filtering
+        const years = [...new Set(updatedSections.map(section => 
+          section.academicYear || 'Not specified'
+        ))];
+        setAcademicYears(years);
 
         // Sort sections by name
         updatedSections.sort((a, b) => a.sectionName.localeCompare(b.sectionName));
@@ -81,18 +98,28 @@ function AdminPage() {
     fetchData();
   }, []);
   
-  // Search filter effect
+  // Search filter effect - updated to include academic year filtering
   useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredSections(sections);
-    } else {
-      const filtered = sections.filter(section => 
+    let filtered = sections;
+    
+    // First filter by search query
+    if (searchQuery.trim() !== '') {
+      filtered = filtered.filter(section => 
         section.sectionName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        section.instructor.toLowerCase().includes(searchQuery.toLowerCase())
+        section.instructor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        section.academicYear.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setFilteredSections(filtered);
     }
-  }, [searchQuery, sections]);
+    
+    // Then filter by academic year if selected
+    if (academicYearFilter !== '' && academicYearFilter !== 'all') {
+      filtered = filtered.filter(section => 
+        section.academicYear === academicYearFilter
+      );
+    }
+    
+    setFilteredSections(filtered);
+  }, [searchQuery, sections, academicYearFilter]);
   
   // Toast notification handler
   const showToast = (message, type = 'success') => {
@@ -122,6 +149,7 @@ function AdminPage() {
       instructor: 'TBA',
       studentCount: 0,
       createdAt: serverTimestamp(),
+      academicYear: newAcademicYear.trim() || 'Not specified', // Add academic year
     };
 
     try {
@@ -130,6 +158,7 @@ function AdminPage() {
       setSections(prev => [...prev, sectionWithId].sort((a, b) => a.sectionName.localeCompare(b.sectionName)));
       setIsPopupOpen(false);
       setNewClassName('');
+      setNewAcademicYear('');
       showToast('Class added successfully', 'success');
     } catch (error) {
       console.error('Error adding class: ', error);
@@ -140,6 +169,7 @@ function AdminPage() {
   const handleEditSection = (section) => {
     setEditedSection(section);
     setEditedName(section.sectionName);
+    setEditedAcademicYear(section.academicYear || 'Not specified');
     setIsEditModalOpen(true);
   };
 
@@ -149,8 +179,8 @@ function AdminPage() {
       return;
     }
     
-    // Check if the name is unchanged
-    if (editedName === editedSection.sectionName) {
+    // Check if the name is unchanged and academic year is unchanged
+    if (editedName === editedSection.sectionName && editedAcademicYear === editedSection.academicYear) {
       setIsEditModalOpen(false);
       setEditedSection(null);
       return;
@@ -168,17 +198,25 @@ function AdminPage() {
 
     try {
       const sectionRef = doc(db, 'classes', editedSection.id);
-      await updateDoc(sectionRef, { sectionName: editedName });
+      await updateDoc(sectionRef, { 
+        sectionName: editedName,
+        academicYear: editedAcademicYear || 'Not specified'
+      });
 
       // Update local state
       const updatedSections = sections.map((sec) =>
-        sec.id === editedSection.id ? { ...sec, sectionName: editedName } : sec
+        sec.id === editedSection.id ? { 
+          ...sec, 
+          sectionName: editedName,
+          academicYear: editedAcademicYear || 'Not specified'
+        } : sec
       ).sort((a, b) => a.sectionName.localeCompare(b.sectionName));
       
       setSections(updatedSections);
       setIsEditModalOpen(false);
       setEditedSection(null);
       setEditedName('');
+      setEditedAcademicYear('');
       showToast('Class updated successfully', 'success');
     } catch (error) {
       console.error('Error updating section name:', error);
@@ -310,6 +348,7 @@ function AdminPage() {
               ...section,
               instructor: instructorName,
               studentCount: studentCount,
+              academicYear: section.academicYear || 'Not specified',
             };
           })
         );
@@ -330,6 +369,98 @@ function AdminPage() {
     fetchData();
   };
   
+  // Handle bulk update of academic year
+  const handleUpdateAcademicYear = async () => {
+    if (!yearToEdit || !newYearName.trim()) {
+      showToast('Please enter a valid academic year', 'error');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      
+      // Get all sections with the selected academic year
+      const sectionsToUpdate = sections.filter(section => section.academicYear === yearToEdit);
+      
+      if (sectionsToUpdate.length === 0) {
+        showToast('No classes to update', 'warning');
+        setIsYearEditorOpen(false);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Update each section document
+      const updatePromises = sectionsToUpdate.map(section => 
+        updateDoc(doc(db, 'classes', section.id), {
+          academicYear: newYearName.trim()
+        })
+      );
+      
+      await Promise.all(updatePromises);
+      
+      // Update local state
+      const updatedSections = sections.map(section => {
+        if (section.academicYear === yearToEdit) {
+          return { ...section, academicYear: newYearName.trim() };
+        }
+        return section;
+      });
+      
+      // Update academic years list
+      const updatedYears = [...new Set(updatedSections.map(section => 
+        section.academicYear || 'Not specified'
+      ))];
+      
+      setSections(updatedSections);
+      setAcademicYears(updatedYears);
+      
+      // If currently filtering by the edited year, update the filter
+      if (academicYearFilter === yearToEdit) {
+        setAcademicYearFilter(newYearName.trim());
+      }
+      
+      showToast(`Successfully updated ${sectionsToUpdate.length} classes`, 'success');
+      setIsYearEditorOpen(false);
+      setYearToEdit(null);
+      setNewYearName('');
+    } catch (error) {
+      console.error('Error updating academic years:', error);
+      showToast('Failed to update academic years', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Add a new academic year
+  const handleAddAcademicYear = async (yearName) => {
+    if (!yearName.trim()) return;
+    
+    // Check if year already exists
+    if (academicYears.includes(yearName.trim())) {
+      showToast('This academic year already exists', 'error');
+      return;
+    }
+    
+    // Just add to the list - no need to create documents for years by themselves
+    setAcademicYears([...academicYears, yearName.trim()].sort());
+    showToast(`Academic year "${yearName}" created successfully`, 'success');
+  };
+  
+  // Delete academic year
+  const handleDeleteAcademicYear = async (year) => {
+    // Check if there are classes in this year
+    const classesInYear = sections.filter(s => s.academicYear === year);
+    
+    if (classesInYear.length > 0) {
+      showToast(`Cannot delete: ${classesInYear.length} classes are assigned to this year`, 'error');
+      return;
+    }
+    
+    // Remove from list since it's not used
+    setAcademicYears(academicYears.filter(y => y !== year));
+    showToast(`Academic year "${year}" removed`, 'success');
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 relative">
       <Header />
@@ -350,98 +481,216 @@ function AdminPage() {
             </span>
           </div>
           
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-            {/* Search Bar */}
-            <div className="relative w-full sm:w-64">
-              <input
-                type="text"
-                placeholder="Search classes..."
-                className="border border-gray-300 rounded-lg pl-9 pr-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-            </div>
-            
-            <div className="flex gap-2">
-              <button
-                onClick={handleRefresh}
-                className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-md transition"
-                title="Refresh"
-              >
-                <RefreshCw className="h-4 w-4" />
-              </button>
-              
-              <button
-                onClick={() => setIsPopupOpen(true)}
-                className="flex items-center justify-center gap-1 bg-gradient-to-r from-[#141a35] to-[#2a3363] text-white text-sm font-medium px-3 py-2 rounded-lg hover:from-[#1f274d] hover:to-[#354080] transition shadow-sm"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Add Class</span>
-              </button>
-            </div>
+          {/* Tab Navigation */}
+          <div className="flex bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setActiveTab('classes')}
+              className={`px-4 py-2 rounded-md text-sm font-medium ${
+                activeTab === 'classes' 
+                  ? 'bg-white shadow text-[#141a35]' 
+                  : 'text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <div className="flex items-center">
+                <Layers className="h-4 w-4 mr-1.5" />
+                Classes
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('years')}
+              className={`px-4 py-2 rounded-md text-sm font-medium ${
+                activeTab === 'years' 
+                  ? 'bg-white shadow text-[#141a35]' 
+                  : 'text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <div className="flex items-center">
+                <Calendar className="h-4 w-4 mr-1.5" />
+                Academic Years
+              </div>
+            </button>
           </div>
+          
+          {activeTab === 'classes' && (
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+              {/* Search Bar */}
+              <div className="relative w-full sm:w-64">
+                <input
+                  type="text"
+                  placeholder="Search classes..."
+                  className="border border-gray-300 rounded-lg pl-9 pr-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+              </div>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={handleRefresh}
+                  className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-md transition"
+                  title="Refresh"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </button>
+                
+                <button
+                  onClick={() => setIsPopupOpen(true)}
+                  className="flex items-center justify-center gap-1 bg-gradient-to-r from-[#141a35] to-[#2a3363] text-white text-sm font-medium px-3 py-2 rounded-lg hover:from-[#1f274d] hover:to-[#354080] transition shadow-sm"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Add Class</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
+        
+        {activeTab === 'classes' && (
+          <>
+            {/* Academic Year Filter Section */}
+            <div className="py-3 px-2 border-b">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center text-sm font-medium text-gray-700">
+                  <Calendar className="h-4 w-4 mr-1.5 text-blue-600" />
+                  <span>Academic Year:</span>
+                </div>
+                
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => setAcademicYearFilter('all')}
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      academicYearFilter === '' || academicYearFilter === 'all'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    All Years
+                  </button>
+                  
+                  {academicYears.map((year, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setAcademicYearFilter(year)}
+                      className={`px-3 py-1 rounded-full text-xs font-medium flex items-center ${
+                        academicYearFilter === year
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                      }`}
+                    >
+                      <span>{year}</span>
+                      {academicYearFilter === year && (
+                        <X 
+                          className="h-3 w-3 ml-1" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setAcademicYearFilter('all');
+                          }} 
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {academicYearFilter && academicYearFilter !== 'all' && (
+                <div className="mt-2 pl-6 flex items-center">
+                  <span className="text-xs text-gray-500 mr-2">Showing classes for year:</span>
+                  <span className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded font-medium">
+                    {academicYearFilter}
+                  </span>
+                  <span className="mx-2 text-xs text-gray-500">({filteredSections.length} classes)</span>
+                </div>
+              )}
+            </div>
 
-        {/* Loading state */}
-        {isLoading ? (
+            {/* Loading state - Classes View */}
+            {isLoading ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="flex flex-col items-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#141a35]"></div>
+                  <p className="mt-3 text-gray-600">Loading classes...</p>
+                </div>
+              </div>
+            ) : filteredSections.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center bg-gray-50 p-8 rounded-lg border border-dashed border-gray-300 max-w-md">
+                  <div className="mx-auto w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-gray-100">
+                    {searchQuery ? (
+                      <Search className="h-8 w-8 text-gray-400" />
+                    ) : (
+                      <Plus className="h-8 w-8 text-gray-400" />
+                    )}
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {searchQuery ? 'No matching classes' : 'No classes available'}
+                  </h3>
+                  <p className="mt-2 text-sm text-gray-500 mb-4">
+                    {searchQuery 
+                      ? `No classes matching "${searchQuery}" were found.` 
+                      : 'Start by creating your first class to manage students and instructors.'}
+                  </p>
+                  {searchQuery ? (
+                    <button 
+                      onClick={() => setSearchQuery('')}
+                      className="mt-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
+                    >
+                      Clear search
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setIsPopupOpen(true)}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#141a35] hover:bg-[#1f274d]"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Create Class
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 overflow-y-auto pr-2 flex-grow">
+                {filteredSections.map((item) => (
+                  <SectionCard
+                    key={item.id}
+                    sectionName={item.sectionName}
+                    instructor={item.instructor}
+                    studentCount={item.studentCount}
+                    academicYear={item.academicYear}
+                    onClick={() => navigate('/ViewClassPage', { state: { section: item } })}
+                    onEdit={() => handleEditSection(item)}
+                    onDelete={() => handleDeleteSection(item)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+        
+        {/* Academic Years Tab */}
+        {activeTab === 'years' && !isLoading && (
+          <div className="flex-1 overflow-y-auto p-4">
+            <AcademicYearEditor 
+              sections={sections}
+              academicYears={academicYears}
+              onUpdateYear={handleUpdateAcademicYear}
+              onDeleteYear={handleDeleteAcademicYear}
+              onAddYear={handleAddAcademicYear}
+              isLoading={isLoading}
+            />
+          </div>
+        )}
+
+        {activeTab === 'years' && isLoading && (
           <div className="flex-1 flex items-center justify-center">
             <div className="flex flex-col items-center">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#141a35]"></div>
-              <p className="mt-3 text-gray-600">Loading classes...</p>
+              <p className="mt-3 text-gray-600">Loading academic years...</p>
             </div>
           </div>
-        ) : filteredSections.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center bg-gray-50 p-8 rounded-lg border border-dashed border-gray-300 max-w-md">
-              <div className="mx-auto w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-gray-100">
-                {searchQuery ? (
-                  <Search className="h-8 w-8 text-gray-400" />
-                ) : (
-                  <Plus className="h-8 w-8 text-gray-400" />
-                )}
-              </div>
-              <h3 className="text-lg font-medium text-gray-900">
-                {searchQuery ? 'No matching classes' : 'No classes available'}
-              </h3>
-              <p className="mt-2 text-sm text-gray-500 mb-4">
-                {searchQuery 
-                  ? `No classes matching "${searchQuery}" were found.` 
-                  : 'Start by creating your first class to manage students and instructors.'}
-              </p>
-              {searchQuery ? (
-                <button 
-                  onClick={() => setSearchQuery('')}
-                  className="mt-2 text-blue-600 hover:text-blue-800 font-medium text-sm"
-                >
-                  Clear search
-                </button>
-              ) : (
-                <button
-                  onClick={() => setIsPopupOpen(true)}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#141a35] hover:bg-[#1f274d]"
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Create Class
-                </button>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 overflow-y-auto pr-2 flex-grow">
-            {filteredSections.map((item) => (
-              <SectionCard
-                key={item.id}
-                sectionName={item.sectionName}
-                instructor={item.instructor}
-                studentCount={item.studentCount}
-                onClick={() => navigate('/ViewClassPage', { state: { section: item } })}
-                onEdit={() => handleEditSection(item)}
-                onDelete={() => handleDeleteSection(item)}
-              />
-            ))}
-          </div>
-        )}        {/* Toast notification */}
+        )}
+        
+        {/* Toast notification */}
         {toast.show && (
           <div 
             className={`fixed top-4 right-4 z-50 flex items-center p-4 mb-4 max-w-md
@@ -492,6 +741,19 @@ function AdminPage() {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
+                <div>
+                  <label htmlFor="academicYear" className="block text-sm font-medium text-gray-700 mb-1">
+                    Academic Year
+                  </label>
+                  <input
+                    id="academicYear"
+                    type="text"
+                    value={newAcademicYear}
+                    onChange={(e) => setNewAcademicYear(e.target.value)}
+                    placeholder="e.g., 2023-2024"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
                 <div className="flex justify-end space-x-3 pt-2">
                   <button
                     onClick={() => setIsPopupOpen(false)}
@@ -525,6 +787,19 @@ function AdminPage() {
                   type="text"
                   value={editedName}
                   onChange={(e) => setEditedName(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label htmlFor="editAcademicYear" className="block text-sm font-medium text-gray-700 mb-1">
+                  Academic Year
+                </label>
+                <input
+                  id="editAcademicYear"
+                  type="text"
+                  value={editedAcademicYear}
+                  onChange={(e) => setEditedAcademicYear(e.target.value)}
+                  placeholder="e.g., 2023-2024"
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -617,6 +892,107 @@ function AdminPage() {
           </div>
         )}
 
+        {/* Academic Year Editor Modal */}
+        {isYearEditorOpen && (
+          <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg w-[450px] shadow-xl space-y-4 relative">
+              <h2 className="text-xl font-bold text-[#141a35] border-b pb-3">Academic Year Manager</h2>
+              
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="font-medium text-gray-700">Current Academic Years</h3>
+                  <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 max-h-[200px] overflow-y-auto">
+                    {academicYears.length > 0 ? (
+                      <ul className="space-y-2">
+                        {academicYears.map((year, index) => (
+                          <li 
+                            key={index} 
+                            className="flex items-center justify-between p-2 hover:bg-gray-100 rounded-md"
+                          >
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 mr-2 text-blue-600" />
+                              <span>{year}</span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-xs text-gray-500 mr-2">
+                                {sections.filter(s => s.academicYear === year).length} classes
+                              </span>
+                              <button
+                                onClick={() => {
+                                  setYearToEdit(year);
+                                  setNewYearName(year);
+                                }}
+                                className="text-blue-600 hover:text-blue-800"
+                              >
+                                <Edit3 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-500 text-sm text-center py-2">No academic years defined</p>
+                    )}
+                  </div>
+                </div>
+                
+                {yearToEdit && (
+                  <div className="space-y-4 pt-2 border-t">
+                    <h3 className="font-medium text-gray-700 pt-2">Update Academic Year</h3>
+                    <div className="bg-blue-50 p-3 rounded-md text-sm text-blue-800 mb-4">
+                      <p>Changing <span className="font-semibold">"{yearToEdit}"</span> to a new name will update all {sections.filter(s => s.academicYear === yearToEdit).length} classes assigned to this year.</p>
+                    </div>
+                    <div>
+                      <label htmlFor="newYearName" className="block text-sm font-medium text-gray-700 mb-1">
+                        New Year Name
+                      </label>
+                      <input
+                        id="newYearName"
+                        type="text"
+                        value={newYearName}
+                        onChange={(e) => setNewYearName(e.target.value)}
+                        placeholder="e.g., 2023-2024"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div className="flex justify-end space-x-3">
+                      <button
+                        onClick={() => {
+                          setYearToEdit(null);
+                          setNewYearName('');
+                        }}
+                        className="px-3 py-1.5 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 text-sm font-medium"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleUpdateAcademicYear}
+                        disabled={!newYearName.trim() || isLoading}
+                        className="px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:bg-blue-300 flex items-center"
+                      >
+                        {isLoading ? (
+                          <div className="animate-spin rounded-full h-4 w-4 mr-2 border-t-2 border-b-2 border-white"></div>
+                        ) : (
+                          <Save className="h-4 w-4 mr-1.5" />
+                        )}
+                        Update Year
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex justify-end border-t pt-4 mt-2">
+                <button
+                  onClick={() => setIsYearEditorOpen(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-medium"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

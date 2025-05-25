@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Menu from '../assets/images/Threedot Icon.png';
 import { Users, BookOpen, UserCheck } from 'lucide-react';
 
-function SectionCard({ sectionName, instructor, studentCount, onClick, onEdit, onDelete, hideMenu = false }) {
+function SectionCard({ sectionName, instructor, studentCount, academicYear, onClick, onEdit, onDelete, hideMenu = false }) {
   const [showMenu, setShowMenu] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -108,6 +108,14 @@ function SectionCard({ sectionName, instructor, studentCount, onClick, onEdit, o
             <span className="font-medium">Students:</span> <span className="text-gray-700">{studentCount}</span>
           </p>
         </div>
+        {academicYear && (
+          <div className="flex items-center text-gray-600">
+            <span className="font-medium mr-1.5">Year:</span> 
+            <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md text-xs font-medium">
+              {academicYear}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

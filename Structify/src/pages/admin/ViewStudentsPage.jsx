@@ -9,7 +9,8 @@ import { deleteDoc } from 'firebase/firestore';
 import { 
   UserPlus, Upload, Users, UserCheck, Trash2, Edit3, 
   CheckCircle, XCircle, AlertCircle, FileText, Download,
-  Search, Mail, Book, Layers, UsersRound, GraduationCap
+  Search, Mail, Book, Layers, UsersRound, GraduationCap,
+  CheckSquare, Square, MoreHorizontal, UserMinus
 } from 'lucide-react';
 
 // Student Section Skeleton component for loading state
@@ -71,6 +72,12 @@ function ViewStudentsPage() {
   const [studentToDelete, setStudentToDelete] = useState(null);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
 
+  // Bulk selection states
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedStudents, setSelectedStudents] = useState([]);
+  const [bulkActionType, setBulkActionType] = useState(null); // 'reassign' or 'delete'
+  const [bulkReassignSection, setBulkReassignSection] = useState('');
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -624,6 +631,255 @@ function ViewStudentsPage() {
     document.body.removeChild(a);
   };
 
+  // Toggle selection of a student
+  const toggleStudentSelection = (studentId) => {
+    setSelectedStudents(prev => {
+      if (prev.includes(studentId)) {
+        return prev.filter(id => id !== studentId);
+      } else {
+        return [...prev, studentId];
+      }
+    });
+  };
+
+  // Add the toggleEditMode function
+  const toggleEditMode = async () => {
+    if (!isEditMode) {
+      // Load available sections for reassignment when entering edit mode
+      try {
+        setIsLoading(true);
+        const classesSnapshot = await getDocs(collection(db, 'classes'));
+        const sections = classesSnapshot.docs.map(doc => doc.data().sectionName);
+        setAvailableSections(sections);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error loading sections:', error);
+        setIsLoading(false);
+      }
+    }
+    setIsEditMode(!isEditMode);
+    setSelectedStudents([]);
+  };
+  
+  // Select all students in a section
+  const toggleSelectAllInSection = (sectionName) => {
+    const sectionStudents = groupedBySection[sectionName] || [];
+    const sectionStudentIds = sectionStudents.map(student => student.id);
+    
+    // Check if all students in section are already selected
+    const allSelected = sectionStudentIds.every(id => selectedStudents.includes(id));
+    
+    if (allSelected) {
+      // Remove all from selection
+      setSelectedStudents(prev => prev.filter(id => !sectionStudentIds.includes(id)));
+    } else {
+      // Add all to selection
+      setSelectedStudents(prev => {
+        const newSelection = [...prev];
+        sectionStudentIds.forEach(id => {
+          if (!newSelection.includes(id)) {
+            newSelection.push(id);
+          }
+        });
+        return newSelection;
+      });
+    }
+  };
+
+  // Exit edit mode and clear selections
+  const exitEditMode = () => {
+    setIsEditMode(false);
+    setSelectedStudents([]);
+    setBulkActionType(null);
+  };
+
+  // Get selected student objects
+  const getSelectedStudentObjects = () => {
+    return students.filter(student => selectedStudents.includes(student.id));
+  };
+
+  // Bulk reassign students
+  const handleBulkReassign = async () => {
+    if (selectedStudents.length === 0 || !bulkReassignSection) return;
+    
+    setIsLoading(true);
+    try {
+      const selectedStudentObjects = getSelectedStudentObjects();
+      const newSection = bulkReassignSection === '__unassign__' ? '' : bulkReassignSection;
+      
+      // Group students by their current section for batch updates
+      const studentsBySection = {};
+      selectedStudentObjects.forEach(student => {
+        const currentSection = student.section || '';
+        if (!studentsBySection[currentSection]) {
+          studentsBySection[currentSection] = [];
+        }
+        studentsBySection[currentSection].push(student);
+      });
+      
+      // Update each student document
+      const updatePromises = selectedStudentObjects.map(student => 
+        setDoc(doc(db, 'users', student.id), {
+          ...student,
+          section: newSection,
+        })
+      );
+      
+      await Promise.all(updatePromises);
+      
+      // Update student counts for all affected classes
+      const classUpdates = [];
+      
+      // 1. Update source classes (decrease counts)
+      for (const [section, students] of Object.entries(studentsBySection)) {
+        if (section) { // Only if section is not empty
+          const sourceClassQuery = query(
+            collection(db, 'classes'),
+            where('sectionName', '==', section)
+          );
+          const sourceClassSnapshot = await getDocs(sourceClassQuery);
+          
+          if (!sourceClassSnapshot.empty) {
+            const classDoc = sourceClassSnapshot.docs[0];
+            const classId = classDoc.id;
+            const currentCount = classDoc.data().studentCount || 0;
+            const newCount = Math.max(0, currentCount - students.length);
+            
+            classUpdates.push(
+              setDoc(doc(db, 'classes', classId), {
+                ...classDoc.data(),
+                studentCount: newCount
+              })
+            );
+          }
+        }
+      }
+      
+      // 2. Update destination class (increase count)
+      if (newSection) {
+        const destClassQuery = query(
+          collection(db, 'classes'),
+          where('sectionName', '==', newSection)
+        );
+        const destClassSnapshot = await getDocs(destClassQuery);
+
+        if (!destClassSnapshot.empty) {
+          const classDoc = destClassSnapshot.docs[0];
+          const classId = classDoc.id;
+          const currentCount = classDoc.data().studentCount || 0;
+          
+          classUpdates.push(
+            setDoc(doc(db, 'classes', classId), {
+              ...classDoc.data(),
+              studentCount: currentCount + selectedStudents.length
+            })
+          );
+        }
+      }
+      
+      // Execute all class updates
+      await Promise.all(classUpdates);
+      
+      // Update local state
+      const updatedStudents = students.map(student => {
+        if (selectedStudents.includes(student.id)) {
+          return { ...student, section: newSection };
+        }
+        return student;
+      });
+      
+      setStudents(updatedStudents);
+      setFilteredStudents(updatedStudents);
+      
+      // Clear selection and reset UI
+      setShowBulkConfirmModal(false);
+      setSelectedStudents([]);
+      setBulkActionType(null);
+      setBulkReassignSection('');
+      
+      showSuccessToast(`Successfully reassigned ${selectedStudents.length} students`);
+    } catch (error) {
+      console.error('Error reassigning students:', error);
+      showErrorToast('Failed to reassign students');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Bulk delete students
+  const handleBulkDelete = async () => {
+    if (selectedStudents.length === 0) return;
+    
+    setIsLoading(true);
+    try {
+      const selectedStudentObjects = getSelectedStudentObjects();
+      
+      for (const student of selectedStudentObjects) {
+        // Update class counts if needed
+        if (student.section) {
+          const classQuery = query(
+            collection(db, 'classes'),
+            where('sectionName', '==', student.section)
+          );
+          const classSnapshot = await getDocs(classQuery);
+          
+          if (!classSnapshot.empty) {
+            const classDoc = classSnapshot.docs[0];
+            const classId = classDoc.id;
+            
+            // Calculate new student count
+            const currentCount = classDoc.data().studentCount || 0;
+            const newCount = Math.max(0, currentCount - 1);
+            
+            await setDoc(doc(db, 'classes', classId), {
+              ...classDoc.data(),
+              studentCount: newCount
+            });
+          }
+        }
+        
+        // Delete student document
+        await deleteDoc(doc(db, 'users', student.id));
+        
+        // Delete auth record
+        try {
+          await adminDeleteUser(null, null, student.id);
+        } catch (authError) {
+          console.error('Error deleting auth record:', authError);
+        }
+      }
+      
+      // Update local state
+      const remainingStudents = students.filter(student => !selectedStudents.includes(student.id));
+      setStudents(remainingStudents);
+      setFilteredStudents(remainingStudents);
+      
+      // Clear selection and reset UI
+      setShowBulkConfirmModal(false);
+      setSelectedStudents([]);
+      setBulkActionType(null);
+      
+      showSuccessToast(`Successfully deleted ${selectedStudentObjects.length} students`);
+    } catch (error) {
+      console.error('Error deleting students:', error);
+      showErrorToast('Failed to delete students');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Show success toast
+  const showSuccessToast = (message) => {
+    // Use existing toast state or implement new toast functionality
+    console.log(message);
+  };
+
+  // Show error toast
+  const showErrorToast = (message) => {
+    // Use existing toast state or implement new toast functionality
+    console.error(message);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
@@ -643,24 +899,45 @@ function ViewStudentsPage() {
               {students.length} Total
             </div>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setShowBulkUploadModal(true)}
-              className="bg-emerald-600 text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-emerald-700 transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
-            >
-              <Upload className="w-4 h-4" />
-              <span className="hidden sm:inline">Bulk Upload</span>
-              <span className="sm:hidden">Upload</span>
-            </button>
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-[#141a35] text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-[#1f274d] transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
-            >
-              <UserPlus className="w-4 h-4" />
-              <span className="hidden sm:inline">Add Student</span>
-              <span className="sm:hidden">Add</span>
-            </button>
-          </div>
+          {!isEditMode ? (
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowBulkUploadModal(true)}
+                className="bg-emerald-600 text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-emerald-700 transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
+              >
+                <Upload className="w-4 h-4" />
+                <span className="hidden sm:inline">Bulk Upload</span>
+                <span className="sm:hidden">Upload</span>
+              </button>
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-[#141a35] text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-[#1f274d] transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span className="hidden sm:inline">Add Student</span>
+                <span className="sm:hidden">Add</span>
+              </button>
+              <button
+                onClick={toggleEditMode} // Use the toggleEditMode function
+                className="border border-gray-300 bg-white text-gray-700 text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-gray-50 transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
+              >
+                <Edit3 className="w-4 h-4" />
+                <span>Edit</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-600">
+                {selectedStudents.length} selected
+              </span>
+              <button
+                onClick={exitEditMode}
+                className="px-3 py-1.5 text-gray-700 border border-gray-300 bg-white rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-start">
             <div className="bg-blue-100 rounded-full p-2 mr-3">
@@ -714,14 +991,41 @@ function ViewStudentsPage() {
           </div>
         </div>        <div className="overflow-y-auto pr-3 flex-grow">
           {!isLoading && Object.keys(groupedBySection).length > 0 && (
-            <div className="flex justify-end mb-3">
+            <div className="flex justify-between mb-3">
+              <div>
+                {isEditMode && selectedStudents.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setBulkActionType('reassign');
+                        setShowBulkConfirmModal(true);
+                      }}
+                      disabled={selectedStudents.length === 0}
+                      className="bg-blue-600 text-white text-sm font-medium px-3 py-1.5 rounded-md hover:bg-blue-700 transition-all flex items-center gap-1.5"
+                    >
+                      <Users className="w-3.5 h-3.5" />
+                      Reassign
+                    </button>
+                    <button
+                      onClick={() => {
+                        setBulkActionType('delete');
+                        setShowBulkConfirmModal(true);
+                      }}
+                      disabled={selectedStudents.length === 0}
+                      className="bg-red-600 text-white text-sm font-medium px-3 py-1.5 rounded-md hover:bg-red-700 transition-all flex items-center gap-1.5"
+                    >
+                      <UserMinus className="w-3.5 h-3.5" />
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+              
               <button 
                 onClick={() => {
                   const sections = Object.keys(groupedBySection);
-                  // Fix 2: Check if any section is expanded rather than all are collapsed
                   const anyExpanded = sections.some(section => !collapsedSections[section]);
                   
-                  // If any section is expanded, collapse all; otherwise, expand all
                   const newCollapsedState = {};
                   sections.forEach(section => {
                     newCollapsedState[section] = anyExpanded;
@@ -781,6 +1085,20 @@ function ViewStudentsPage() {
                     }}
                   >
                     <div className="flex items-center gap-2">
+                      {isEditMode && (
+                        <div onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSelectAllInSection(section);
+                        }} className="mr-1">
+                          {studentsInSection.every(student => selectedStudents.includes(student.id)) ? (
+                            <CheckSquare className="h-4.5 w-4.5 text-blue-600" />
+                          ) : studentsInSection.some(student => selectedStudents.includes(student.id)) ? (
+                            <div className="h-4.5 w-4.5 border-2 border-blue-600 bg-blue-100 rounded-sm"></div>
+                          ) : (
+                            <Square className="h-4.5 w-4.5 text-gray-400" />
+                          )}
+                        </div>
+                      )}
                       <div className={`p-1.5 rounded-md ${
                         section === 'Unassigned' ? 'bg-gray-200 text-gray-600' : 'bg-blue-100 text-blue-700'
                       }`}>
@@ -804,6 +1122,18 @@ function ViewStudentsPage() {
                       {studentsInSection.map((student, idx) => (
                         <div key={idx} className="flex items-center justify-between py-3 px-4 hover:bg-gray-50 transition-colors">
                           <div className="flex items-center gap-3">
+                            {isEditMode && (
+                              <div 
+                                onClick={() => toggleStudentSelection(student.id)}
+                                className="cursor-pointer mr-1"
+                              >
+                                {selectedStudents.includes(student.id) ? (
+                                  <CheckSquare className="h-5 w-5 text-blue-600" />
+                                ) : (
+                                  <Square className="h-5 w-5 text-gray-400" />
+                                )}
+                              </div>
+                            )}
                             <div className="bg-[#141a35]/5 p-2 rounded-full">
                               <UserCheck className="w-5 h-5 text-[#141a35]" />
                             </div>
@@ -815,23 +1145,27 @@ function ViewStudentsPage() {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <button
-                              className="p-2 text-blue-700 hover:bg-blue-50 rounded-full transition-colors"
-                              onClick={() => openReassignModal(student)}
-                              title={student.section === '' ? 'Assign Section' : 'Re-assign Section'}
-                            >
-                              <Edit3 className="w-4.5 h-4.5" />
-                            </button>
-                            <button 
-                              className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                              onClick={() => { setStudentToDelete(student); setShowDeleteModal(true); }}
-                              title="Delete Account"
-                            >
-                              <Trash2 className="w-4.5 h-4.5" />
-                            </button>
-                          </div>
-                        </div>                      ))}
+                          
+                          {!isEditMode && (
+                            <div className="flex items-center gap-2">
+                              <button
+                                className="p-2 text-blue-700 hover:bg-blue-50 rounded-full transition-colors"
+                                onClick={() => openReassignModal(student)}
+                                title={student.section === '' ? 'Assign Section' : 'Re-assign Section'}
+                              >
+                                <Edit3 className="w-4.5 h-4.5" />
+                              </button>
+                              <button 
+                                className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                                onClick={() => { setStudentToDelete(student); setShowDeleteModal(true); }}
+                                title="Delete Account"
+                              >
+                                <Trash2 className="w-4.5 h-4.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -1282,6 +1616,96 @@ function ViewStudentsPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Bulk Confirmation Modal */}
+      {showBulkConfirmModal && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white px-8 py-6 rounded-xl shadow-xl w-full max-w-md animate-fade-scale">
+            <div className="flex flex-col items-center text-center">
+              <div className="mx-auto w-16 h-16 flex items-center justify-center bg-blue-100 rounded-full mb-4">
+                {bulkActionType === 'delete' ? (
+                  <Trash2 className="h-8 w-8 text-red-600" />
+                ) : (
+                  <Users className="h-8 w-8 text-blue-600" />
+                )}
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                {bulkActionType === 'delete' 
+                  ? 'Confirm Bulk Deletion' 
+                  : 'Reassign Students'}
+              </h3>
+              <p className="text-gray-600 mb-4">
+                {bulkActionType === 'delete' 
+                  ? `Are you sure you want to delete ${selectedStudents.length} selected students? This action cannot be undone.`
+                  : `Select a class to reassign ${selectedStudents.length} students:`}
+              </p>
+
+              {bulkActionType === 'reassign' && (
+                <div className="w-full mb-4">
+                  {isLoading ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                      <span className="text-blue-500">Loading classes...</span>
+                    </div>
+                  ) : (
+                    <select
+                      value={bulkReassignSection}
+                      onChange={(e) => setBulkReassignSection(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+                    >
+                      <option value="">-- Select Class --</option>
+                      {availableSections.map((section, idx) => (
+                        <option key={idx} value={section}>{section}</option>
+                      ))}
+                      <option value="__unassign__" className="font-medium text-orange-600">
+                        Remove from current class
+                      </option>
+                    </select>
+                  )}
+                  <p className="mt-2 text-xs text-gray-500">
+                    Note: This will update student count in all affected classes
+                  </p>
+                </div>
+              )}
+
+              <div className="flex gap-3 mt-4 w-full">
+                <button
+                  onClick={() => {
+                    setShowBulkConfirmModal(false);
+                    setBulkActionType(null);
+                  }}
+                  className="flex-1 px-4 py-2.5 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={bulkActionType === 'delete' ? handleBulkDelete : handleBulkReassign}
+                  disabled={bulkActionType === 'reassign' && !bulkReassignSection}
+                  className={`flex-1 px-4 py-2.5 ${
+                    bulkActionType === 'delete' 
+                      ? 'bg-red-600 hover:bg-red-700' 
+                      : 'bg-blue-600 hover:bg-blue-700'
+                  } text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2 ${
+                    (bulkActionType === 'reassign' && !bulkReassignSection) ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {bulkActionType === 'delete' ? (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      Reassign
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
