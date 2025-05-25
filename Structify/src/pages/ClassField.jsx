@@ -5,7 +5,7 @@ import { db } from '../services/firebaseConfig';
 import Header from '../components/ProfileHeader ';
 import { useAuth } from '../context/authContextProvider';
 import { doc, deleteDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { X, Book, Activity, FileQuestion, Clock, Calendar, Edit3, Trash2, Save } from 'lucide-react';
+import { X, Book, Activity, FileQuestion, Clock, Calendar, Edit3, Trash2, Save, ExternalLink, Download } from 'lucide-react';
 
 
 const ClassField = () => {
@@ -155,6 +155,30 @@ const ClassField = () => {
             setError('Failed to update lesson. Please try again.');
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    // Function to handle file opening
+    const handleOpenFile = (url, name) => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
+    
+    // Function to handle file download
+    const handleDownloadFile = async (url, name) => {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = name;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (err) {
+            console.error('Error downloading file:', err);
+            setError('Failed to download file. Please try again.');
         }
     };
 
@@ -311,11 +335,29 @@ const ClassField = () => {
                                                                 <h4 className="font-semibold text-sm text-gray-700 mb-2">Attachments:</h4>
                                                                 <ul className="space-y-1">
                                                                     {lesson.media.map((file, idx) => (
-                                                                        <li key={idx} className="flex items-center">
-                                                                            <svg className="h-4 w-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                                                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-                                                                            </svg>
-                                                                            <a href={file.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline text-sm">{file.name}</a>
+                                                                        <li key={idx} className="flex items-center justify-between">
+                                                                            <div className="flex items-center">
+                                                                                <svg className="h-4 w-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                                                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                                                                </svg>
+                                                                                <span className="text-sm text-gray-700">{file.name}</span>
+                                                                            </div>
+                                                                            <div className="flex gap-2">
+                                                                                <button 
+                                                                                    onClick={() => handleOpenFile(file.url, file.name)}
+                                                                                    className="p-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-md transition-colors"
+                                                                                    title="Open file in new tab"
+                                                                                >
+                                                                                    <ExternalLink className="h-4 w-4" />
+                                                                                </button>
+                                                                                <button 
+                                                                                    onClick={() => handleDownloadFile(file.url, file.name)}
+                                                                                    className="p-1 bg-green-100 hover:bg-green-200 text-green-700 rounded-md transition-colors"
+                                                                                    title="Download file"
+                                                                                >
+                                                                                    <Download className="h-4 w-4" />
+                                                                                </button>
+                                                                            </div>
                                                                         </li>
                                                                     ))}
                                                                 </ul>
