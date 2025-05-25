@@ -59,7 +59,7 @@ class Program {
 };
 
 const expectedOutput = "olleh";
-const totalTimeInSeconds = 30;
+const totalTimeInSeconds = 60;
 
 export default function Activity1() {
   const editorRef = useRef(null);
@@ -82,6 +82,7 @@ export default function Activity1() {
   const { activityScores, markActivityComplete } = useLessonProgress();
   const [score, setScore] = useState(null);
   const timerRef = useRef(null);
+  const [hasDeductedHeart, setHasDeductedHeart] = useState(false);
 
   useEffect(() => {
     if (activityScores && activityScores["activity1"] !== undefined) {
@@ -94,19 +95,34 @@ export default function Activity1() {
     editorRef.current = editor;
   };
 
+  // Add effect to update editor content when language changes
   useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.setValue(defaultCodes[language] || "");
+    }
+  }, [language]);
+
+  useEffect(() => {
+    let timerHasDeductedHeart = false;
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
           setShowTimeoutModal(true);
+          if (!timerHasDeductedHeart && !hasDeductedHeart) {
+            deductHeart();
+            timerHasDeductedHeart = true;
+            setHasDeductedHeart(true);
+          }
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-    return () => clearInterval(timerRef.current);
-  }, []);
+    return () => {
+      clearInterval(timerRef.current);
+    };
+  }, [deductHeart, hasDeductedHeart]);
 
   const runCode = () => {
     setHasRunCode(true);
@@ -154,10 +170,42 @@ export default function Activity1() {
       setScore(calculatedScore);
       await markActivityComplete("activity1", calculatedScore);
       navigate("/week1activity2");
-    } else {
+    } else if (!hasDeductedHeart) {
       await deductHeart();
+      setHasDeductedHeart(true);
       setFeedback("❌ Output does not match expected result. 1 heart has been deducted.");
+    } else {
+      setFeedback("❌ Output does not match expected result.");
     }
+  };
+
+  const handleTryAgain = () => {
+    setShowTimeoutModal(false);
+    setTimeLeft(totalTimeInSeconds);
+    setHasRunCode(false);
+    setConsoleOutput("");
+    setFeedback("");
+    setIsCorrect(false);
+    setHasDeductedHeart(false);
+    if (editorRef.current) {
+      editorRef.current.setValue(defaultCodes[language] || "");
+    }
+    // Clear the timer and start a new one
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setShowTimeoutModal(true);
+          if (!hasDeductedHeart) {
+            deductHeart();
+            setHasDeductedHeart(true);
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
   };
 
   return (
@@ -230,20 +278,20 @@ export default function Activity1() {
       </div>
 
       {showTimeoutModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#1A2A4B] p-6 rounded-xl text-white w-full max-w-md text-center">
+        <div className="fixed inset-0 backdrop-blur-md bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-[#1A2A4B] p-6 rounded-xl text-white w-full max-w-md text-center shadow-2xl border border-blue-500/20">
             <h2 className="text-2xl font-bold mb-4">⏱ Time's Up!</h2>
             <p className="mb-4">Your time has ended. Would you like to retry or move to the next challenge?</p>
             <div className="flex gap-4 justify-center">
               <button
-                onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-700"
+                onClick={handleTryAgain}
+                className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-700 transition-colors"
               >
                 Try Again
               </button>
               <button
                 onClick={() => navigate("/week1activity2")}
-                className="px-4 py-2 bg-green-600 rounded hover:bg-green-700"
+                className="px-4 py-2 bg-green-600 rounded hover:bg-green-700 transition-colors"
               >
                 Next Activity
               </button>

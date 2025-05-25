@@ -81,21 +81,21 @@ function MainPage() {
                 {/* Lessons */}
                 <div className="space-y-3 sm:space-y-4">
                   <WeekButton 
-                    title="Lesson 1" 
+                    title="What is Data Structure?" 
                     status="LEARN" 
                     icon={completedLessons.includes("lesson1") ? CheckIcon : UncheckIcon}
                     iconType={StudyIcon} 
                     path="/page1"
                   />
                   <WeekButton 
-                    title="Lesson 2" 
+                    title="Types of Basic Data Structures" 
                     status="LEARN" 
                     icon={completedLessons.includes("lesson2") ? CheckIcon : UncheckIcon}
                     iconType={StudyIcon} 
                     path="/l2page1"
                   />
                   <WeekButton 
-                    title="Lesson 3" 
+                    title="How Computers use Data Structures" 
                     status="LEARN" 
                     icon={completedLessons.includes("lesson3") ? CheckIcon : UncheckIcon}
                     iconType={StudyIcon} 
