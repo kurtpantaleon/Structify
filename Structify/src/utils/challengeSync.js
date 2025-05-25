@@ -2,25 +2,11 @@
  * Utility functions for testing and validating challenge synchronization
  */
 
-import { io } from 'socket.io-client';
+import { getSocket as getSocketInstance } from '../services/socketService';
 
 // Initialize socket connection if needed
 const getSocket = () => {
-  // Use existing socket connection if available in window
-  if (window._structifySocket) {
-    return window._structifySocket;
-  }
-
-  // Create new socket connection
-  const socket = io('http://localhost:3001', {
-    reconnection: true,
-    reconnectionAttempts: 5,
-    timeout: 10000,
-  });
-  
-  // Store socket for reuse
-  window._structifySocket = socket;
-  return socket;
+  return getSocketInstance();
 };
 
 /**

@@ -11,6 +11,13 @@ const matchSocketIds = new Map(); // matchId -> [socketId1, socketId2]
 // Track socket status (connected, disconnected but waiting, completely gone)
 const socketStatus = new Map(); // socketId -> { status: 'connected'|'waiting'|'gone', lastSeen: timestamp }
 
+// Constants for timeouts and intervals
+const RECONNECT_TIMEOUT = 10000; // 10 seconds to attempt reconnection
+const FINAL_CLEANUP_TIMEOUT = 120000; // 2 minutes before final cleanup
+const CLEANUP_INTERVAL = 60000; // Run cleanup every minute
+const STALE_CONNECTION_TIMEOUT = 300000; // 5 minutes before considering a connection stale
+const WAITING_TIMEOUT = 120000; // 2 minutes before cleaning up waiting sockets
+
 /**
  * Helper function to clean up a disconnected socket
  * @param {string} socketId - The ID of the socket that disconnected
@@ -59,26 +66,26 @@ function cleanupDisconnectedSocket(socketId, forceCleanup = false) {
 }
 
 function initializeSocket(io) {
-  // Run periodic cleanup every 5 minutes to prevent memory leaks
+  // Run periodic cleanup every minute to prevent memory leaks
   setInterval(() => {
     const now = Date.now();
     
-    // Check for stale socket connections (inactive for over 10 minutes)
+    // Check for stale socket connections
     socketActivityTimestamps.forEach((timestamp, socketId) => {
-      if (now - timestamp > 10 * 60 * 1000) { // 10 minutes
+      if (now - timestamp > STALE_CONNECTION_TIMEOUT) {
         console.log(`Cleaning up stale socket: ${socketId}`);
         cleanupDisconnectedSocket(socketId, true);
       }
     });
     
-    // Check for waiting sockets that have been waiting too long (over 2 minutes)
+    // Check for waiting sockets that have been waiting too long
     socketStatus.forEach((status, socketId) => {
-      if (status.status === 'waiting' && (now - status.lastSeen > 2 * 60 * 1000)) {
+      if (status.status === 'waiting' && (now - status.lastSeen > WAITING_TIMEOUT)) {
         console.log(`Socket ${socketId} has been waiting too long, cleaning up`);
         cleanupDisconnectedSocket(socketId, true);
       }
     });
-  }, 2 * 60 * 1000); // Every 2 minutes
+  }, CLEANUP_INTERVAL);
   
   io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
@@ -87,8 +94,20 @@ function initializeSocket(io) {
     socketActivityTimestamps.set(socket.id, Date.now());
     socketStatus.set(socket.id, { status: 'connected', lastSeen: Date.now() });
     
+    // Handle reconnection attempts
+    socket.on('reconnect_attempt', () => {
+      console.log(`Socket ${socket.id} attempting to reconnect`);
+      socketStatus.set(socket.id, { status: 'waiting', lastSeen: Date.now() });
+    });
+    
+    // Handle successful reconnection
+    socket.on('reconnect', () => {
+      console.log(`Socket ${socket.id} reconnected successfully`);
+      socketStatus.set(socket.id, { status: 'connected', lastSeen: Date.now() });
+      socketActivityTimestamps.set(socket.id, Date.now());
+    });
+    
     // Check if this socket was previously in a match
-    // This helps with reconnection and maintaining match state
     let foundExistingMatch = false;
     for (const [matchId, participants] of activeMatches.entries()) {
       if (participants.pendingReconnect === socket.id) {
@@ -105,6 +124,9 @@ function initializeSocket(io) {
         
         delete participants.pendingReconnect;
         foundExistingMatch = true;
+        
+        // Notify the reconnected player
+        socket.emit('reconnected', { matchId });
       }
     }
     
@@ -112,6 +134,12 @@ function initializeSocket(io) {
     if (queue.size > 0) {
       socket.emit('queueUpdate', { position: queue.size });
     }
+
+    // Handle heartbeat to keep connection alive
+    socket.on('heartbeat', () => {
+      socketActivityTimestamps.set(socket.id, Date.now());
+      socketStatus.set(socket.id, { status: 'connected', lastSeen: Date.now() });
+    });
 
     socket.on('findMatch', (playerData) => {
       // Update activity timestamp
@@ -124,18 +152,15 @@ function initializeSocket(io) {
         rank: playerData.rank || 0,
         avatar: playerData.avatar,
         userId: playerData.userId,
-        difficulty: playerData.difficulty || 'Easy' // Default to Easy if not specified
-      };      // If there's someone in queue, try to match
+        difficulty: playerData.difficulty || 'Easy'
+      };
+
+      // If there's someone in queue, try to match
       if (queue.size > 0) {
-        // Get the first player in queue - properly extract both key and value
         const [opponentId, opponent] = Array.from(queue.entries())[0];
         queue.delete(opponentId);
 
-        // Create a match
         const matchId = `match_${Date.now()}`;
-        
-        // Track match participants and desired difficulty level
-        // Choose the higher difficulty level between the two players
         const matchDifficulty = 
           getDifficultyLevel(player.difficulty) >= getDifficultyLevel(opponent.difficulty) 
             ? player.difficulty 
@@ -156,7 +181,7 @@ function initializeSocket(io) {
             avatar: player.avatar
           },
           difficulty: matchDifficulty,
-          userId: socket.id // Add the socket ID to track disconnections
+          userId: socket.id
         });
 
         socket.emit('matchFound', {
@@ -167,19 +192,22 @@ function initializeSocket(io) {
             avatar: opponent.avatar
           },
           difficulty: matchDifficulty,
-          userId: opponent.id // Add the socket ID to track disconnections
-        });      } else {
-        // Add player to queue using Map's set method (not add)
+          userId: opponent.id
+        });
+      } else {
         queue.set(socket.id, player);
         socket.emit('waitingForMatch');
       }
-    });    socket.on('cancelMatch', () => {
-      // Remove player from queue if they cancel - simplified since we use socket.id as key
+    });
+
+    socket.on('cancelMatch', () => {
       if (queue.has(socket.id)) {
         queue.delete(socket.id);
       }
       socket.emit('matchCancelled');
-    });socket.on('disconnect', () => {
+    });
+
+    socket.on('disconnect', () => {
       console.log('User disconnected:', socket.id);
       
       // Update socket status to 'waiting' instead of immediately removing
@@ -191,166 +219,50 @@ function initializeSocket(io) {
       }
       
       // Check if this user was in an active match
-      let wasInMatch = false;
       activeMatches.forEach((participants, matchId) => {
         const { player1, player2 } = participants;
         
-        // Store the socket ID for potential reconnection
-        if (player1 === socket.id) {
-          wasInMatch = true;
+        if (player1 === socket.id || player2 === socket.id) {
+          const otherPlayerId = player1 === socket.id ? player2 : player1;
           
-          // Wait 10 seconds before notifying opponent about disconnect
+          // Wait for reconnection attempt
           setTimeout(() => {
             const status = socketStatus.get(socket.id);
-            // If socket is still in waiting state after timeout, consider it gone
             if (status && status.status === 'waiting') {
-              // Notify player2 that player1 quit
-              io.to(player2).emit('opponentQuit', { matchId, userId: player1 });
+              // Notify other player about disconnect
+              io.to(otherPlayerId).emit('opponentQuit', { matchId, userId: socket.id });
               
-              // Save the old socket ID but don't clean up match yet
-              participants.player1_old = socket.id;
+              // Save the old socket ID for potential reconnection
+              if (player1 === socket.id) {
+                participants.player1_old = socket.id;
+              } else {
+                participants.player2_old = socket.id;
+              }
               participants.pendingReconnect = socket.id;
               
-              // Set a longer timeout for final cleanup
+              // Set final cleanup timeout
               setTimeout(() => {
                 if (participants.pendingReconnect) {
                   console.log(`Final cleanup for match ${matchId} after player ${socket.id} failed to reconnect`);
                   cleanupDisconnectedSocket(socket.id, true);
                 }
-              }, 2 * 60 * 1000); // 2 minutes
+              }, FINAL_CLEANUP_TIMEOUT);
             }
-          }, 10000); // 10 seconds
-        }
-        
-        if (player2 === socket.id) {
-          wasInMatch = true;
-          
-          // Wait 10 seconds before notifying opponent about disconnect
-          setTimeout(() => {
-            const status = socketStatus.get(socket.id);
-            // If socket is still in waiting state after timeout, consider it gone
-            if (status && status.status === 'waiting') {
-              // Notify player1 that player2 quit
-              io.to(player1).emit('opponentQuit', { matchId, userId: player2 });
-              
-              // Save the old socket ID but don't clean up match yet
-              participants.player2_old = socket.id;
-              participants.pendingReconnect = socket.id;
-              
-              // Set a longer timeout for final cleanup
-              setTimeout(() => {
-                if (participants.pendingReconnect) {
-                  console.log(`Final cleanup for match ${matchId} after player ${socket.id} failed to reconnect`);
-                  cleanupDisconnectedSocket(socket.id, true);
-                }
-              }, 2 * 60 * 1000); // 2 minutes
-            }
-          }, 10000); // 10 seconds
+          }, RECONNECT_TIMEOUT);
         }
       });
-      
-      // If not in a match, clean up immediately
-      if (!wasInMatch) {
-        cleanupDisconnectedSocket(socket.id);
-      }
-    });
-    
-    // Handle challenge related events
-    socket.on('challengeSelected', ({ matchId, challengeId, difficulty }) => {
-      // Store the selected challenge for this match
-      if (!matchChallenges.has(matchId)) {
-        // Get the match difficulty if available
-        const match = activeMatches.get(matchId);
-        const matchDifficulty = match ? match.difficulty : difficulty || 'Easy';
-        
-        // If a specific challenge ID is provided by client, validate it
-        // Otherwise, select a random challenge of appropriate difficulty
-        if (challengeId) {
-          matchChallenges.set(matchId, challengeId);
-        } else {
-          // This would be implemented on the server-side if you had challenges in the backend
-          // For now, we'll just use the client-provided difficulty
-          matchChallenges.set(matchId, { difficulty: matchDifficulty });
-        }
-        
-        console.log(`Match ${matchId} selected challenge with difficulty ${matchDifficulty}`);
-      }
-      
-      // Send the challenge ID to the client that requested it
-      // If this is the second player, they will get the same challenge as the first player
-      socket.emit('assignChallenge', { 
-        matchId,
-        challengeId: matchChallenges.get(matchId),
-        difficulty: activeMatches.get(matchId)?.difficulty || 'Easy'
-      });
-    });
-      socket.on('updateProgress', ({ matchId, userId, progress, completed }) => {
-      if (activeMatches.has(matchId)) {
-        const { player1, player2 } = activeMatches.get(matchId);
-        const targetPlayer = userId === player1 ? player2 : player1;
-        
-        // Forward progress to opponent
-        io.to(targetPlayer).emit('opponentProgress', {
-          matchId,
-          progress,
-          completed
-        });
-          // If challenge completed, update match state
-        if (completed) {
-          // Notify both players that the match has ended
-          io.to(player1).emit('matchEnded', { matchId, winnerUid: userId });
-          io.to(player2).emit('matchEnded', { matchId, winnerUid: userId });
-
-          activeMatches.delete(matchId); // Close the match
-          matchChallenges.delete(matchId); // Clean up challenge data
-        }
-      }
-    });
-    
-    // Handle heartbeat messages to keep connection alive
-    socket.on('heartbeat', ({ matchId }) => {
-      // Update activity timestamp
-      socketActivityTimestamps.set(socket.id, Date.now());
-      
-      // Update socket status to connected
-      socketStatus.set(socket.id, { status: 'connected', lastSeen: Date.now() });
-      
-      // If this socket was in waiting state for reconnection, handle the reconnection
-      if (matchId && activeMatches.has(matchId)) {
-        const match = activeMatches.get(matchId);
-        
-        // Check if this socket was pending reconnection
-        if (match.pendingReconnect === socket.id) {
-          console.log(`Reconnected socket ${socket.id} to match ${matchId} via heartbeat`);
-          
-          // Update the match with the reconnected socket
-          if (match.player1_old === socket.id) {
-            match.player1 = socket.id;
-            delete match.player1_old;
-          } else if (match.player2_old === socket.id) {
-            match.player2 = socket.id;
-            delete match.player2_old;
-          }
-          
-          delete match.pendingReconnect;
-          
-          // Notify the other player that the opponent has reconnected
-          const otherPlayer = match.player1 === socket.id ? match.player2 : match.player1;
-          io.to(otherPlayer).emit('opponentReconnected', { matchId });
-        }
-      }
     });
   });
 }
 
-module.exports = { initializeSocket };
-
-// Helper function to convert difficulty strings to numeric levels for comparison
+// Helper function to get difficulty level as a number
 function getDifficultyLevel(difficulty) {
-  switch(difficulty) {
-    case 'Easy': return 1;
-    case 'Medium': return 2;
-    case 'Hard': return 3;
-    default: return 1; // Default to Easy
+  switch (difficulty.toLowerCase()) {
+    case 'easy': return 1;
+    case 'medium': return 2;
+    case 'hard': return 3;
+    default: return 1;
   }
 }
+
+module.exports = { initializeSocket };

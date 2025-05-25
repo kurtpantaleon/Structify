@@ -21,7 +21,9 @@ export default function Match() {
   const navigate = useNavigate();
   const auth = useAuth();
   const { currentUser } = auth;
-  const { matchId, opponent } = location.state || {};
+  const { matchData, userStats } = location.state || {};
+  const matchId = matchData?.matchId;
+  const opponent = matchData?.opponent;
   const [timeLeft, setTimeLeft] = useState(5);
   const [showChallenge, setShowChallenge] = useState(false);
   const [opponentQuit, setOpponentQuit] = useState(false);
@@ -39,11 +41,11 @@ export default function Match() {
   
   // Redirect if we arrived at this page without proper state
   useEffect(() => {
-    if (!location.state) {
+    if (!matchData || !opponent) {
       console.error("Match page accessed without proper state data");
       navigate('/CodeChallengeLobby');
     }
-  }, [location.state, navigate]);
+  }, [matchData, opponent, navigate]);
   // Listen for opponent disconnection events
   useEffect(() => {
     if (!matchId || !opponent) return;

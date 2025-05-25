@@ -16,19 +16,36 @@ if (!fs.existsSync(serviceAccountPath)) {
 }
 
 const app = express();
-app.use(cors());
-app.use(express.json()); // Parse JSON request bodies
+
+// Optimize CORS configuration
+app.use(cors({
+  origin: ["http://localhost:5173", "http://127.0.0.1:5173"], // Allow both localhost and IP
+  methods: ["GET", "POST"],
+  credentials: true,
+  maxAge: 86400 // Cache preflight requests for 24 hours
+}));
+
+// Optimize JSON parsing
+app.use(express.json({ limit: '1mb' })); // Limit JSON payload size
 
 const server = http.createServer(app);
+
+// Optimize Socket.IO configuration
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Your Vite frontend URL
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
     methods: ["GET", "POST"],
     credentials: true
   },
-  connectTimeout: 10000,
-  pingTimeout: 30000, // Increase ping timeout (default 5000ms)
-  pingInterval: 25000 // Check connection every 25s (default 10000ms)
+  connectTimeout: 5000, // Reduced from 10000 to 5000 for faster connection attempts
+  pingTimeout: 20000, // Reduced from 30000 to 20000 for faster detection of disconnections
+  pingInterval: 10000, // Reduced from 25000 to 10000 for more frequent connection checks
+  transports: ['websocket', 'polling'], // Prefer WebSocket, fallback to polling
+  allowEIO3: true, // Allow Engine.IO v3 clients
+  maxHttpBufferSize: 1e6, // Limit message size to 1MB
+  path: '/socket.io/', // Explicit path
+  serveClient: false, // Don't serve the client
+  cookie: false // Disable cookies
 });
 
 // Initialize socket handlers
@@ -40,6 +57,16 @@ app.use('/', userRoutes);
 // Basic health check route
 app.get('/', (req, res) => {
   res.send('Server is running');
+});
+
+// Add a more detailed health check endpoint
+app.get('/health', (req, res) => {
+  const health = {
+    uptime: process.uptime(),
+    message: 'OK',
+    timestamp: Date.now()
+  };
+  res.send(health);
 });
 
 const PORT = process.env.PORT || 3001;
@@ -57,4 +84,5 @@ server.on('error', (error) => {
 // Start the server
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log(`Health check available at http://localhost:${PORT}/health`);
 });

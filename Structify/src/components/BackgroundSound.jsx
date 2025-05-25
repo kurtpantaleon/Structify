@@ -1,55 +1,55 @@
 // src/components/BackgroundSound.jsx
-import { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import backgroundMusic from '../assets/sounds/background.mp3';
 
-// Create a persistent audio instance
-const audio = new Audio(backgroundMusic);
-audio.loop = true;
-audio.volume = 0.3;
-
-function BackgroundSound() {
-  const [isPlaying, setIsPlaying] = useState(true); // default to playing
+export default function BackgroundSound() {
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    const startAudio = async () => {
-      try {
-        await audio.play();
-        setIsPlaying(true);
-      } catch (err) {
-        console.warn('Autoplay blocked by browser:', err);
-        setIsPlaying(false);
-      }
-    };
+    // Create audio element
+    const audio = new Audio(backgroundMusic);
+    audio.loop = true;
+    audio.volume = 0.3;
+    audioRef.current = audio;
 
-    startAudio();
-
+    // Cleanup on unmount
     return () => {
-      audio.pause();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
   }, []);
 
-  const toggleAudio = () => {
-    const newState = !isPlaying;
-    setIsPlaying(newState);
-
-    if (newState) {
-      audio.play().catch(err => {
-        console.warn('Failed to play:', err);
-      });
-    } else {
-      audio.pause();
+  const startAudio = async () => {
+    try {
+      if (audioRef.current && !isPlaying) {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.log('Audio playback failed:', error);
     }
   };
 
-  return (
-    <button
-      onClick={toggleAudio}
-      className="fixed bottom-4 right-4 z-50 p-3 bg-white text-black rounded-full shadow-md hover:bg-gray-200 focus:outline-none"
-      aria-label={isPlaying ? 'Mute background music' : 'Play background music'}
-    >
-      {isPlaying ? '🎵' : '🔇'}
-    </button>
-  );
-}
+  // Add click handler to the document to start audio
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      startAudio();
+      // Remove the event listeners after first interaction
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+    };
 
-export default BackgroundSound;
+    document.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('keydown', handleFirstInteraction);
+
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+    };
+  }, [isPlaying]);
+
+  return null; // This component doesn't render anything
+}

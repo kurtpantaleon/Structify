@@ -173,41 +173,21 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
     // Set up listener for challenge assignment
     const handleChallengeAssignment = (data) => {
       if (data.matchId === matchId) {
-        let assignedChallenge;
-        
-        // Check if server provided a specific challenge ID
-        if (typeof data.challengeId === 'number') {
-          assignedChallenge = challenges.find(c => c.id === data.challengeId);
-        } 
-        // If server provided difficulty only
-        else if (data.challengeId && data.challengeId.difficulty) {
-          const difficultyMatches = challenges.filter(c => c.difficulty === data.challengeId.difficulty);
-          if (difficultyMatches.length > 0) {
-            // Pick a random challenge of the specified difficulty
-            const randomIdx = Math.floor(Math.random() * difficultyMatches.length);
-            assignedChallenge = difficultyMatches[randomIdx];
-          }
-        }
-        
-        // If no valid challenge was found, use default
-        if (!assignedChallenge) {
-          assignedChallenge = eligibleChallenges[0] || challenges[0];
-        }
+        const assignedChallenge = challenges.find(c => c.id === data.challengeId);
+        if (assignedChallenge) {
           setChallenge(assignedChallenge);
-        setCode(assignedChallenge.initialCode);
-        setTotalTests(assignedChallenge.testCases.length);
-        setIsLoadingChallenge(false); // Challenge is now loaded
-        setStartTime(Date.now()); // Record when the challenge started
-        
-        console.log(`Assigned challenge: ${assignedChallenge.title} (${assignedChallenge.difficulty})`);
+          setCode(assignedChallenge.initialCode);
+          setTotalTests(assignedChallenge.testCases.length);
+          setIsLoadingChallenge(false);
+        }
       }
     };
     
-    // Listen for challenge assignment from server
     socket.on('assignChallenge', handleChallengeAssignment);
     
-    // Emit event to request challenge assignment (only if socket is connected)
+    // Send challenge selection to server
     if (socket.connected) {
+      console.log("Sending challengeSelected event");
       socket.emit('challengeSelected', { 
         matchId, 
         challengeId: suggestedChallengeId,
@@ -247,7 +227,7 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
   }, [matchId, isLoadingChallenge, difficulty]);
   // Set up socket event listeners for opponent progress and quitting
   useEffect(() => {
-    // Get or create socket connection
+    // Get socket instance from our service
     const socket = getSocket();
     
     // If socket is not connected, try to reconnect
@@ -262,115 +242,46 @@ export default function CodingChallenge({ matchId, opponent, currentUser, onComp
         if (data.completed && !winner) {
           setWinner(opponent.name);
           setChallengeComplete(true);
-
-          // Calculate completion time in seconds
-          const endTime = Date.now();
-          const timeTaken = Math.floor((endTime - (startTime || endTime)) / 1000);
-          setCompletionTime(timeTaken);
-
-          // Record match in Firestore
-          recordMatch({
-            player1: { uid: currentUser?.uid, name: currentUser?.name || 'You' },
-            player2: { uid: opponent?.userId, name: opponent?.name },
-            winnerUid: opponent?.userId,
-            challengeId: challenge?.id,
-            difficulty: challenge?.difficulty,
-            completionTime: timeTaken,
-          });
         }
+      }
+    };
+    
+    const handleOpponentQuit = (data) => {
+      if (data.matchId === matchId) {
+        setOpponentQuit(true);
+        setWinner(currentUser.name);
+        setChallengeComplete(true);
       }
     };
     
     const handleOpponentReconnected = (data) => {
       if (data.matchId === matchId) {
-        console.log("Opponent has reconnected to the match!");
-        
-        // Update UI to show opponent has reconnected
-        setError(null);
-        setOutput((prev) => prev + "\n\n👋 Your opponent has reconnected to the match.");
+        setOpponentQuit(false);
+        setOpponentProgress(0);
       }
     };
     
-   const handleOpponentQuit = (data) => {
-    console.log("Opponent quit event received:", data);
-    
-    // Check match ID first, then try to match opponent ID if available
-    const isThisMatch = data.matchId === matchId;
-    const isThisOpponent = opponent && opponent.userId && data.userId === opponent.userId;
-    
-    if (isThisMatch || isThisOpponent) {
-      console.log("Opponent quit detected for this match!");
-      
-      // Set error message but don't end match yet - they might reconnect
-      setError("Your opponent disconnected. Waiting to see if they reconnect...");
-      
-      // Wait 30 seconds before declaring victory
-      setTimeout(() => {
-        // Check if we're still in the same situation (opponent still disconnected)
-        if (error && error.includes("disconnected") && !challengeComplete) {
-          // Set all relevant states to mark player as winner
-          setChallengeComplete(true);
-          setWinner(currentUser?.name || 'You');
-          setError(null);
-          setOutput((prev) => prev + "\n\n🎉 Your opponent left the match. You win by default!");
-            
-          // Calculate completion time in seconds
-          const endTime = Date.now();
-          const timeTaken = Math.floor((endTime - (startTime || endTime)) / 1000);
-          setCompletionTime(timeTaken);
-          
-          // Call the completion handler if provided
-          if (onCompleteChallenge) {
-            onCompleteChallenge(true, 'opponent_quit', challenge, timeTaken);
-          }
-
-          // Record match in Firestore
-          recordMatch({
-            player1: { uid: currentUser?.uid, name: currentUser?.name || 'You' },
-            player2: { uid: opponent?.userId, name: opponent?.name },
-            winnerUid: currentUser?.uid,
-            challengeId: challenge?.id,
-            difficulty: challenge?.difficulty,
-            completionTime: timeTaken,
-          });
-        }
-      }, 30000); // 30 seconds wait for reconnection
-    }
-  };
     // Register event handlers
-  socket.on('opponentProgress', handleOpponentProgress);
-  socket.on('opponentQuit', handleOpponentQuit);
-  socket.on('opponentReconnected', handleOpponentReconnected);
-  
-  // Register reconnect listener to re-emit events
-  socket.io.on('reconnect', () => {
-    console.log("Socket reconnected - re-registering with the match");
-    if (matchId) {
-      socket.emit('heartbeat', { matchId });
-    }
-  });
-  
-  // Send a heartbeat to the server to make sure this client is still tracked
-  const heartbeatInterval = setInterval(() => {
-    if (socket.connected && matchId) {
-      socket.emit('heartbeat', { matchId });
-    } else if (!socket.connected && matchId) {
-      // If socket is disconnected, try to reconnect
-      reconnectSocket();
-    }
-  }, 10000); // Every 10 seconds
-  
-  return () => {
-    // Clean up event listeners
-    socket.off('opponentProgress', handleOpponentProgress);
-    socket.off('opponentQuit', handleOpponentQuit);
-    socket.off('opponentReconnected', handleOpponentReconnected);
-    socket.io.off('reconnect');
+    socket.on('opponentProgress', handleOpponentProgress);
+    socket.on('opponentQuit', handleOpponentQuit);
+    socket.on('opponentReconnected', handleOpponentReconnected);
     
-    // Clear heartbeat interval
-    clearInterval(heartbeatInterval);
-  };
-}, [matchId, opponent, winner, currentUser, onCompleteChallenge, challenge, startTime]);
+    // Register reconnect listener to re-emit events
+    socket.io.on('reconnect', () => {
+      console.log("Socket reconnected - re-registering with the match");
+      if (matchId) {
+        socket.emit('heartbeat', { matchId });
+      }
+    });
+    
+    return () => {
+      // Clean up event listeners
+      socket.off('opponentProgress', handleOpponentProgress);
+      socket.off('opponentQuit', handleOpponentQuit);
+      socket.off('opponentReconnected', handleOpponentReconnected);
+      socket.io.off('reconnect');
+    };
+  }, [matchId, opponent, winner, currentUser, onCompleteChallenge, challenge, startTime]);
     // Timer countdown
   useEffect(() => {
     const timer = setInterval(() => {

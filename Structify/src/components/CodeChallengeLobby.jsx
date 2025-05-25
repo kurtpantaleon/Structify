@@ -14,15 +14,8 @@ import fireIcon from '../assets/images/fire.png';
 import select from '../assets/images/select.png';
 import icon from '../assets/images/select-icon.png';
 import Match from '../pages/PvP/Match';
-import { io } from 'socket.io-client';
+import { getSocket, reconnectSocket } from '../services/socketService';
 import BackgroundSound from './BackgroundSound';
-
-// Initialize socket connection
-const socket = io('http://localhost:3001', {
-  reconnection: true,
-  reconnectionAttempts: 5,
-  timeout: 10000,
-});
 
 const styles = {
   challengeButton: "w-90 py-3 px-4 rounded-xl text-white font-semibold flex items-center justify-center gap-x-2 shadow-lg shadow-blue-600/40 hover:shadow-blue-600/70 transition duration-300 ease-in-out bg-no-repeat"
@@ -129,6 +122,9 @@ export default function CodeChallengeLobby() {
   
   // Socket connection and events handling
   useEffect(() => {
+    // Get socket instance from our service
+    const socket = getSocket();
+    
     // Connection event handlers
     const handleConnect = () => {
       console.log('Socket connected successfully');
@@ -157,27 +153,22 @@ export default function CodeChallengeLobby() {
       setIsSearching(true);
       setError(null);
     };
-
+    
     const handleMatchFound = (data) => {
-      console.log('Match found with:', data);
+      console.log('Match found:', data);
       setIsSearching(false);
-      setOpponent(data.opponent);
-      
-      // Navigate to the game page with match data
-      navigate('/pvp/match', { 
+      navigate(`/PvP/Match`, { 
         state: { 
-          matchId: data.matchId,
-          opponent: data.opponent,
-          user: userStats // Include user data for the match
-        },
-        replace: true // Ensure we can't go back to the lobby
+          matchData: data,
+          userStats: userStats
+        }
       });
     };
-
+    
     const handleMatchCancelled = () => {
+      console.log('Match cancelled');
       setIsSearching(false);
-      setOpponent(null);
-      setSearchTime(0);
+      setError('Match cancelled');
     };
     
     const handleMatchError = (error) => {
@@ -185,7 +176,7 @@ export default function CodeChallengeLobby() {
       setIsSearching(false);
       setError(error.message || 'An error occurred during matchmaking');
     };
-
+    
     const handleQueueUpdate = (data) => {
       console.log('Queue update:', data);
       // You can add queue position or waiting time display here
@@ -203,7 +194,7 @@ export default function CodeChallengeLobby() {
     
     // Try to connect if not already connected
     if (!socket.connected) {
-      socket.connect();
+      reconnectSocket();
     }
     
     // Cleanup on unmount
@@ -243,9 +234,11 @@ export default function CodeChallengeLobby() {
   const handleFindMatch = () => {
     console.log('Find Match button clicked');
     
+    const socket = getSocket();
     if (!socket.connected) {
       console.error('Socket is not connected');
       setError('Not connected to matchmaking server');
+      reconnectSocket();
       return;
     }
 
@@ -273,6 +266,7 @@ export default function CodeChallengeLobby() {
   
   // Handler to cancel match search
   const handleCancelSearch = () => {
+    const socket = getSocket();
     socket.emit('cancelMatch');
     setIsSearching(false);
   };
@@ -280,6 +274,7 @@ export default function CodeChallengeLobby() {
   // Handler to exit to main page
   const handleExit = () => {
     if (isSearching) {
+      const socket = getSocket();
       socket.emit('cancelMatch');
     }
     navigate('/MainPage');
@@ -356,19 +351,18 @@ export default function CodeChallengeLobby() {
       <div className="mb-8 animate-fadeIn"></div>
       
       {isSearching && (
-        <div 
-          className="mt-4 text-center bg-blue-900/30 p-6 rounded-xl border border-blue-500/30 shadow-lg animate-fadeIn"
-        >
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-3 text-xl font-medium">Searching for an opponent...</p>
-          <p className="text-sm text-blue-300 mt-1">Time elapsed: {formatTime(searchTime)}</p>
-          
-          <button
-            onClick={handleCancelSearch}
-            className="mt-4 px-6 py-2 bg-red-500/70 hover:bg-red-500 rounded-lg text-white font-medium transition duration-200"
-          >
-            Cancel Search
-          </button>
+        <div className="fixed inset-0 flex items-center justify-center bg-blue-900/30 backdrop-blur-sm z-50">
+          <div className="text-center bg-blue-900/90 p-8 rounded-xl border border-blue-500/30 shadow-lg animate-fadeIn min-w-[320px]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-3 text-xl font-medium">Searching for an opponent...</p>
+            <p className="text-sm text-blue-300 mt-1">Time elapsed: {formatTime(searchTime)}</p>
+            <button
+              onClick={handleCancelSearch}
+              className="mt-4 px-6 py-2 bg-red-500/70 hover:bg-red-500 rounded-lg text-white font-medium transition duration-200"
+            >
+              Cancel Search
+            </button>
+          </div>
         </div>
       )}
       
