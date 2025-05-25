@@ -3,6 +3,7 @@ import Editor from "@monaco-editor/react";
 import Header from "../../../components/Header";
 import { useNavigate } from "react-router-dom";
 import { useGameStats } from "../../../context/gameStatsContext";
+import { useLessonProgress } from "../../../context/lessonProgressContext";
 
 const problemDescription = `
 Write a function that takes a string as input and prints the reversed string.
@@ -17,35 +18,48 @@ Output: olleh
 
 const defaultCodes = {
   javascript: `function reverseString(str) {
-  // Use string and array functions to reverse
-  console.log(str.split('').reverse().join(''));
+  
 }
 
 reverseString("hello");
 `,
   python: `def reverse_string(s):
-    # Use string slicing to reverse
-    print(s[::-1])
+    pass
 
 reverse_string("hello")
 `,
   cpp: `#include <iostream>
-#include <algorithm>
 using namespace std;
 
 void reverseString(string s) {
-    reverse(s.begin(), s.end());
-    cout << s << endl;
 }
 
 int main() {
     reverseString("hello");
     return 0;
+}`,
+  csharp: `using System;
+
+class Program {
+    static void ReverseString(string str) {
+    }
+
+    static void Main() {
+        ReverseString("hello");
+    }
+}`,
+  java: `public class Main {
+    public static void reverseString(String str) {
+    }
+
+    public static void main(String[] args) {
+        reverseString("hello");
+    }
 }`
 };
 
 const expectedOutput = "olleh";
-const totalTimeInSeconds = 10;
+const totalTimeInSeconds = 30;
 
 export default function Activity1() {
   const editorRef = useRef(null);
@@ -54,7 +68,9 @@ export default function Activity1() {
   const [availableLanguages] = useState([
     { id: "javascript", label: "JavaScript" },
     { id: "python", label: "Python" },
-    { id: "cpp", label: "C++" }
+    { id: "cpp", label: "C++" },
+    { id: "csharp", label: "C#" },
+    { id: "java", label: "Java" }
   ]);
   const [feedback, setFeedback] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
@@ -63,7 +79,16 @@ export default function Activity1() {
   const [showTimeoutModal, setShowTimeoutModal] = useState(false);
   const navigate = useNavigate();
   const { deductHeart } = useGameStats();
+  const { activityScores, markActivityComplete } = useLessonProgress();
+  const [score, setScore] = useState(null);
   const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (activityScores && activityScores["activity1"] !== undefined) {
+      setScore(activityScores["activity1"]);
+      setFeedback(`Your previous score: ${activityScores["activity1"]}/100`);
+    }
+  }, [activityScores]);
 
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;
@@ -125,6 +150,9 @@ export default function Activity1() {
     if (!hasRunCode && !force) return;
 
     if (isCorrect) {
+      const calculatedScore = 100;
+      setScore(calculatedScore);
+      await markActivityComplete("activity1", calculatedScore);
       navigate("/week1activity2");
     } else {
       await deductHeart();
