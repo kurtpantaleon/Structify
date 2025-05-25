@@ -79,6 +79,10 @@ function ViewStudentsPage() {
   const [bulkReassignSection, setBulkReassignSection] = useState('');
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
+  // Toast notification states
+  const [toast, setToast] = useState(null);
+  const [toastVisible, setToastVisible] = useState(false);
+
   useEffect(() => {
     const fetchStudents = async () => {
       setIsLoading(true);
@@ -286,6 +290,7 @@ function ViewStudentsPage() {
   
     try {
       const newSection = selectedSection === '__unassign__' ? '' : selectedSection;
+      const previousSection = selectedStudent.section || 'None';
   
       // Update user document
       await setDoc(doc(db, 'users', selectedStudent.id), {
@@ -318,7 +323,9 @@ function ViewStudentsPage() {
             studentCount: studentCount,
           });
         }
-      }      const updatedStudent = { ...selectedStudent, section: newSection };
+      }
+      
+      const updatedStudent = { ...selectedStudent, section: newSection };
       
       // Update both arrays
       setStudents(students.map((s) =>
@@ -328,11 +335,16 @@ function ViewStudentsPage() {
       setFilteredStudents(filteredStudents.map((s) =>
         s.id === selectedStudent.id ? updatedStudent : s
       ));
+      
       setReassignModalOpen(false);
       setSelectedStudent(null);
       setSelectedSection('');
+      
+      // Show success notification
+      showSuccessToast(`${updatedStudent.name} reassigned from ${previousSection} to ${newSection || 'Unassigned'}`);
     } catch (error) {
       console.error('Error updating student section:', error);
+      showErrorToast(`Failed to reassign student: ${error.message}`);
     }
   };  const handleDeleteStudent = async () => {
     if (!studentToDelete) return;
@@ -490,9 +502,12 @@ function ViewStudentsPage() {
       setShowDeleteModal(false);
       setStudentToDelete(null);
       setShowDeleteSuccessModal(true);
+      
+      // Show success notification
+      showSuccessToast(`${studentToDelete.name} has been successfully deleted`);
     } catch (error) {
       console.error('Error deleting student:', error);
-      alert('Failed to delete student.');
+      showErrorToast(`Failed to delete student: ${error.message}`);
     }
   };
 
@@ -816,10 +831,11 @@ function ViewStudentsPage() {
       setBulkActionType(null);
       setBulkReassignSection('');
       
-      showSuccessToast(`Successfully reassigned ${selectedStudents.length} students`);
+      const newSectionName = bulkReassignSection === '__unassign__' ? 'Unassigned' : bulkReassignSection;
+      showSuccessToast(`Successfully reassigned ${selectedStudents.length} students to ${newSectionName}`);
     } catch (error) {
       console.error('Error reassigning students:', error);
-      showErrorToast('Failed to reassign students');
+      showErrorToast(`Failed to reassign students: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -881,7 +897,7 @@ function ViewStudentsPage() {
       showSuccessToast(`Successfully deleted ${selectedStudentObjects.length} students`);
     } catch (error) {
       console.error('Error deleting students:', error);
-      showErrorToast('Failed to delete students');
+      showErrorToast(`Failed to delete students: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -889,14 +905,24 @@ function ViewStudentsPage() {
 
   // Show success toast
   const showSuccessToast = (message) => {
-    // Use existing toast state or implement new toast functionality
-    console.log(message);
+    setToast({
+      type: 'success',
+      message,
+      icon: <CheckCircle className="h-5 w-5 text-white" />
+    });
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 3000);
   };
 
   // Show error toast
   const showErrorToast = (message) => {
-    // Use existing toast state or implement new toast functionality
-    console.error(message);
+    setToast({
+      type: 'error',
+      message,
+      icon: <XCircle className="h-5 w-5 text-white" />
+    });
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 3000);
   };
 
   return (
@@ -906,6 +932,25 @@ function ViewStudentsPage() {
       {isNavOpen && (
         <div className="w-20 border-r border-white/20 bg-[#141a35]">
           <AdminNavigationBar />
+        </div>
+      )}      
+      {/* Toast notification */}
+      {toast && (
+        <div 
+          className={`fixed top-4 right-4 z-50 flex items-center px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
+            toastVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-4'
+          } ${toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}
+        >
+          <div className="mr-3 rounded-full bg-white/20 p-1">
+            {toast.icon}
+          </div>
+          <p className="text-white font-medium">{toast.message}</p>
+          <button 
+            onClick={() => setToastVisible(false)}
+            className="ml-4 text-white/80 hover:text-white"
+          >
+            <XCircle className="h-4 w-4" />
+          </button>
         </div>
       )}      <div className="max-w-6xl mx-auto mt-7 bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-md h-[75vh] flex flex-col">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
@@ -987,14 +1032,14 @@ function ViewStudentsPage() {
               )}
             </div>
           </div>
-          
-          <div className="relative flex">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <div>
+            <div className="relative mb-4 flex">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <Search className="w-4 h-4 text-gray-500" />
-            </div>
+              </div>
             <input
               type="text"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-[#141a35]/20 focus:border-[#141a35] block w-full pl-10 p-2.5"
               placeholder="Search students..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -1007,8 +1052,10 @@ function ViewStudentsPage() {
                 <XCircle className="w-4 h-4" />
               </button>
             )}
+            </div>
           </div>
-        </div>        <div className="overflow-y-auto pr-3 flex-grow">
+        </div>        
+          <div className="overflow-y-auto pr-3 flex-grow">
           {!isLoading && Object.keys(groupedBySection).length > 0 && (
             <div className="flex justify-between mb-3">
               <div>

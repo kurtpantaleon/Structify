@@ -865,7 +865,7 @@ function ViewInstructorPage() {
         
         <div className="relative mb-4 flex">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <Search className="w-4 h-4 text-gray-500" />
+            <Search className="w-4 h-1 text-gray-500" />
           </div>
           <input
             type="text"
@@ -879,7 +879,7 @@ function ViewInstructorPage() {
               onClick={() => setSearchTerm('')}
               className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
             >
-              <XCircle className="w-4 h-4" />
+              <XCircle className="w-4 h-1" />
             </button>
           )}
         </div>
