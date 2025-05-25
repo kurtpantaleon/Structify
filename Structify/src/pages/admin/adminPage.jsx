@@ -7,7 +7,10 @@ import AdminNavigationBar from '../../components/AdminNavigationBar';
 import AdminSubHeading from '../../components/AdminSubHeading';
 import SectionCard from '../../components/AdminSectionCard';
 import AcademicYearEditor from '../../components/AcademicYearEditor';
-import { Search, Plus, RefreshCw, AlertTriangle, CheckCircle, XCircle, Calendar, Filter, X, Layers } from 'lucide-react';
+import { 
+  Search, Plus, RefreshCw, AlertTriangle, CheckCircle, XCircle, Calendar, 
+  Filter, X, Layers, LayoutGrid, List, Edit3, Trash2, ExternalLink, Save
+} from 'lucide-react';
  
 function AdminPage() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -37,6 +40,12 @@ function AdminPage() {
   const [newYearName, setNewYearName] = useState('');
 
   const [activeTab, setActiveTab] = useState('classes'); // Add state for active tab
+
+  // View mode state (grid or list)
+  const [viewMode, setViewMode] = useState(() => {
+    // Get from localStorage or default to 'grid'
+    return localStorage.getItem('classViewMode') || 'grid';
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -461,6 +470,13 @@ function AdminPage() {
     showToast(`Academic year "${year}" removed`, 'success');
   };
 
+  // Handle view mode toggle
+  const toggleViewMode = () => {
+    const newMode = viewMode === 'grid' ? 'list' : 'grid';
+    setViewMode(newMode);
+    localStorage.setItem('classViewMode', newMode);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 relative">
       <Header />
@@ -526,6 +542,19 @@ function AdminPage() {
               </div>
               
               <div className="flex gap-2">
+                {/* View Mode Toggle */}
+                <button
+                  onClick={toggleViewMode}
+                  className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-md transition"
+                  title={viewMode === 'grid' ? "Switch to List View" : "Switch to Grid View"}
+                >
+                  {viewMode === 'grid' ? (
+                    <List className="h-4 w-4" />
+                  ) : (
+                    <LayoutGrid className="h-4 w-4" />
+                  )}
+                </button>
+                
                 <button
                   onClick={handleRefresh}
                   className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-md transition"
@@ -648,7 +677,8 @@ function AdminPage() {
                   )}
                 </div>
               </div>
-            ) : (
+            ) : viewMode === 'grid' ? (
+              /* Grid View */
               <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 overflow-y-auto pr-2 flex-grow">
                 {filteredSections.map((item) => (
                   <SectionCard
@@ -662,6 +692,108 @@ function AdminPage() {
                     onDelete={() => handleDeleteSection(item)}
                   />
                 ))}
+              </div>
+            ) : (
+              /* List View */
+              <div className="p-4 overflow-y-auto pr-2 flex-grow">
+                <div className="overflow-hidden border border-gray-200 sm:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Class Name
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Instructor
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Students
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Academic Year
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredSections.map((section) => (
+                        <tr 
+                          key={section.id} 
+                          className="hover:bg-gray-50 cursor-pointer transition"
+                        >
+                          <td 
+                            className="px-6 py-4 whitespace-nowrap"
+                            onClick={() => navigate('/ViewClassPage', { state: { section } })}
+                          >
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-800">
+                                <Layers className="h-5 w-5" />
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {section.sectionName}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td 
+                            className="px-6 py-4 whitespace-nowrap"
+                            onClick={() => navigate('/ViewClassPage', { state: { section } })}
+                          >
+                            <div className="text-sm text-gray-900">{section.instructor}</div>
+                          </td>
+                          <td 
+                            className="px-6 py-4 whitespace-nowrap"
+                            onClick={() => navigate('/ViewClassPage', { state: { section } })}
+                          >
+                            <div className="text-sm text-gray-900">
+                              <span className="bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full">
+                                {section.studentCount} students
+                              </span>
+                            </div>
+                          </td>
+                          <td 
+                            className="px-6 py-4 whitespace-nowrap"
+                            onClick={() => navigate('/ViewClassPage', { state: { section } })}
+                          >
+                            <div className="text-sm text-gray-900">
+                              <span className="bg-gray-100 text-gray-800 text-xs px-2.5 py-0.5 rounded-full">
+                                {section.academicYear}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex justify-end space-x-2">
+                              <button
+                                onClick={() => navigate('/ViewClassPage', { state: { section } })}
+                                className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50"
+                                title="View Class"
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleEditSection(section)}
+                                className="text-indigo-600 hover:text-indigo-900 p-1 rounded-full hover:bg-indigo-50"
+                                title="Edit Class"
+                              >
+                                <Edit3 className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSection(section)}
+                                className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50"
+                                title="Delete Class"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </>
