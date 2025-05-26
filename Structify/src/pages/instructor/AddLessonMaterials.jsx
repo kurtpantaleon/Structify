@@ -347,7 +347,7 @@ const AddLessonMaterials = () => {
             <Header />
             <AdminSubHeading toggleNav={() => setIsNavOpen(!isNavOpen)} title="Add Learning Materials" />
 
-            <div className="flex">
+            <div className="flex min-h-[calc(100vh-120px)]">
                 {isNavOpen && (
                     <motion.div 
                         initial={{ width: 0, opacity: 0 }}

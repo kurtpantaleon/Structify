@@ -83,14 +83,49 @@ function MainPage() {
                 <div className="relative z-10">
                   <div className="flex justify-between items-center mb-2">
                     <h2 className="text-xl sm:text-2xl font-extrabold tracking-wide text-white">WEEK 1 GOALS</h2>
-                    <select 
-                      className="bg-[#1F274D] text-white border border-white/20 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={lessonType}
-                      onChange={handleLessonTypeChange}
-                    >
-                      <option value="structify">Structify Lessons</option>
-                      <option value="instructor">Instructor Lessons</option>
-                    </select>
+                    <div className="relative group/select">
+                      <select 
+                        className="appearance-none bg-gradient-to-r from-[#1a2142] to-[#232d5d] text-white border border-blue-500/50 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/70 focus:border-transparent shadow-md hover:shadow-lg hover:shadow-blue-600/20 transition-all duration-300 pr-9"
+                        value={lessonType}
+                        onChange={handleLessonTypeChange}
+                        style={{ 
+                          backgroundImage: 'linear-gradient(to right, #1a2142, #232d5d)', 
+                          WebkitAppearance: 'none',
+                          MozAppearance: 'none',
+                          borderRadius: '0.75rem'
+                        }}
+                      >
+                        <option value="structify" className="bg-[#1F274D] text-white py-3 px-4 hover:bg-[#2a3566] cursor-pointer border-b border-blue-400/20 font-medium">Structify Lessons</option>
+                        <option value="instructor" className="bg-[#1F274D] text-white py-3 px-4 hover:bg-[#2a3566] cursor-pointer font-medium">Instructor Lessons</option>
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-blue-400 group-hover/select:text-blue-300 transition-colors duration-200">
+                        <div className="rounded-full bg-blue-500/15 p-1 group-hover/select:bg-blue-500/30 transition-all duration-300 shadow-inner shadow-blue-400/20">
+                          <svg className="h-3.5 w-3.5 fill-current transform transition-transform duration-300 group-hover/select:translate-y-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 pointer-events-none group-hover/select:from-blue-600/15 group-hover/select:to-indigo-600/15 transition-all duration-300"></div>
+                      <div className="absolute -inset-[0.5px] rounded-xl bg-gradient-to-r from-blue-400/30 to-indigo-400/30 opacity-0 group-hover/select:opacity-100 blur-[1px] transition-opacity duration-300 pointer-events-none"></div>
+                      
+                      {/* Style overrides for dropdown list */}
+                      <style jsx>{`
+                        select option {
+                          background-color: #1a2142 !important;
+                          color: white;
+                          padding: 10px;
+                          border-radius: 8px;
+                        }
+                        select:focus {
+                          border-radius: 0.75rem;
+                        }
+                        @supports (-moz-appearance:none) {
+                          select {
+                            background-color: #1a2142;
+                          }
+                        }
+                      `}</style>
+                    </div>
                   </div>
                   <div className="border-t border-white/50 w-full mb-4 sm:mb-5"></div>
 

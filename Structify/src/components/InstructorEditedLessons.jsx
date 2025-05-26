@@ -72,27 +72,56 @@ function InstructorEditedLessons({ lessonType, onLessonTypeChange }) {
       {/* Content wrapper with z-index */}
       <div className="relative z-10">
         <div className="mb-2">
-          <h2 className="text-xl sm:text-2xl font-extrabold tracking-wide text-white mb-3">INSTRUCTOR EDITED LESSONS</h2>
-          <div className="flex flex-col sm:flex-row gap-2 w-full">
-            <select 
-              className="bg-[#1F274D] text-white border border-white/20 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
-              value={selectedWeek}
-              onChange={(e) => setSelectedWeek(e.target.value)}
-            >
-              {learningPathData.map((item, index) => (
-                <option key={index} value={item.week}>
-                  {item.week} - {item.topic}
-                </option>
-              ))}
-            </select>
-            <select 
-              className="bg-[#1F274D] text-white border border-white/20 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
-              value={lessonType}
-              onChange={onLessonTypeChange}
-            >
-              <option value="structify">Structify Lessons</option>
-              <option value="instructor">Instructor Lessons</option>
-            </select>
+          <h2 className="text-xl sm:text-2xl font-extrabold tracking-wide text-white mb-3">UPLOADED LESSONS</h2>
+          <div className="flex flex-col sm:flex-row gap-3 w-full">
+            <div className="relative w-full sm:w-auto flex-grow group/select">
+              <select 
+                className="appearance-none bg-gradient-to-r from-[#1a2142] to-[#232d5d] text-white border border-blue-500/50 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent w-full shadow-md hover:shadow-lg hover:shadow-blue-600/20 transition-all duration-300"
+                value={selectedWeek}
+                onChange={(e) => setSelectedWeek(e.target.value)}
+              >
+                {learningPathData.map((item, index) => (
+                  <option key={index} value={item.week} className="bg-[#1F274D] text-white py-3 px-4 hover:bg-[#2a3566] cursor-pointer transition-colors duration-150">
+                    {item.week} - {item.topic}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-blue-400 group-hover/select:text-blue-300 transition-colors duration-200">
+                <div className="rounded-full bg-blue-500/10 p-1 group-hover/select:bg-blue-500/20 transition-all duration-300 ml-2">
+                  <svg className="h-4 w-4 fill-current transform transition-transform duration-300 group-hover/select:translate-y-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+              <div className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-500/10 to-indigo-500/10 pointer-events-none group-hover/select:from-blue-600/15 group-hover/select:to-indigo-600/15 transition-all duration-300"></div>
+              <div className="absolute -inset-[0.5px] rounded-md bg-gradient-to-r from-blue-400/30 to-indigo-400/30 opacity-0 group-hover/select:opacity-100 blur-[1px] transition-opacity duration-300 pointer-events-none"></div>
+              <label className="absolute -top-2 left-2 px-1 text-xs bg-[#141a35] pointer-events-none z-10 font-medium">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-indigo-300 group-hover/select:from-blue-200 group-hover/select:to-indigo-200 transition-all duration-300">Week</span>
+              </label>
+            </div>
+            <div className="relative w-full sm:w-auto group/select">
+              <select 
+                className="appearance-none bg-gradient-to-r from-[#1a2142] to-[#232d5d] text-white border border-blue-500/50 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent w-full shadow-md hover:shadow-lg hover:shadow-blue-600/20 transition-all duration-300 pr-10"
+                value={lessonType}
+                onChange={onLessonTypeChange}
+                aria-label="Select lesson type"
+              >
+                <option value="structify" className="bg-[#1F274D] text-white py-3 px-4 hover:bg-[#2a3566] cursor-pointer border-b border-blue-400/10">Structify Lessons</option>
+                <option value="instructor" className="bg-[#1F274D] text-white py-3 px-4 hover:bg-[#2a3566] cursor-pointer">Instructor Lessons</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-blue-400 group-hover/select:text-blue-300 transition-colors duration-200">
+                <div className="rounded-full bg-blue-500/10 p-1.5 group-hover/select:bg-blue-500/20 transition-all duration-300 ml-1">
+                  <svg className="h-3.5 w-3.5 fill-current transform transition-transform duration-300 group-hover/select:translate-y-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+              <div className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-500/10 to-indigo-500/10 pointer-events-none group-hover/select:from-blue-600/15 group-hover/select:to-indigo-600/15 transition-all duration-300"></div>
+              <div className="absolute -inset-[0.5px] rounded-md bg-gradient-to-r from-blue-400/30 to-indigo-400/30 opacity-0 group-hover/select:opacity-100 blur-[1px] transition-opacity duration-300 pointer-events-none"></div>
+              <label className="absolute -top-2 left-2 px-1 text-xs bg-[#141a35] pointer-events-none z-10 font-medium">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-indigo-300 group-hover/select:from-blue-200 group-hover/select:to-indigo-200 transition-all duration-300">Lesson Type</span>
+              </label>
+            </div>
           </div>
         </div>
         <div className="border-t border-white/50 w-full mb-4 sm:mb-5"></div>
