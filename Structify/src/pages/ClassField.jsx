@@ -687,148 +687,250 @@ const ClassField = () => {
                 </div>
             </div>
             
-            {/* Edit Modal with improved UI */}
+            {/* Enhanced Edit Modal with improved UI/UX and centered positioning */}
             {editingLesson && (
                 <>
-                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"></div>
-                    <div className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-xl z-50 transition-transform duration-300 transform translate-x-0 flex flex-col overflow-hidden">
-                        <div className="bg-blue-600 p-4 text-white flex justify-between items-center">
-                            <h2 className="text-lg font-bold flex items-center">
-                                <Edit3 className="w-5 h-5 mr-2" />
-                                Edit Lesson
-                            </h2>
-                            <button 
-                                onClick={() => setEditingLesson(null)}
-                                className="text-white hover:text-blue-100 transition-colors"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-                        
-                        <div className="p-6 flex-1 overflow-y-auto">
-                            <form onSubmit={handleEditFormSubmit} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                                    <input 
-                                        type="text" 
-                                        name="title" 
-                                        value={editForm.title} 
-                                        onChange={handleEditFormChange} 
-                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                                        required 
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                    <textarea 
-                                        name="description" 
-                                        value={editForm.description} 
-                                        onChange={handleEditFormChange} 
-                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                                        rows="3" 
-                                        required 
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Week</label>
-                                    <input 
-                                        type="text" 
-                                        name="week" 
-                                        value={editForm.week} 
-                                        onChange={handleEditFormChange} 
-                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                                        required 
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
-                                    <textarea 
-                                        name="text" 
-                                        value={editForm.text} 
-                                        onChange={handleEditFormChange} 
-                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                                        rows="6"
-                                    />
-                                </div>
-                            </form>
-                        </div>
-                        
-                        <div className="border-t border-gray-200 p-4 bg-gray-50 flex gap-3 justify-end">
-                            <button 
-                                type="button" 
-                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md transition-colors duration-200 flex items-center gap-2"
-                                onClick={() => setEditingLesson(null)}
-                                disabled={isSaving}
-                            >
-                                <X className="w-4 h-4" />
-                                Cancel
-                            </button>
-                            <button 
-                                onClick={handleEditFormSubmit}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center gap-2"
-                                disabled={isSaving}
-                            >
-                                {isSaving ? (
-                                    <>
-                                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                        </svg>
-                                        Saving...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Save className="w-4 h-4" />
-                                        Save Changes
-                                    </>
-                                )}
-                            </button>
+                    <div 
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
+                        onClick={() => setEditingLesson(null)}
+                    />
+                    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white shadow-2xl rounded-xl max-w-4xl w-[95%] max-h-[90vh] transition-all duration-300 transform animate-scale-in flex flex-col overflow-hidden">
+                            <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 p-6 text-white flex justify-between items-center">
+                                <h2 className="text-xl sm:text-2xl font-bold flex items-center">
+                                    <Edit3 className="w-6 h-6 mr-3" />
+                                    Edit Lesson
+                                </h2>
+                                <button 
+                                    onClick={() => setEditingLesson(null)}
+                                    className="text-white/80 hover:text-white hover:bg-white/10 transition-colors p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-white/30"
+                                    aria-label="Close"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+                            
+                            <div className="p-8 flex-1 overflow-y-auto bg-gradient-to-b from-gray-50 to-white">
+                                <form onSubmit={handleEditFormSubmit} className="space-y-8 max-w-5xl mx-auto">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="md:col-span-2 group">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                                <span className="mr-2">Lesson Title</span>
+                                                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 text-xs rounded-full font-medium">Required</span>
+                                            </label>
+                                            <div className="relative">
+                                                <input 
+                                                    type="text" 
+                                                    name="title" 
+                                                    value={editForm.title} 
+                                                    onChange={handleEditFormChange} 
+                                                    className="w-full border border-gray-300 rounded-lg px-4 pl-10 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors shadow-sm text-base group-hover:border-blue-300" 
+                                                    placeholder="Enter lesson title"
+                                                    required 
+                                                />
+                                                <Book className="absolute top-3.5 left-3 h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="group">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                                <span className="mr-2">Week Number</span>
+                                                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 text-xs rounded-full font-medium">Required</span>
+                                            </label>
+                                            <div className="relative">
+                                                <input 
+                                                    type="text" 
+                                                    name="week" 
+                                                    value={editForm.week} 
+                                                    onChange={handleEditFormChange} 
+                                                    className="w-full border border-gray-300 rounded-lg px-4 pl-10 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors shadow-sm text-base group-hover:border-blue-300" 
+                                                    placeholder="e.g., 1, 2, 3..."
+                                                    required 
+                                                />
+                                                <Calendar className="absolute top-3.5 left-3 h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Last Modified</label>
+                                            <div className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-base text-gray-600 flex items-center">
+                                                <Clock className="h-5 w-5 text-gray-400 mr-2" />
+                                                {editingLesson?.lastUpdated 
+                                                    ? new Date(editingLesson.lastUpdated.seconds ? editingLesson.lastUpdated.seconds * 1000 : editingLesson.lastUpdated).toLocaleString()
+                                                    : 'Not yet saved'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Description field with enhanced UI */}
+                                    <div className="group">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                            <span className="mr-2">Description</span>
+                                            <span className="bg-blue-100 text-blue-700 px-2 py-0.5 text-xs rounded-full font-medium">Required</span>
+                                        </label>
+                                        <div className="relative">
+                                            <textarea 
+                                                name="description" 
+                                                value={editForm.description} 
+                                                onChange={handleEditFormChange} 
+                                                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors shadow-sm text-base group-hover:border-blue-300 pl-10" 
+                                                rows="4"
+                                                placeholder="Briefly describe what this lesson is about..."
+                                                required 
+                                            />
+                                            <span className="absolute top-3 left-3">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <p className="mt-1 text-xs text-gray-500">Provide a concise summary that explains what students will learn in this lesson.</p>
+                                    </div>
+                                    
+                                    {/* Content field with enhanced UI */}
+                                    <div className="group relative">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <label className="block text-sm font-medium text-gray-700 flex items-center">
+                                                <span className="mr-2">Lesson Content</span>
+                                                <div className="ml-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
+                                                    Optional
+                                                </div>
+                                            </label>
+                                            <div className="flex items-center text-xs text-blue-600">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Supports markdown formatting
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="relative">
+                                            <div className="absolute top-0 right-0 flex bg-gray-50 border-l border-b border-gray-200 rounded-bl-md overflow-hidden">
+                                                <button type="button" className="p-1.5 text-sm text-gray-500 hover:bg-gray-200" title="Bold">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 12h6m0 0H6m6 0V6m0 6v6" />
+                                                    </svg>
+                                                </button>
+                                                <button type="button" className="p-1.5 text-sm text-gray-500 hover:bg-gray-200" title="Expand editor">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            
+                                            <textarea 
+                                                name="text" 
+                                                value={editForm.text} 
+                                                onChange={handleEditFormChange} 
+                                                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors shadow-sm text-base font-mono group-hover:border-blue-300" 
+                                                rows="14"
+                                                placeholder="# Lesson Content goes here..."
+                                            />
+                                        </div>
+                                        
+                                        <div className="mt-2 flex justify-between items-center">
+                                            <p className="text-xs text-gray-500">Add detailed lesson content, examples, and explanations.</p>
+                                            <div className="text-xs text-gray-500 flex items-center">
+                                                <span>Characters: {editForm.text.length}</span>
+                                                <span className="mx-2">|</span>
+                                                <span className="flex items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                    </svg>
+                                                    Drag corner to resize
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div className="border-t border-gray-200 px-6 py-4 bg-white flex gap-4 justify-between md:justify-end shadow-inner">
+                                <button 
+                                    type="button" 
+                                    className="bg-white border border-gray-300 text-gray-700 font-medium px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 text-base hover:bg-gray-50"
+                                    onClick={() => setEditingLesson(null)}
+                                    disabled={isSaving}
+                                >
+                                    <X className="w-5 h-5" />
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={handleEditFormSubmit}
+                                    className={`${isSaving 
+                                        ? 'bg-blue-400 cursor-not-allowed' 
+                                        : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'} 
+                                    text-white font-medium px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg text-base`}
+                                    disabled={isSaving}
+                                >
+                                    {isSaving ? (
+                                        <>
+                                            <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Saving...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Save className="w-5 h-5" />
+                                            Save Changes
+                                        </>
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </>
             )}
             
-            {/* Delete Confirmation Modal with improved UI */}
+            {/* Enhanced Delete Confirmation Modal */}
             {showDeleteModal && (
                 <>
-                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"></div>
+                    <div 
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
+                        onClick={handleDeleteCancel}
+                    />
                     <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-                        <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden transform transition-all">
-                            <div className="bg-red-50 p-4 border-b border-red-100">
+                        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all animate-scale-in">
+                            <div className="bg-gradient-to-r from-red-500 to-red-600 p-5 text-white">
                                 <div className="flex items-center">
-                                    <div className="bg-red-100 rounded-full p-2 mr-3">
-                                        <Trash2 className="h-5 w-5 text-red-600" />
+                                    <div className="bg-white/20 rounded-full p-2.5 mr-4">
+                                        <Trash2 className="h-6 w-6 text-white" />
                                     </div>
-                                    <h3 className="text-lg font-bold text-gray-900">Delete Lesson</h3>
+                                    <h3 className="text-xl font-bold">Delete Lesson</h3>
                                 </div>
                             </div>
                             
                             <div className="p-6">
-                                <p className="text-gray-700 mb-4">
+                                <p className="text-gray-700 mb-4 text-lg">
                                     Are you sure you want to delete <span className="font-semibold">"{lessonToDelete?.title}"</span>?
                                 </p>
-                                <p className="text-sm text-red-600 mb-6">
-                                    This action cannot be undone.
+                                <p className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border-l-4 border-red-400 mb-6">
+                                    <strong>Warning:</strong> This action cannot be undone. All content associated with this lesson will be permanently removed.
                                 </p>
                                 
                                 <div className="flex justify-end gap-3">
                                     <button
                                         onClick={handleDeleteCancel}
-                                        className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md transition-colors duration-200 flex items-center gap-2 text-sm"
+                                        className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium"
                                         disabled={isDeleting}
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         onClick={handleDeleteConfirm}
-                                        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors duration-200 flex items-center gap-2 text-sm"
+                                        className={`${isDeleting 
+                                            ? 'bg-red-400' 
+                                            : 'bg-red-600 hover:bg-red-700'} 
+                                        px-5 py-2.5 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium`}
                                         disabled={isDeleting}
                                     >
                                         {isDeleting ? (
                                             <>
-                                                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                                 </svg>
                                                 Deleting...
                                             </>
@@ -845,6 +947,18 @@ const ClassField = () => {
                     </div>
                 </>
             )}
+            
+            {/* Custom animations - updated to replace slide-in-right with scale-in */}
+            <style jsx>{`
+                @keyframes scale-in {
+                    0% { transform: scale(0.9); opacity: 0; }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+                
+                .animate-scale-in {
+                    animation: scale-in 0.2s ease-out forwards;
+                }
+            `}</style>
         </div>
     );
 };
