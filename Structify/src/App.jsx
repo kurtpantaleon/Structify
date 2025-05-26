@@ -562,7 +562,7 @@ function App() {
       <Route path="/ClassField" element={<ClassField />} />
 
       {/* Instructor-edited lessons */}
-      <Route path="/instructor-lesson/:id" element={<ProtectedRoute allowedRoles={['student']}><StructifyLessonTemplate /></ProtectedRoute>} />
+      <Route path="/instructor-lesson/:id" element={<StructifyLessonTemplate />} />
     </Routes> 
   )
 }

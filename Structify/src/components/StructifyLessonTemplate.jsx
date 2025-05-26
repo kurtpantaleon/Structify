@@ -8,6 +8,7 @@ import LessonPages from './LessonPages';
 import LessonFooter from './LessonFooter';
 import BigLeftNextIcon from '../assets/images/Big Left Next Icon.png';
 import BigRightNextIcon from '../assets/images/Big Right Next Icon.png';
+import { X } from 'lucide-react';
 
 export default function StructifyLessonTemplate() {
   const { id } = useParams();
@@ -76,13 +77,13 @@ export default function StructifyLessonTemplate() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1F274D] to-[#0E1328] text-white flex flex-col font-sans relative">
       <Header />
-      <SubHeading2
-        progress={currentIndex + 1}
-        totalSteps={slides.length}
-        exitPath="/mainPage"
-        onNext={nextSlide}
-        onPrev={prevSlide}
-      />
+      <button
+        onClick={() => navigate(-1)}
+        className="absolute top-24 right-8 z-20 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 shadow-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+        title="Exit"
+      >
+        <X size={28} />
+      </button>
       <div className="flex-grow flex flex-col justify-center items-center gap-4 sm:gap-6 md:gap-8 px-4 sm:px-6 md:px-8 py-4 sm:py-6 overflow-y-auto">
         <LessonPages
           title={

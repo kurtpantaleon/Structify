@@ -584,7 +584,6 @@ const AddLessonMaterials = () => {
                                                             <Link
                                                                 to={`/instructor-lesson/${lesson.id}`}
                                                                 className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
-                                                                target="_blank"
                                                             >
                                                                 View Lesson
                                                             </Link>
