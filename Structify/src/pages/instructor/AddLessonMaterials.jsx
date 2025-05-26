@@ -5,7 +5,7 @@ import { useAuth } from '../../context/authContextProvider';
 import { useNavigate, Link } from 'react-router-dom';
 import Header from '../../components/AdminHeader';
 import AdminSubHeading from '../../components/AdminSubHeading';
-import AdminNavigationBar from '../../components/InstructorNavigationBar';
+import InstructorNavigationBar from '../../components/InstructorNavigationBar';
 import LessonForm from './LessonForm';
 import ActivityForm from './ActivityForm';
 import QuizForm from './QuizForm';
@@ -353,9 +353,9 @@ const AddLessonMaterials = () => {
                         initial={{ width: 0, opacity: 0 }}
                         animate={{ width: '220px', opacity: 1 }}
                         exit={{ width: 0, opacity: 0 }}
-                        className="border-r border-white/20 bg-[#141a35] h-[calc(100vh-120px)]"
+                        className="h-full bg-[#141a35] text-white overflow-hidden transition-all duration-300"
                     >
-                        <AdminNavigationBar />
+                        <InstructorNavigationBar />
                     </motion.div>
                 )}
                 

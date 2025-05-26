@@ -1,56 +1,51 @@
-import React, { useState } from 'react';
-import HamburgerMenu from '../assets/images/Hamburger Menu.png';
-import CreateIcon from '../assets/images/Create Icon.png';
+import React, { useState, useEffect } from 'react';
+import { Menu } from 'lucide-react';
 
 function AdminSubHeading({ toggleNav, title }) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); 
+  const [animateTitle, setAnimateTitle] = useState(false);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen); 
-  };
+  // Add title animation when it changes
+  useEffect(() => {
+    setAnimateTitle(true);
+    const timer = setTimeout(() => setAnimateTitle(false), 500);
+    return () => clearTimeout(timer);
+  }, [title]);
 
   return (
-    <div className="bg-[#1F274D] flex items-center justify-between px-7 py-3 shadow-md border-b-1 border-gray-200 relative">
-      {/* Sidebar Toggle */}
-      <button onClick={toggleNav}>
-        <img src={HamburgerMenu} alt="Menu Icon" className="h-4 w-7 cursor-pointer" />
+    <div className="bg-gradient-to-r from-[#1a2045] to-[#1F274D] flex items-center justify-between px-4 sm:px-7 py-4 shadow-md border-b border-indigo-900/40 relative">
+      {/* Sidebar Toggle with improved styling */}
+      <button 
+        onClick={toggleNav}
+        className="p-2 rounded-lg hover:bg-blue-600/20 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+        aria-label="Toggle Navigation"
+      >
+        <Menu className="h-5 w-5 text-gray-300 hover:text-white transition-colors" />
       </button>
 
-      {/* Center: Subheading */}
-      <h2 className="text-white font-bold text-lg tracking-wide">
+      {/* Center: Subheading with animation */}
+      <h2 
+        className={`text-white font-bold text-lg tracking-wide py-1 px-3 rounded-lg ${animateTitle ? 'bg-blue-900/20 backdrop-blur-sm animate-fadeIn' : ''}`}
+      >
         {title}
+        {animateTitle && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-blue-400 to-transparent"></span>}
       </h2>
 
-      {/* Create Dropdown */}
-      <div className="opacity-0">
-        {/*
-        <button onClick={toggleDropdown}>
-          <img src={CreateIcon} alt="Create Icon" className="h-5 w-5 cursor-pointer" />
-        </button>
-
-        {isDropdownOpen && (
-          <div className="absolute right-0 w-40 bg-white rounded-lg shadow-lg z-50">
-            <ul className="py-1 text-sm text-gray-700 font-normal">
-              <li>
-                <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer" >
-                  Student
-                </button>
-              </li>
-              <li> 
-                <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 border-b-1 border-t-1 border-black-100 cursor-pointer">
-                  Instructor
-                </button>
-              </li>
-              <li>
-                <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Class
-                </button>
-              </li>
-            </ul>
-          </div>
-        )}* */}
-        
+      {/* Placeholder div to maintain layout balance */}
+      <div className="w-10 h-9 opacity-0">
+        {/* Empty div with same dimensions as the toggle button for spacing */}
       </div>
+
+      {/* Add custom animations */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }
