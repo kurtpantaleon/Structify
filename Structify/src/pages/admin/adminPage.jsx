@@ -231,7 +231,8 @@ function AdminPage() {
       console.error('Error updating section name:', error);
       showToast('Failed to update class', 'error');
     }
-  };const [affectedUsers, setAffectedUsers] = useState({ students: 0, instructor: null });
+  };
+  const [affectedUsers, setAffectedUsers] = useState({ students: 0, instructor: null });
   const [deleteStudents, setDeleteStudents] = useState(false);
   const handleDeleteSection = async (section) => {
     // Get count of affected users
@@ -679,18 +680,19 @@ function AdminPage() {
               </div>
             ) : viewMode === 'grid' ? (
               /* Grid View */
-              <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 overflow-y-auto pr-2 flex-grow">
+              <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto flex-grow">
                 {filteredSections.map((item) => (
-                  <SectionCard
-                    key={item.id}
-                    sectionName={item.sectionName}
-                    instructor={item.instructor}
-                    studentCount={item.studentCount}
-                    academicYear={item.academicYear}
-                    onClick={() => navigate('/ViewClassPage', { state: { section: item } })}
-                    onEdit={() => handleEditSection(item)}
-                    onDelete={() => handleDeleteSection(item)}
-                  />
+                  <div key={item.id} className="h-full">
+                    <SectionCard
+                      sectionName={item.sectionName}
+                      instructor={item.instructor}
+                      studentCount={item.studentCount}
+                      academicYear={item.academicYear}
+                      onClick={() => navigate('/ViewClassPage', { state: { section: item } })}
+                      onEdit={() => handleEditSection(item)}
+                      onDelete={() => handleDeleteSection(item)}
+                    />
+                  </div>
                 ))}
               </div>
             ) : (
