@@ -9,9 +9,10 @@ import AdminNavigationBar from '../../components/InstructorNavigationBar';
 import LessonForm from './LessonForm';
 import ActivityForm from './ActivityForm';
 import QuizForm from './QuizForm';
+import EditStructifyLesson from './EditStructifyLesson';
 import useFileUpload from './useFileUpload';
 import { getStorage, ref, deleteObject } from 'firebase/storage';
-import { BookOpen, FileText, HelpCircle, Plus, Loader, CheckCircle, AlertCircle, X, BarChart2 } from 'lucide-react';
+import { BookOpen, FileText, HelpCircle, Plus, Loader, CheckCircle, AlertCircle, X, BarChart2, Edit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AddLessonMaterials = () => {
@@ -304,7 +305,7 @@ const AddLessonMaterials = () => {
         <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200">
             <Header />
             <AdminSubHeading toggleNav={() => setIsNavOpen(!isNavOpen)} title="Add Learning Materials" />
-            
+
             <div className="flex">
                 {isNavOpen && (
                     <motion.div 
@@ -387,18 +388,18 @@ const AddLessonMaterials = () => {
                                 </button>
                                 <button
                                     className={`px-4 py-3 rounded-t-lg flex items-center space-x-2 font-medium transition-all ${
-                                        activeTab === 'scores' ? 
-                                        'bg-white text-orange-600 shadow-sm border-t border-r border-l border-gray-200' : 
+                                        activeTab === 'structify' ? 
+                                        'bg-white text-blue-600 shadow-sm border-t border-r border-l border-gray-200' : 
                                         'text-gray-600 hover:bg-gray-100'
                                     }`}
-                                    onClick={() => setActiveTab('scores')}
+                                    onClick={() => setActiveTab('structify')}
                                 >
-                                    <BarChart2 size={18} />
-                                    <span>Scores</span>
+                                    <Edit size={18} />
+                                    <span>Edit Structify Lessons</span>
                                 </button>
                             </div>
                         </div>
-                        
+
                         {/* Tab content area */}
                         <div className="p-6 h-[calc(100vh-280px)] overflow-y-auto">
                             {/* Error/Success messages */}
@@ -421,18 +422,18 @@ const AddLessonMaterials = () => {
                                     activeTab === 'lessons' ? 'text-blue-700' : 
                                     activeTab === 'activities' ? 'text-purple-700' : 
                                     activeTab === 'quizzes' ? 'text-green-700' :
-                                    'text-orange-700'
+                                    'text-blue-700'
                                 }`}>
                                     {activeTab === 'lessons' ? 'Create New Lesson' : 
                                     activeTab === 'activities' ? 'Create New Activity' : 
                                     activeTab === 'quizzes' ? 'Create New Quiz' :
-                                    'View Scores & Results'}
+                                    'Edit Structify Lessons'}
                                 </h2>
                                 <p className="text-gray-600 mt-1">
                                     {activeTab === 'lessons' ? 'Add lesson content, media, and resources for your students.' : 
                                     activeTab === 'activities' ? 'Create interactive activities for skill practice.' : 
                                     activeTab === 'quizzes' ? 'Build assessments to test student knowledge.' :
-                                    'Monitor student performance and track progress.'}
+                                    'Edit and customize Structify lessons for your students.'}
                                 </p>
                             </div>
                             
@@ -492,100 +493,20 @@ const AddLessonMaterials = () => {
                                         />
                                     </motion.div>
                                 )}
-                                {activeTab === 'scores' && (
+                                {activeTab === 'structify' && (
                                     <motion.div
-                                        key="scores"
+                                        key="structify"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
                                     >
-                                        {isLoadingScores ? (
-                                            <div className="flex items-center justify-center h-64">
-                                                <Loader className="animate-spin text-orange-600" size={32} />
-                                            </div>
-                                        ) : (
-                                            <div className="space-y-6">
-                                                {/* Quiz Scores Section */}
-                                                <div className="bg-white rounded-lg shadow p-6">
-                                                    <h3 className="text-xl font-semibold text-green-700 mb-4">Quiz Results</h3>
-                                                    {scoresData.quizzes.length === 0 ? (
-                                                        <p className="text-gray-500">No quiz submissions yet.</p>
-                                                    ) : (
-                                                        <div className="overflow-x-auto">
-                                                            <table className="min-w-full divide-y divide-gray-200">
-                                                                <thead className="bg-gray-50">
-                                                                    <tr>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quiz Title</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody className="bg-white divide-y divide-gray-200">
-                                                                    {scoresData.quizzes.map((quiz) => (
-                                                                        <tr key={quiz.id}>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">{quiz.studentName}</td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">{quiz.quizTitle}</td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">{quiz.score}%</td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                                {new Date(quiz.submittedAt?.toDate()).toLocaleDateString()}
-                                                                            </td>
-                                                                        </tr>
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                {/* Activity Scores Section */}
-                                                <div className="bg-white rounded-lg shadow p-6">
-                                                    <h3 className="text-xl font-semibold text-purple-700 mb-4">Activity Results</h3>
-                                                    {scoresData.activities.length === 0 ? (
-                                                        <p className="text-gray-500">No activity submissions yet.</p>
-                                                    ) : (
-                                                        <div className="overflow-x-auto">
-                                                            <table className="min-w-full divide-y divide-gray-200">
-                                                                <thead className="bg-gray-50">
-                                                                    <tr>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity Title</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody className="bg-white divide-y divide-gray-200">
-                                                                    {scoresData.activities.map((activity) => (
-                                                                        <tr key={activity.id}>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">{activity.studentName}</td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">{activity.activityTitle}</td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                                                    activity.status === 'completed' ? 'bg-green-100 text-green-800' : 
-                                                                                    activity.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' : 
-                                                                                    'bg-gray-100 text-gray-800'
-                                                                                }`}>
-                                                                                    {activity.status}
-                                                                                </span>
-                                                                            </td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                                {new Date(activity.submittedAt?.toDate()).toLocaleDateString()}
-                                                                            </td>
-                                                                        </tr>
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
+                                        <EditStructifyLesson />
                                     </motion.div>
                                 )}
                             </AnimatePresence>
-                            
+
                             {/* Submit button footer */}
-                            {activeTab !== 'scores' && (
+                            {activeTab !== 'structify' && (
                                 <div className="mt-8 pt-6 border-t border-gray-200 flex justify-end">
                                     <button
                                         onClick={() => {
@@ -658,12 +579,12 @@ const AddLessonMaterials = () => {
                                                 <li>Create clear and unambiguous question text</li>
                                             </>
                                         )}
-                                        {activeTab === 'scores' && (
+                                        {activeTab === 'structify' && (
                                             <>
-                                                <li>Monitor student performance across all assessments</li>
-                                                <li>Track completion rates for activities</li>
-                                                <li>Identify areas where students may need additional support</li>
-                                                <li>Use the data to improve future lessons and activities</li>
+                                                <li>Edit existing Structify lessons to match your teaching style</li>
+                                                <li>Add or modify slides to better suit your students' needs</li>
+                                                <li>Upload relevant images to enhance the learning experience</li>
+                                                <li>Ensure the content aligns with your course objectives</li>
                                             </>
                                         )}
                                     </ul>

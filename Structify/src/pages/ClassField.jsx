@@ -5,14 +5,14 @@ import { db } from '../services/firebaseConfig';
 import Header from '../components/ProfileHeader ';
 import { useAuth } from '../context/authContextProvider';
 import { doc, deleteDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { X, Book, Activity, FileQuestion, Clock, Calendar, Edit3, Trash2, Save, ExternalLink, Download } from 'lucide-react';
-
+import { X, Book, Activity, FileQuestion, Clock, Calendar, Edit3, Trash2, Save, ExternalLink, Download, BarChart2 } from 'lucide-react';
 
 const ClassField = () => {
     const [activeTab, setActiveTab] = useState('lessons');
     const [lessons, setLessons] = useState([]);
     const [activities, setActivities] = useState([]);
     const [quizzes, setQuizzes] = useState([]);
+    const [scores, setScores] = useState({ quizzes: [], activities: [] });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -58,6 +58,32 @@ const ClassField = () => {
                 const quizzesQuery = query(collection(db, 'quizzes'), where('section', '==', section));
                 const quizzesSnap = await getDocs(quizzesQuery);
                 setQuizzes(quizzesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+                // Fetch scores
+                const quizScoresQuery = query(
+                    collection(db, 'quiz_submissions'),
+                    where('section', '==', section)
+                );
+                const quizScoresSnap = await getDocs(quizScoresQuery);
+                const quizScores = quizScoresSnap.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                const activityScoresQuery = query(
+                    collection(db, 'activity_submissions'),
+                    where('section', '==', section)
+                );
+                const activityScoresSnap = await getDocs(activityScoresQuery);
+                const activityScores = activityScoresSnap.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                setScores({
+                    quizzes: quizScores,
+                    activities: activityScores
+                });
             } catch (err) {
                 console.error('Error fetching data:', err); // Debug log
                 setError('Failed to fetch class materials.');
@@ -242,6 +268,17 @@ const ClassField = () => {
                             >
                                 <FileQuestion className="w-4 h-4 mr-2" />
                                 Quizzes {quizzes.length > 0 && <span className="ml-2 bg-blue-100 text-blue-600 rounded-full px-2 text-xs">{quizzes.length}</span>}
+                            </button>
+                            <button
+                                className={`flex items-center px-4 py-3 font-medium transition-all duration-200 ${
+                                    activeTab === 'scores' 
+                                    ? 'border-b-2 border-blue-500 text-blue-600' 
+                                    : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                                }`}
+                                onClick={() => setActiveTab('scores')}
+                            >
+                                <BarChart2 className="w-4 h-4 mr-2" />
+                                Scores
                             </button>
                         </div>
                     </div>
@@ -548,6 +585,100 @@ const ClassField = () => {
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Scores Tab */}
+                        {activeTab === 'scores' && !loading && (
+                            <div>
+                                {scores.quizzes.length === 0 && scores.activities.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                                        <BarChart2 className="w-12 h-12 mb-2 text-gray-300" />
+                                        <p>No scores available yet.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-6">
+                                        {/* Quiz Scores */}
+                                        {scores.quizzes.length > 0 && (
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                                    <FileQuestion className="w-5 h-5 mr-2 text-purple-600" />
+                                                    Quiz Scores
+                                                </h3>
+                                                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                                    <table className="min-w-full divide-y divide-gray-200">
+                                                        <thead className="bg-gray-50">
+                                                            <tr>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quiz</th>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="bg-white divide-y divide-gray-200">
+                                                            {scores.quizzes.map((score) => (
+                                                                <tr key={score.id} className="hover:bg-gray-50">
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                        {score.studentName}
+                                                                    </td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                        {score.quizTitle}
+                                                                    </td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                        {score.score}%
+                                                                    </td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                                        {new Date(score.submittedAt.seconds * 1000).toLocaleDateString()}
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Activity Scores */}
+                                        {scores.activities.length > 0 && (
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                                    <Activity className="w-5 h-5 mr-2 text-green-600" />
+                                                    Activity Scores
+                                                </h3>
+                                                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                                    <table className="min-w-full divide-y divide-gray-200">
+                                                        <thead className="bg-gray-50">
+                                                            <tr>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="bg-white divide-y divide-gray-200">
+                                                            {scores.activities.map((score) => (
+                                                                <tr key={score.id} className="hover:bg-gray-50">
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                        {score.studentName}
+                                                                    </td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                        {score.activityTitle}
+                                                                    </td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                        {score.score}%
+                                                                    </td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                                        {new Date(score.submittedAt.seconds * 1000).toLocaleDateString()}
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

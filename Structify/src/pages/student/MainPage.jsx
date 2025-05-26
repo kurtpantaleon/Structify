@@ -5,6 +5,7 @@ import Header from '../../components/Header';
 import CardSection from '../../components/CardSection';
 import WeekButton from '../../components/WeekButton';
 import LearningPath from '../../components/LearningPath';
+import InstructorEditedLessons from '../../components/InstructorEditedLessons';
 
 import CheckIcon from '../../assets/images/Check Icon.png';
 import UncheckIcon from '../../assets/images/Uncheck Icon.png';
@@ -19,9 +20,14 @@ function MainPage() {
   const { completedLessons, completedActivities, activityScores } = useLessonProgress();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isLearningPathOpen, setIsLearningPathOpen] = useState(false);
+  const [lessonType, setLessonType] = useState('structify');
 
   const toggleLearningPath = () => {
     setIsLearningPathOpen(!isLearningPathOpen);
+  };
+
+  const handleLessonTypeChange = (e) => {
+    setLessonType(e.target.value);
   };
 
   return (
@@ -64,77 +70,91 @@ function MainPage() {
             <RankStats/>
 
             {/* Right Section */}
-            <div className="w-full lg:w-1/2 flex-shrink-0 bg-[#141a35] p-4 sm:p-6 rounded-lg shadow-xl mt-6 lg:mt-0 relative group overflow-hidden">
+            {lessonType === 'structify' ? (
+              <div className="w-full lg:w-1/2 flex-shrink-0 bg-[#141a35] p-4 sm:p-6 rounded-lg shadow-xl mt-6 lg:mt-0 relative group overflow-hidden">
+                {/* Glowing animated border */}
+                <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue-900 to-blue-900 blur-lg opacity-50 group-hover:opacity-100 transition-all duration-500 z-0" />
 
-              {/* Glowing animated border */}
-              <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue-900 to-blue-900 blur-lg opacity-50 group-hover:opacity-100 transition-all duration-500 z-0" />
+                {/* Moving background icon (optional shimmer object) */}
+                <div className="absolute top-1/2 left-[-20%] w-72 h-72 bg-gradient-to-tr from-indigo-400 via-blue-500 to-transparent 
+                                opacity-20 animate-move-slow rounded-full blur-3xl z-0" />
 
-              {/* Moving background icon (optional shimmer object) */}
-              <div className="absolute top-1/2 left-[-20%] w-72 h-72 bg-gradient-to-tr from-indigo-400 via-blue-500 to-transparent 
-                              opacity-20 animate-move-slow rounded-full blur-3xl z-0" />
+                {/* Content wrapper with z-index */}
+                <div className="relative z-10">
+                  <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-xl sm:text-2xl font-extrabold tracking-wide text-white">WEEK 1 GOALS</h2>
+                    <select 
+                      className="bg-[#1F274D] text-white border border-white/20 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={lessonType}
+                      onChange={handleLessonTypeChange}
+                    >
+                      <option value="structify">Structify Lessons</option>
+                      <option value="instructor">Instructor Lessons</option>
+                    </select>
+                  </div>
+                  <div className="border-t border-white/50 w-full mb-4 sm:mb-5"></div>
 
-              {/* Content wrapper with z-index */}
-              <div className="relative z-10">
-                <h2 className="text-xl sm:text-2xl font-extrabold tracking-wide mb-2 text-white">WEEK 1 GOALS</h2>
-                <div className="border-t border-white/50 w-full mb-4 sm:mb-5"></div>
+                  {/* Lessons */}
+                  <div className="space-y-3 sm:space-y-4">
+                    <WeekButton 
+                      title="What is Data Structure?" 
+                      status="LEARN" 
+                      icon={completedLessons.includes("lesson1") ? CheckIcon : UncheckIcon}
+                      iconType={StudyIcon} 
+                      path="/page1"
+                    />
+                    <WeekButton 
+                      title="Types of Basic Data Structures" 
+                      status="LEARN" 
+                      icon={completedLessons.includes("lesson2") ? CheckIcon : UncheckIcon}
+                      iconType={StudyIcon} 
+                      path="/l2page1"
+                    />
+                    <WeekButton 
+                      title="How Computers use Data Structures" 
+                      status="LEARN" 
+                      icon={completedLessons.includes("lesson3") ? CheckIcon : UncheckIcon}
+                      iconType={StudyIcon} 
+                      path="/l3page1"
+                    />
+                  </div>
 
-                {/* Lessons */}
-                <div className="space-y-3 sm:space-y-4">
-                  <WeekButton 
-                    title="What is Data Structure?" 
-                    status="LEARN" 
-                    icon={completedLessons.includes("lesson1") ? CheckIcon : UncheckIcon}
-                    iconType={StudyIcon} 
-                    path="/page1"
-                  />
-                  <WeekButton 
-                    title="Types of Basic Data Structures" 
-                    status="LEARN" 
-                    icon={completedLessons.includes("lesson2") ? CheckIcon : UncheckIcon}
-                    iconType={StudyIcon} 
-                    path="/l2page1"
-                  />
-                  <WeekButton 
-                    title="How Computers use Data Structures" 
-                    status="LEARN" 
-                    icon={completedLessons.includes("lesson3") ? CheckIcon : UncheckIcon}
-                    iconType={StudyIcon} 
-                    path="/l3page1"
-                  />
-                </div>
-
-                {/* Activities */}
-                <div className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
-                  <h3 className="text-base sm:text-lg font-semibold text-yellow-300">Activities</h3>
-                  <WeekButton 
-                    title="Activity 1" 
-                    status={`SCORE: ${activityScores["activity1"] ?? "-"}`}
-                    icon={completedActivities.includes("activity1") ? CheckIcon : UncheckIcon}
-                    iconType={PracticeIcon} 
-                    path="/Week1Activity1"
-                  />
-                  <WeekButton 
-                    title="Activity 2" 
-                    status={`SCORE: ${activityScores["activity2"] ?? "-"}`}
-                    icon={completedActivities.includes("activity2") ? CheckIcon : UncheckIcon}
-                    iconType={PracticeIcon} 
-                    path="/Week1Activity2"
-                  />
-                  <WeekButton 
-                    title="Activity 3" 
-                    status={`SCORE: ${activityScores["activity3"] ?? "-"}`}
-                    icon={completedActivities.includes("activity3") ? CheckIcon : UncheckIcon}
-                    iconType={PracticeIcon} 
-                    path="/Week1Activity3"
-                  />
+                  {/* Activities */}
+                  <div className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
+                    <h3 className="text-base sm:text-lg font-semibold text-yellow-300">Activities</h3>
+                    <WeekButton 
+                      title="Activity 1" 
+                      status={`SCORE: ${activityScores["activity1"] ?? "-"}`}
+                      icon={completedActivities.includes("activity1") ? CheckIcon : UncheckIcon}
+                      iconType={PracticeIcon} 
+                      path="/Week1Activity1"
+                    />
+                    <WeekButton 
+                      title="Activity 2" 
+                      status={`SCORE: ${activityScores["activity2"] ?? "-"}`}
+                      icon={completedActivities.includes("activity2") ? CheckIcon : UncheckIcon}
+                      iconType={PracticeIcon} 
+                      path="/Week1Activity2"
+                    />
+                    <WeekButton 
+                      title="Activity 3" 
+                      status={`SCORE: ${activityScores["activity3"] ?? "-"}`}
+                      icon={completedActivities.includes("activity3") ? CheckIcon : UncheckIcon}
+                      iconType={PracticeIcon} 
+                      path="/Week1Activity3"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-
+            ) : (
+              <InstructorEditedLessons 
+                lessonType={lessonType}
+                onLessonTypeChange={handleLessonTypeChange}
+              />
+            )}
           </div>
         </main>
         
-
         {/* Learning Path: Full width on mobile */}
         <LearningPath 
           isOpen={isLearningPathOpen} 
@@ -142,7 +162,6 @@ function MainPage() {
         />
       </div>
     </div>
-    
   );
 }
 
