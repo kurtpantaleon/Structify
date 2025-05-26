@@ -277,6 +277,9 @@ import CodeChallengeLobby from './components/CodeChallengeLobby'
 import Match from './pages/PvP/Match'
 import ClassField from './pages/ClassField'
 
+import StructifyLessonTemplate from './components/StructifyLessonTemplate'; // Adjust the path if needed
+// ...other imports
+
 function App() {
   const { currentUser, role } = useContext(AuthContext);
 
@@ -557,6 +560,9 @@ function App() {
       <Route path="/CodeChallengeLobby" element={<CodeChallengeLobby />} />
       <Route path="/PvP/Match" element={<Match />} />
       <Route path="/ClassField" element={<ClassField />} />
+
+      {/* Instructor-edited lessons */}
+      <Route path="/instructor-lesson/:id" element={<ProtectedRoute allowedRoles={['student']}><StructifyLessonTemplate /></ProtectedRoute>} />
     </Routes> 
   )
 }

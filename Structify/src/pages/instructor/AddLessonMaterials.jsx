@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
 import { useAuth } from '../../context/authContextProvider';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Header from '../../components/AdminHeader';
 import AdminSubHeading from '../../components/AdminSubHeading';
 import AdminNavigationBar from '../../components/InstructorNavigationBar';
@@ -12,7 +12,7 @@ import QuizForm from './QuizForm';
 import EditStructifyLesson from './EditStructifyLesson';
 import useFileUpload from './useFileUpload';
 import { getStorage, ref, deleteObject } from 'firebase/storage';
-import { BookOpen, FileText, HelpCircle, Plus, Loader, CheckCircle, AlertCircle, X, BarChart2, Edit } from 'lucide-react';
+import { BookOpen, FileText, HelpCircle, Plus, Loader, CheckCircle, AlertCircle, X, BarChart2, Edit, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AddLessonMaterials = () => {
@@ -73,6 +73,10 @@ const AddLessonMaterials = () => {
         activities: []
     });
     const [isLoadingScores, setIsLoadingScores] = useState(false);
+
+    // My Structify Lessons state
+    const [myStructifyLessons, setMyStructifyLessons] = useState([]);
+    const [isLoadingMyLessons, setIsLoadingMyLessons] = useState(false);
 
     // Add question handler
     const handleAddQuestion = () => {
@@ -301,6 +305,43 @@ const AddLessonMaterials = () => {
         }
     }, [activeTab]);
 
+    // Fetch instructor's edited structify lessons
+    const fetchMyStructifyLessons = async () => {
+        setIsLoadingMyLessons(true);
+        try {
+            const q = query(
+                collection(db, 'structifyLessons'),
+                where('instructorId', '==', currentUser.uid)
+            );
+            const snapshot = await getDocs(q);
+            setMyStructifyLessons(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        } catch (err) {
+            showNotification('error', 'Failed to fetch your edited lessons');
+        } finally {
+            setIsLoadingMyLessons(false);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'mystructify') {
+            fetchMyStructifyLessons();
+        }
+    }, [activeTab]);
+
+    // Delete a structify lesson
+    const handleDeleteStructifyLesson = async (lessonId) => {
+        if (!window.confirm('Are you sure you want to delete this lesson? This action cannot be undone.')) return;
+        try {
+            // Optionally: delete associated files from storage if needed
+            // Remove lesson from Firestore
+            await deleteDoc(doc(db, 'structifyLessons', lessonId));
+            setMyStructifyLessons(prev => prev.filter(lesson => lesson.id !== lessonId));
+            showNotification('success', 'Lesson deleted successfully');
+        } catch (err) {
+            showNotification('error', 'Failed to delete lesson');
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200">
             <Header />
@@ -397,6 +438,17 @@ const AddLessonMaterials = () => {
                                     <Edit size={18} />
                                     <span>Edit Structify Lessons</span>
                                 </button>
+                                <button
+                                    className={`px-4 py-3 rounded-t-lg flex items-center space-x-2 font-medium transition-all ${
+                                        activeTab === 'mystructify' ? 
+                                        'bg-white text-blue-700 shadow-sm border-t border-r border-l border-gray-200' : 
+                                        'text-gray-600 hover:bg-gray-100'
+                                    }`}
+                                    onClick={() => setActiveTab('mystructify')}
+                                >
+                                    <BookOpen size={18} />
+                                    <span>My Edited Structify Lessons</span>
+                                </button>
                             </div>
                         </div>
 
@@ -422,18 +474,21 @@ const AddLessonMaterials = () => {
                                     activeTab === 'lessons' ? 'text-blue-700' : 
                                     activeTab === 'activities' ? 'text-purple-700' : 
                                     activeTab === 'quizzes' ? 'text-green-700' :
+                                    activeTab === 'structify' ? 'text-blue-700' :
                                     'text-blue-700'
                                 }`}>
                                     {activeTab === 'lessons' ? 'Create New Lesson' : 
                                     activeTab === 'activities' ? 'Create New Activity' : 
                                     activeTab === 'quizzes' ? 'Create New Quiz' :
-                                    'Edit Structify Lessons'}
+                                    activeTab === 'structify' ? 'Edit Structify Lessons' :
+                                    'My Edited Structify Lessons'}
                                 </h2>
                                 <p className="text-gray-600 mt-1">
                                     {activeTab === 'lessons' ? 'Add lesson content, media, and resources for your students.' : 
                                     activeTab === 'activities' ? 'Create interactive activities for skill practice.' : 
                                     activeTab === 'quizzes' ? 'Build assessments to test student knowledge.' :
-                                    'Edit and customize Structify lessons for your students.'}
+                                    activeTab === 'structify' ? 'Edit and customize Structify lessons for your students.' :
+                                    ''}
                                 </p>
                             </div>
                             
@@ -503,10 +558,54 @@ const AddLessonMaterials = () => {
                                         <EditStructifyLesson />
                                     </motion.div>
                                 )}
+                                {activeTab === 'mystructify' && (
+                                    <motion.div
+                                        key="mystructify"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                    >
+                                        
+                                        {isLoadingMyLessons ? (
+                                            <div className="flex justify-center items-center py-8">
+                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                                            </div>
+                                        ) : myStructifyLessons.length === 0 ? (
+                                            <div className="text-gray-500 text-center py-8">No edited lessons found.</div>
+                                        ) : (
+                                            <div className="space-y-4">
+                                                {myStructifyLessons.map(lesson => (
+                                                    <div key={lesson.id} className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between">
+                                                        <div>
+                                                            <div className="font-semibold text-blue-900 text-lg">{lesson.title}</div>
+                                                            <div className="text-blue-700 text-sm">{lesson.week}</div>
+                                                        </div>
+                                                        <div className="flex gap-2 mt-2 sm:mt-0">
+                                                            <Link
+                                                                to={`/instructor-lesson/${lesson.id}`}
+                                                                className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                                                                target="_blank"
+                                                            >
+                                                                View Lesson
+                                                            </Link>
+                                                            <button
+                                                                className="inline-flex items-center bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md font-medium transition-colors"
+                                                                onClick={() => handleDeleteStructifyLesson(lesson.id)}
+                                                                title="Delete Lesson"
+                                                            >
+                                                                <Trash2 size={18} className="mr-1" /> Delete
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
                             </AnimatePresence>
 
                             {/* Submit button footer */}
-                            {activeTab !== 'structify' && (
+                            {['lessons', 'activities', 'quizzes'].includes(activeTab) && (
                                 <div className="mt-8 pt-6 border-t border-gray-200 flex justify-end">
                                     <button
                                         onClick={() => {
@@ -542,54 +641,56 @@ const AddLessonMaterials = () => {
                                     </button>
                                 </div>
                             )}
-                        </div>
-                    </div>
-                    
-                    {/* Quick help section */}
-                    <div className="max-w-6xl mx-auto mt-6 mb-10">
-                        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm text-blue-800">
-                            <div className="flex items-start">
-                                <div className="bg-blue-100 p-2 rounded-full mr-3">
-                                    <HelpCircle size={20} className="text-blue-600" />
+
+                            {/* Quick help section */}
+                            {activeTab !== 'mystructify' && (
+                                <div className="max-w-6xl mx-auto mt-6 mb-10">
+                                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm text-blue-800">
+                                        <div className="flex items-start">
+                                            <div className="bg-blue-100 p-2 rounded-full mr-3">
+                                                <HelpCircle size={20} className="text-blue-600" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold text-blue-900 mb-1">Creating {activeTab} tips:</h3>
+                                                <ul className="list-disc list-inside space-y-1 ml-1 text-blue-700">
+                                                    {activeTab === 'lessons' && (
+                                                        <>
+                                                            <li>Include clear and concise lesson objectives</li>
+                                                            <li>Upload relevant resources (PDFs, images, videos)</li>
+                                                            <li>Format text using the rich text editor</li>
+                                                            <li>Specify the week number for proper sequencing</li>
+                                                        </>
+                                                    )}
+                                                    {activeTab === 'activities' && (
+                                                        <>
+                                                            <li>Define clear instructions in the description</li>
+                                                            <li>Create a variety of question types for engagement</li>
+                                                            <li>Preview questions before adding them to the activity</li>
+                                                            <li>Ensure activities align with lesson content</li>
+                                                        </>
+                                                    )}
+                                                    {activeTab === 'quizzes' && (
+                                                        <>
+                                                            <li>Set an appropriate time limit based on question count</li>
+                                                            <li>Include a mix of difficulty levels</li>
+                                                            <li>Assign appropriate point values to questions</li>
+                                                            <li>Create clear and unambiguous question text</li>
+                                                        </>
+                                                    )}
+                                                    {activeTab === 'structify' && (
+                                                        <>
+                                                            <li>Edit existing Structify lessons to match your teaching style</li>
+                                                            <li>Add or modify slides to better suit your students' needs</li>
+                                                            <li>Upload relevant images to enhance the learning experience</li>
+                                                            <li>Ensure the content aligns with your course objectives</li>
+                                                        </>
+                                                    )}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-semibold text-blue-900 mb-1">Creating {activeTab} tips:</h3>
-                                    <ul className="list-disc list-inside space-y-1 ml-1 text-blue-700">
-                                        {activeTab === 'lessons' && (
-                                            <>
-                                                <li>Include clear and concise lesson objectives</li>
-                                                <li>Upload relevant resources (PDFs, images, videos)</li>
-                                                <li>Format text using the rich text editor</li>
-                                                <li>Specify the week number for proper sequencing</li>
-                                            </>
-                                        )}
-                                        {activeTab === 'activities' && (
-                                            <>
-                                                <li>Define clear instructions in the description</li>
-                                                <li>Create a variety of question types for engagement</li>
-                                                <li>Preview questions before adding them to the activity</li>
-                                                <li>Ensure activities align with lesson content</li>
-                                            </>
-                                        )}
-                                        {activeTab === 'quizzes' && (
-                                            <>
-                                                <li>Set an appropriate time limit based on question count</li>
-                                                <li>Include a mix of difficulty levels</li>
-                                                <li>Assign appropriate point values to questions</li>
-                                                <li>Create clear and unambiguous question text</li>
-                                            </>
-                                        )}
-                                        {activeTab === 'structify' && (
-                                            <>
-                                                <li>Edit existing Structify lessons to match your teaching style</li>
-                                                <li>Add or modify slides to better suit your students' needs</li>
-                                                <li>Upload relevant images to enhance the learning experience</li>
-                                                <li>Ensure the content aligns with your course objectives</li>
-                                            </>
-                                        )}
-                                    </ul>
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>
