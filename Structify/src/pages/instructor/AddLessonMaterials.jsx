@@ -436,7 +436,7 @@ const AddLessonMaterials = () => {
                                     onClick={() => setActiveTab('structify')}
                                 >
                                     <Edit size={18} />
-                                    <span>Edit Structify Lessons</span>
+                                    <span>Upload Structify Lessons</span>
                                 </button>
                                 <button
                                     className={`px-4 py-3 rounded-t-lg flex items-center space-x-2 font-medium transition-all ${
@@ -447,7 +447,7 @@ const AddLessonMaterials = () => {
                                     onClick={() => setActiveTab('mystructify')}
                                 >
                                     <BookOpen size={18} />
-                                    <span>My Edited Structify Lessons</span>
+                                    <span>Structify Lessons Uploads</span>
                                 </button>
                             </div>
                         </div>
