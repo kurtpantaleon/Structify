@@ -6,7 +6,7 @@ import StudentIcon from "../assets/images/Student Icon.png";
 
 const AdminNavigationBar = () => {
   return (
-    <div className="fixed bg-[#1F274D] h-screen w-20 flex flex-col items-center py-8 space-y-8 px-1 border-r-1 border-gray-200">
+    <div className="sticky top-0 bg-[#1F274D] h-screen w-20 flex flex-col items-center py-8 space-y-8 px-1 border-r border-gray-200">
       {/* Navigation Icons */}
       <nav className="flex flex-col space-y-8">
         <NavItem to="/AdminPage" icon={HomeIcon} label="Home" />

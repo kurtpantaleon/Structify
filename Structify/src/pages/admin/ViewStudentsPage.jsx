@@ -926,121 +926,75 @@ function ViewStudentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 relative">
       <Header />
       <AdminSubHeading toggleNav={() => setIsNavOpen(!isNavOpen)} title="Students" />
-      {isNavOpen && (
-        <div className="w-20 border-r border-white/20 bg-[#141a35]">
-          <AdminNavigationBar />
-        </div>
-      )}      
-      {/* Toast notification */}
-      {toast && (
-        <div 
-          className={`fixed top-4 right-4 z-50 flex items-center px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
-            toastVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-4'
-          } ${toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}
-        >
-          <div className="mr-3 rounded-full bg-white/20 p-1">
-            {toast.icon}
+      <div className="flex mt-0">
+        {isNavOpen && (
+          <div className="w-20 border-r border-white/20 bg-[#141a35]">
+            <AdminNavigationBar />
           </div>
-          <p className="text-white font-medium">{toast.message}</p>
-          <button 
-            onClick={() => setToastVisible(false)}
-            className="ml-4 text-white/80 hover:text-white"
-          >
-            <XCircle className="h-4 w-4" />
-          </button>
-        </div>
-      )}      <div className="max-w-6xl mx-auto mt-7 bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-md h-[75vh] flex flex-col">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#141a35]/10 p-1.5 rounded-md">
-              <GraduationCap className="w-5 h-5 text-[#141a35]" />
-            </div>
-            <h2 className="text-xl font-semibold text-[#141a35]">Manage Students</h2>
-            <div className="ml-2 bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-              {students.length} Total
-            </div>
-          </div>
-          {!isEditMode ? (
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowBulkUploadModal(true)}
-                className="bg-emerald-600 text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-emerald-700 transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
-              >
-                <Upload className="w-4 h-4" />
-                <span className="hidden sm:inline">Bulk Upload</span>
-                <span className="sm:hidden">Upload</span>
-              </button>
-              <button
-                onClick={() => setShowModal(true)}
-                className="bg-[#141a35] text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-[#1f274d] transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span className="hidden sm:inline">Add Student</span>
-                <span className="sm:hidden">Add</span>
-              </button>
-              <button
-                onClick={toggleEditMode} // Use the toggleEditMode function
-                className="border border-gray-300 bg-white text-gray-700 text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-gray-50 transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
-              >
-                <Edit3 className="w-4 h-4" />
-                <span>Edit</span>
-              </button>
-            </div>
-          ) : (
+        )}
+        <div className="flex-1 mt-10 max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-lg h-[90vh] flex flex-col relative border border-gray-200">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-600">
-                {selectedStudents.length} selected
-              </span>
-              <button
-                onClick={exitEditMode}
-                className="px-3 py-1.5 text-gray-700 border border-gray-300 bg-white rounded-md hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-        </div>          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-start">
-            <div className="bg-blue-100 rounded-full p-2 mr-3">
-              <UsersRound className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Total Students</p>
-              <h4 className="text-xl font-bold text-gray-800">{students.length}</h4>
-              {students.length > 0 && (
-                <p className="text-xs text-gray-500 mt-1">
-                  {totalAssignedStudents} assigned · {unassignedStudents} unassigned
-                </p>
-              )}
-            </div>
-          </div>
-          
-          <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-4 flex items-start">
-            <div className="bg-emerald-100 rounded-full p-2 mr-3">
-              <Layers className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Total Sections</p>
-              <h4 className="text-xl font-bold text-gray-800">{totalSections}</h4>
-              {totalSections > 0 && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Avg. {Math.round(totalAssignedStudents / Math.max(1, totalSections))} students per section
-                </p>
-              )}
-            </div>
-          </div>
-          <div>
-            <div className="relative mb-4 flex">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <Search className="w-4 h-4 text-gray-500" />
+              <div className="bg-[#141a35]/10 p-1.5 rounded-md">
+                <Users className="w-5 h-5 text-[#141a35]" />
               </div>
+              <h2 className="text-xl font-semibold text-[#141a35]">Manage Students</h2>
+              <div className="ml-2 bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                {students.length} Total
+              </div>
+            </div>
+            {!isEditMode ? (
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowBulkUploadModal(true)}
+                  className="bg-emerald-600 text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-emerald-700 transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span className="hidden sm:inline">Bulk Upload</span>
+                  <span className="sm:hidden">Upload</span>
+                </button>
+                <button
+                  onClick={() => setShowModal(true)}
+                  className="bg-[#141a35] text-white text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-[#1f274d] transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span className="hidden sm:inline">Add Student</span>
+                  <span className="sm:hidden">Add</span>
+                </button>
+                <button
+                  onClick={toggleEditMode}
+                  className="border border-gray-300 bg-white text-gray-700 text-sm font-medium px-3 sm:px-4 py-2 rounded-md hover:bg-gray-50 transition-all duration-200 flex items-center gap-1 sm:gap-2 shadow-sm"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  <span>Edit</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-600">
+                  {selectedStudents.length} selected
+                </span>
+                <button
+                  onClick={exitEditMode}
+                  className="px-3 py-1.5 text-gray-700 border border-gray-300 bg-white rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="relative mb-4 flex">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Search className="w-4 h-4 text-gray-500" />
+            </div>
             <input
               type="text"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-[#141a35]/20 focus:border-[#141a35] block w-full pl-10 p-2.5"
-              placeholder="Search students..."
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
+              placeholder="Search students by name, email, or section..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -1052,217 +1006,167 @@ function ViewStudentsPage() {
                 <XCircle className="w-4 h-4" />
               </button>
             )}
-            </div>
           </div>
-        </div>        
-          <div className="overflow-y-auto pr-3 flex-grow">
-          {!isLoading && Object.keys(groupedBySection).length > 0 && (
-            <div className="flex justify-between mb-3">
-              <div>
-                {isEditMode && selectedStudents.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        setBulkActionType('reassign');
-                        setShowBulkConfirmModal(true);
-                      }}
-                      disabled={selectedStudents.length === 0}
-                      className="bg-blue-600 text-white text-sm font-medium px-3 py-1.5 rounded-md hover:bg-blue-700 transition-all flex items-center gap-1.5"
-                    >
-                      <Users className="w-3.5 h-3.5" />
-                      Reassign
-                    </button>
-                    <button
-                      onClick={() => {
-                        setBulkActionType('delete');
-                        setShowBulkConfirmModal(true);
-                      }}
-                      disabled={selectedStudents.length === 0}
-                      className="bg-red-600 text-white text-sm font-medium px-3 py-1.5 rounded-md hover:bg-red-700 transition-all flex items-center gap-1.5"
-                    >
-                      <UserMinus className="w-3.5 h-3.5" />
-                      Delete
-                    </button>
-                  </div>
-                )}
+
+          {/* Bulk actions toolbar */}
+          {isEditMode && selectedStudents.length > 0 && (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-2 mb-4 flex justify-between items-center">
+              <div className="flex items-center gap-2 ml-2">
+                <CheckSquare className="h-4 w-4 text-blue-600" />
+                <span className="text-sm font-medium">{selectedStudents.length} students selected</span>
               </div>
-              
-              <button 
-                onClick={() => {
-                  const sections = Object.keys(groupedBySection);
-                  const anyExpanded = sections.some(section => !collapsedSections[section]);
-                  
-                  const newCollapsedState = {};
-                  sections.forEach(section => {
-                    newCollapsedState[section] = anyExpanded;
-                  });
-                  
-                  setCollapsedSections(newCollapsedState);
-                }}
-                className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-md transition-colors"
-              >
-                {Object.keys(collapsedSections).length > 0 && Object.values(collapsedSections).every(Boolean) ? (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setBulkActionType('reassign');
+                    setShowBulkConfirmModal(true);
+                  }}
+                  className="bg-blue-600 text-white text-sm font-medium px-3 py-1.5 rounded-md hover:bg-blue-700 transition-all flex items-center gap-1.5"
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  Reassign
+                </button>
+                <button
+                  onClick={() => {
+                    setBulkActionType('delete');
+                    setShowBulkConfirmModal(true);
+                  }}
+                  className="bg-red-600 text-white text-sm font-medium px-3 py-1.5 rounded-md hover:bg-red-700 transition-all flex items-center gap-1.5"
+                >
+                  <UserMinus className="w-3.5 h-3.5" />
+                  Delete
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="overflow-y-auto pr-3 flex-grow">
+            {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#141a35]"></div>
+              </div>
+            ) : filteredStudents.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                {searchTerm ? (
                   <>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevrons-up"><path d="m17 11-5-5-5 5"/><path d="m17 18-5-5-5 5"/></svg>
-                    Expand All
+                    <Search className="w-16 h-16 mb-2 opacity-20" />
+                    <p className="text-center font-medium">No matching students found</p>
+                    <p className="text-sm mt-1">Try a different search term</p>
                   </>
                 ) : (
                   <>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevrons-down"><path d="m7 6 5 5 5-5"/><path d="m7 13 5 5 5-5"/></svg>
-                    Collapse All
+                    <Users className="w-16 h-16 mb-2 opacity-20" />
+                    <p className="text-center font-medium">No students found</p>
+                    <p className="text-sm mt-1">Add students using the buttons above</p>
                   </>
                 )}
-              </button>
-            </div>
-          )}
-          
-          {isLoading ? (
-            <div className="space-y-6">
-              {[...Array(3)].map((_, idx) => (
-                <StudentSectionSkeleton key={idx} />
-              ))}
-            </div>
-          ) : Object.keys(groupedBySection).length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-              {searchTerm ? (
-                <>
-                  <Search className="w-16 h-16 mb-2 opacity-20" />
-                  <p className="text-center font-medium">No matching students found</p>
-                  <p className="text-sm mt-1">Try a different search term</p>
-                </>
-              ) : (
-                <>
-                  <GraduationCap className="w-16 h-16 mb-2 opacity-20" />
-                  <p className="text-center font-medium">No students found</p>
-                  <p className="text-sm mt-1">Add students using the buttons above</p>
-                </>
-              )}
-            </div>
-          ) : (            <div className="space-y-6">
-              {Object.entries(groupedBySection)
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([section, studentsInSection], index) => (                <div key={index} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
-                  <div                    className={`flex items-center justify-between p-3 ${collapsedSections[section] ? 'bg-gray-50 rounded-lg' : 'bg-gray-50 rounded-t-lg'} border-b ${collapsedSections[section] ? 'border-b-0' : 'border-gray-100'} cursor-pointer hover:bg-gray-100 transition-colors relative group`}
-                    onClick={() => {
-                      setCollapsedSections(prev => ({
-                        ...prev, 
-                        [section]: !prev[section]
-                      }));
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      {isEditMode && (
-                        <div onClick={(e) => {
-                          e.stopPropagation();
-                          toggleSelectAllInSection(section);
-                        }} className="mr-1">
-                          {studentsInSection.every(student => selectedStudents.includes(student.id)) ? (
-                            <CheckSquare className="h-4.5 w-4.5 text-blue-600" />
-                          ) : studentsInSection.some(student => selectedStudents.includes(student.id)) ? (
-                            <div className="h-4.5 w-4.5 border-2 border-blue-600 bg-blue-100 rounded-sm"></div>
-                          ) : (
-                            <Square className="h-4.5 w-4.5 text-gray-400" />
-                          )}
-                        </div>
-                      )}
-                      <div className={`p-1.5 rounded-md ${
-                        section === 'Unassigned' ? 'bg-gray-200 text-gray-600' : 'bg-blue-100 text-blue-700'
-                      }`}>
-                        {section === 'Unassigned' ? 
-                          <Users className="w-5 h-5" /> : 
-                          <Layers className="w-5 h-5" />
-                        }
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-[#141a35]">{section}</h3>
-                        {section !== 'Unassigned' && studentsInSection.length > 0 && studentsInSection[0].academicYear && (
-                          <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
-                            {studentsInSection[0].academicYear}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {Object.entries(groupedBySection)
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([section, sectionStudents]) => (
+                    <div key={section} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                      <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-medium text-gray-900">{section || 'Unassigned'}</h3>
+                          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            {sectionStudents.length} students
                           </span>
+                        </div>
+                        {isEditMode && (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => toggleSelectAllInSection(section)}
+                              className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                            >
+                              {sectionStudents.every(student => selectedStudents.includes(student.id)) ? (
+                                <>
+                                  <CheckSquare className="w-4 h-4" />
+                                  Deselect All
+                                </>
+                              ) : (
+                                <>
+                                  <Square className="w-4 h-4" />
+                                  Select All
+                                </>
+                              )}
+                            </button>
+                          </div>
                         )}
                       </div>
-                      <div className="ml-2 bg-gray-200 text-gray-700 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                        {studentsInSection.length}
-                      </div>
-                    </div>
-                    <div className={`text-gray-500 bg-white/50 rounded-full p-1 transition-transform duration-300 transform ${collapsedSections[section] ? 'rotate-180' : 'rotate-0'} group-hover:bg-white/80`}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6"/></svg>
-                    </div>
-                  </div>
-                      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${collapsedSections[section] ? 'opacity-0 max-h-0' : 'opacity-100'}`}
-                       style={{ maxHeight: collapsedSections[section] ? '0px' : `${studentsInSection.length * 80}px` }}>
-                    <div className="divide-y divide-gray-100">
-                      {studentsInSection.map((student, idx) => (
-                        <div key={idx} className="flex items-center justify-between py-3 px-4 hover:bg-gray-50 transition-colors">
-                          <div className="flex items-center gap-3">
-                            {isEditMode && (
-                              <div 
-                                onClick={() => toggleStudentSelection(student.id)}
-                                className="cursor-pointer mr-1"
-                              >
-                                {selectedStudents.includes(student.id) ? (
-                                  <CheckSquare className="h-5 w-5 text-blue-600" />
-                                ) : (
-                                  <Square className="h-5 w-5 text-gray-400" />
+                      <div className="divide-y divide-gray-200">
+                        {sectionStudents.map((student) => (
+                          <div key={student.id} className="p-4 hover:bg-gray-50 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                {isEditMode && (
+                                  <div 
+                                    className="mr-3 cursor-pointer"
+                                    onClick={() => toggleStudentSelection(student.id)}
+                                  >
+                                    {selectedStudents.includes(student.id) ? (
+                                      <CheckSquare className="h-5 w-5 text-blue-600" />
+                                    ) : (
+                                      <Square className="h-5 w-5 text-gray-400" />
+                                    )}
+                                  </div>
                                 )}
+                                <div className={`rounded-full p-2 mr-3 ${
+                                  student.section 
+                                    ? 'bg-blue-100' 
+                                    : 'bg-gray-100'
+                                }`}>
+                                  <UserCheck className={`w-6 h-6 ${
+                                    student.section 
+                                      ? 'text-blue-700' 
+                                      : 'text-gray-600'
+                                  }`} />
+                                </div>
+                                <div>
+                                  <h3 className="text-lg font-medium text-[#141a35]">{student.name}</h3>
+                                  <div className="flex items-center text-sm text-gray-500">
+                                    <Mail className="w-3 h-3 mr-1" />
+                                    {student.email}
+                                  </div>
+                                </div>
                               </div>
-                            )}
-                            <div className="bg-[#141a35]/5 p-2 rounded-full">
-                              <UserCheck className="w-5 h-5 text-[#141a35]" />
-                            </div>
-                            <div>
-                              <span className="font-medium text-[#141a35]">{student.name}</span>
-                              <div className="flex items-center text-xs text-gray-500 mt-0.5">
-                                <Mail className="w-3 h-3 mr-1" />
-                                {student.email}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {isEditMode ? (
-                            <div className="flex items-center gap-2">
-                              <button
-                                className="p-2 text-blue-700 hover:bg-blue-50 rounded-full transition-colors"
-                                onClick={() => openReassignModal(student)}
-                                title={student.section === '' ? 'Assign Section' : 'Re-assign Section'}
-                              >
-                                <Edit3 className="w-4.5 h-4.5" />
-                              </button>
-                              <button 
-                                className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                                onClick={() => { setStudentToDelete(student); setShowDeleteModal(true); }}
-                                title="Delete Account"
-                              >
-                                <Trash2 className="w-4.5 h-4.5" />
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              {student.section ? 
-                                <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
-                                  {student.section}
-                                </span> :
-                                <span className="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full">
-                                  Unassigned
-                                </span>
-                              }
-                              {student.academicYear && (
-                                <span className="bg-emerald-50 text-emerald-700 text-xs px-2 py-0.5 rounded-full">
-                                  {student.academicYear}
-                                </span>
+                              {!isEditMode && (
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    className={`p-2 rounded-full transition-colors ${
+                                      student.section === '' 
+                                        ? 'text-green-600 hover:bg-green-50' 
+                                        : 'text-blue-600 hover:bg-blue-50'
+                                    }`}
+                                    onClick={() => openReassignModal(student)}
+                                    title={student.section === '' ? 'Assign Section' : 'Re-assign Section'}
+                                  >
+                                    <Edit3 className="w-5 h-5" />
+                                  </button>
+                                  <button 
+                                    className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                                    onClick={() => { setStudentToDelete(student); setShowDeleteModal(true); }}
+                                    title="Delete Account"
+                                  >
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
                               )}
                             </div>
-                          )}
-                        </div>
-                      ))}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                  ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>      {/* Add Student Modal */}
+      </div>
+
+      {/* Rest of the modals */}
+      {/* Add Student Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-xl p-8 w-full max-w-md animate-fade-in-up">
