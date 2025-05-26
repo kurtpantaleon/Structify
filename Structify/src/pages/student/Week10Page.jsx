@@ -5,21 +5,18 @@ import Header from '../../components/Header';
 import CardSection from '../../components/CardSection';
 import WeekButton from '../../components/WeekButton';
 import LearningPath from '../../components/LearningPath';
+import { useLessonProgress } from '../../context/lessonProgressContext';
 
 import CheckIcon from '../../assets/images/Check Icon.png';
 import UncheckIcon from '../../assets/images/Uncheck Icon.png';
 import PracticeIcon from '../../assets/images/Practice Icon.png';
 import StudyIcon from '../../assets/images/Study Icon.png';
+import RankStats from '../../components/RankStats';
 
-import card1 from "../../assets/clip/string.mp4"
-import card2 from "../../assets/clip/operation.mp4"
-import card3 from "../../assets/clip/process.mp4"
-import Challenges from "../../assets/clip/challenge.mp4"
-
-
-export default function Week10Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY PASTE LANG
+export default function Week10Page() { 
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isLearningPathOpen, setIsLearningPathOpen] = useState(false);
+  const { completedLessons, completedActivities, activityScores } = useLessonProgress();
 
   const toggleLearningPath = () => {
     setIsLearningPathOpen(!isLearningPathOpen);
@@ -61,42 +58,76 @@ export default function Week10Page() {   // PAPALITAN YUNG WEEK NUMBER KASI COPY
         <main className=" flex-1 px-12 py-8 ">
           <div className=" flex items-start gap-8 ">
             {/* Left Section */}
-            <div className="w-6/12 flex-shrink-0">
-              <h2 className="text-2xl font-extrabold tracking-wide mb-2">SECTION</h2>
-              <div className="border-t border-white/50 w-full mb-5"></div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+             <RankStats/>
 
+           {/* Right Section */}
+             <div className="w-full lg:w-1/2 flex-shrink-0 bg-[#141a35] p-4 sm:p-6 rounded-lg shadow-xl mt-6 lg:mt-0 relative group overflow-hidden">
 
-                                                                                  {/*YUNG PATH LALAGYAN TO !!!!!!!*/}
-                <CardSection title="Introduction to Trees" subtitle="Lesson 1" progress={12.5} path="/week10Page1"  mediaSrc={card1} mediaType="video"/>
-                <CardSection title=" Binary Trees and Binary Search Trees (BST)" subtitle="Lesson 2" progress={0} path="/week10L2Page1" mediaSrc={card2} mediaType="video"/>
-                <CardSection title="Tree Traversal (How to Search a Tree)" subtitle="Lesson 3" progress={0} path="/week10L3Page1" mediaSrc={card3} mediaType="video" />
-                <CardSection title="Build a Simple BST in Java" subtitle="Challenge" progress={0} path="/quizWeek10" mediaSrc={Challenges} mediaType="video"/>
+              {/* Glowing animated border */}
+              <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue-900 to-blue-900 blur-lg opacity-50 group-hover:opacity-100 transition-all duration-500 z-0" />
+
+              {/* Moving background icon (optional shimmer object) */}
+              <div className="absolute top-1/2 left-[-20%] w-72 h-72 bg-gradient-to-tr from-indigo-400 via-blue-500 to-transparent 
+                              opacity-20 animate-move-slow rounded-full blur-3xl z-0" />
+
+              {/* Content wrapper with z-index */}
+              <div className="relative z-10">
+                <h2 className="text-xl sm:text-2xl font-extrabold tracking-wide mb-2 text-white">WEEK 10 GOALS</h2>
+                <div className="border-t border-white/50 w-full mb-4 sm:mb-5"></div>
+
+                {/* Lessons */}
+                <div className="space-y-3 sm:space-y-4">
+                  <WeekButton 
+                    title="Lesson 1" 
+                    status="LEARN" 
+                    icon={completedLessons.includes("Week10lesson1") ? CheckIcon : UncheckIcon}
+                    iconType={StudyIcon} 
+                    path="/week10Page1"
+                  />
+                  <WeekButton 
+                    title="Lesson 2" 
+                    status="LEARN" 
+                    icon={completedLessons.includes("Week10lesson2") ? CheckIcon : UncheckIcon}
+                    iconType={StudyIcon} 
+                    path="/week10L2Page1"
+                  />
+                  <WeekButton 
+                    title="Lesson 3" 
+                    status="LEARN" 
+                    icon={completedLessons.includes("Week10lesson3") ? CheckIcon : UncheckIcon}
+                    iconType={StudyIcon} 
+                    path="/week10L3Page1"
+                  />
+                </div>
+
+                {/* Activities */}
+                <div className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
+                  <h3 className="text-base sm:text-lg font-semibold text-yellow-300">Activities</h3>
+                  <WeekButton 
+                    title="Activity 1" 
+                    status={`SCORE: ${activityScores["Week10activity1"] ?? "-"}`}
+                    icon={completedActivities.includes("Week10activity1") ? CheckIcon : UncheckIcon}
+                    iconType={PracticeIcon} 
+                    path="/Week10Activity1"
+                  />
+                  <WeekButton 
+                    title="Activity 2" 
+                    status={`SCORE: ${activityScores["Week10activity2"] ?? "-"}`}
+                    icon={completedActivities.includes("Week10activity2") ? CheckIcon : UncheckIcon}
+                    iconType={PracticeIcon} 
+                    path="/Week10Activity2"
+                  />
+                  <WeekButton 
+                    title="Activity 3" 
+                    status={`SCORE: ${activityScores["Week10activity3"] ?? "-"}`}
+                    icon={completedActivities.includes("Week10activity3") ? CheckIcon : UncheckIcon}
+                    iconType={PracticeIcon} 
+                    path="/Week10Activity3"
+                  />
+                </div>
               </div>
             </div>
-
             {/* Right Section */}
-            <div className=" w-6/12 flex-shrink-0 bg-[#141a35] p-4 rounded-xl shadow-xl">
-              <h2 className="text-2xl font-extrabold tracking-wide mb-2"> WEEK 10&11 GOALS</h2>{/*YUNG WEEK NUMBER LANG */}
-              <div className="border-t border-white/50 w-full mb-5"></div>
-
-              {/* Lessons */}
-              <div className="space-y-4">
-                                                                                     {/*YUNG PATH LALAGYAN TO !!!!!!! */}
-                <WeekButton title="Lesson 1" status="LEARN" icon={CheckIcon} iconType={StudyIcon} path="/week10Page1"  />
-                <WeekButton title="Lesson 2" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week10L2Page1"/>
-                <WeekButton title="Lesson 3" status="LEARN" icon={UncheckIcon} iconType={StudyIcon} path="/week10L3Page1" />
-              </div>
-
-              {/* Activities */}
-              <div className="mt-6 space-y-4">
-                <h3 className="text-lg font-semibold text-yellow-300"> Activities</h3>
-                                                                                                            {/*YUNG PATH LALAGYAN TO !!!!!!!!*/}
-                <WeekButton title="Activity 1" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week10Activity1"/>
-                <WeekButton title="Activity 2" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week10Activity2"/>
-                <WeekButton title="Activity 3" status="PRACTICE" icon={UncheckIcon} iconType={PracticeIcon} path="/Week10Activity3"/>
-              </div>
-            </div>
           </div>
         </main>
         <LearningPath isOpen={isLearningPathOpen} toggleLearningPath={toggleLearningPath} />

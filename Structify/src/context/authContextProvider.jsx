@@ -1,11 +1,18 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, useContext } from "react";
 import { getDoc, doc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "../services/firebaseConfig";
 import { AuthContext } from "./authContext";
 import authReducer from "./authReducer";
 import LoadingCircle from "../components/LoadingCircle";
-import { useContext } from "react"; // ADD THIS
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthContextProvider');
+  }
+  return context;
+}
 
 const INITIAL_STATE = {
   currentUser: null,
@@ -74,8 +81,3 @@ function AuthContextProvider({ children }) {
 }
 
 export default AuthContextProvider;
-
-// ✅ ADD THIS BELOW:
-export function useAuth() {
-  return useContext(AuthContext);
-}

@@ -8,11 +8,11 @@ import { useLessonProgress } from "../../../context/lessonProgressContext"; // I
 
 const options = ["Algorithm", "Efficiency", "Big-O Notation", "Input", "Output"];
 const descriptions = [
-  " A step-by-step process to solve a problem.",
-  " Measures time complexity.",
-  " How fast an algorithm runs.",
-  " The data an algorithm receives.",
-  " The final result after processing."
+  "A step-by-step process to solve a problem.",
+  "Measures time complexity.",
+  "How fast an algorithm runs.",
+  "The data an algorithm receives.",
+  "The final result after processing."
 ];
 
 const correctAnswers = {
@@ -82,9 +82,9 @@ export default function Activity1() {
 
   //added useEffect to get the score from the context
   useEffect(() => {
-    if (activityScores && activityScores["activity1"] !== undefined) {
-      setScore(activityScores["activity1"]);
-      setFeedback(`Your previous score: ${activityScores["activity1"]}/100`);
+    if (activityScores && activityScores["Week2activity1"] !== undefined) {
+      setScore(activityScores["Week2activity1"]);
+      setFeedback(`Previous attempt score: ${activityScores["Week2activity1"]}/100`);
     }
   }, [activityScores]);
 
@@ -249,9 +249,4 @@ export default function Activity1() {
       </div>
     </>
   );
-
-  // Function to handle marking the lesson as complete
-  const handleComplete = () => {
-    markLessonComplete("lesson1");
-  };
 }

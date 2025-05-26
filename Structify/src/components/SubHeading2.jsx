@@ -39,13 +39,12 @@ function SubHeading2({ progress = 1, totalSteps = 8, onNext, onPrev, exitPath = 
       {/* Info button */}
       <button
         onClick={() => navigate('/info')}
-        className="p-2 sm:p-3 rounded-full hover:bg-gray-700 focus:ring-2 focus:ring-white transition-transform transform hover:scale-105"
         aria-label="View Lesson Information"
-      >
+      >{/*className=""p-2 sm:p-3 rounded-full hover:bg-gray-700 focus:ring-2 focus:ring-white transition-transform transform hover:scale-105*/}
         <img
           src={InfoIcon}
           alt="Info Icon"
-          className="h-8 w-8 sm:h-10 sm:w-10 cursor-pointer"
+          className="h-8 w-8 sm:h-10 sm:w-10 opacity-0"
         />
       </button>
     </div>

@@ -3,7 +3,8 @@ import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../services/firebaseConfig";
-
+import { useGameStats } from "../context/gameStatsContext";
+ 
 const LessonProgressContext = createContext();
 
 export const useLessonProgress = () => useContext(LessonProgressContext);
@@ -13,6 +14,8 @@ export const LessonProgressProvider = ({ children }) => {
   const [completedLessons, setCompletedLessons] = useState([]);
   const [completedActivities, setCompletedActivities] = useState([]);
   const [activityScores, setActivityScores] = useState({});
+  const [completedQuizzes, setCompletedQuizzes] = useState([]);
+  const { addCoins } = useGameStats();
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -24,6 +27,7 @@ export const LessonProgressProvider = ({ children }) => {
           setCompletedLessons(data.completedLessons || []);
           setCompletedActivities(data.completedActivities || []);
           setActivityScores(data.activityScores || {});
+          setCompletedQuizzes(data.completedQuizzes || []);
         }
       }
     };
@@ -37,6 +41,7 @@ export const LessonProgressProvider = ({ children }) => {
       completedLessons: arrayUnion(lessonId)
     });
     setCompletedLessons((prev) => [...new Set([...prev, lessonId])]);
+    await addCoins(1);
   };
 
   const markActivityComplete = async (activityId, score = null) => {
@@ -59,6 +64,15 @@ export const LessonProgressProvider = ({ children }) => {
     }
   };
 
+  const markQuizComplete = async (quizId) => {
+    if (!user) return;
+    const userRef = doc(db, "users", user.uid);
+    await updateDoc(userRef, {
+      completedQuizzes: arrayUnion(quizId)
+    });
+    setCompletedQuizzes((prev) => [...new Set([...prev, quizId])]);
+  };
+
   return (
     <LessonProgressContext.Provider
       value={{
@@ -66,7 +80,9 @@ export const LessonProgressProvider = ({ children }) => {
         markLessonComplete,
         completedActivities,
         activityScores,
-        markActivityComplete
+        markActivityComplete,
+        completedQuizzes,
+        markQuizComplete
       }}
     >
       {children}

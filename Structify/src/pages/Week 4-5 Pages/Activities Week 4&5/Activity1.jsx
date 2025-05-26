@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../../../components/Header";
 import hint from "../../../assets/images/hint.png";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
+import Actbox from "../../../assets/asset/ActBox.png";
+import { useLessonProgress } from "../../../context/lessonProgressContext"; // Importing the lesson progress context
 
 const options = ["Array", "Record", "Pointer",];
 const descriptions = [
@@ -18,16 +21,25 @@ const correctAnswers = {
  
 };
 
-function DraggableItem({ id, children }) {
+function DraggableItem({ id, children, fitContainer = false }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
-  const style = transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : {};
+
+  const style = {
+    backgroundImage: `url(${Actbox})`,
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined
+  };
+
   return (
-    <div 
-      ref={setNodeRef} 
-      style={style} 
-      {...listeners} 
-      {...attributes} 
-      className="p-2 bg-blue-900 border border-white text-white rounded text-center uppercase text-lg font-bold cursor-pointer w-47"
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      className={`flex items-center justify-center text-white rounded text-center uppercase text-sm sm:text-base md:text-lg font-bold cursor-pointer hover:scale-105 
+        ${fitContainer ? 'w-full h-full p-0' : 'w-36 sm:w-44 md:w-48 p-2 sm:p-3'}`}
     >
       {children}
     </div>
@@ -35,123 +47,204 @@ function DraggableItem({ id, children }) {
 }
 
 function DroppableArea({ id, answer }) {
-  const { setNodeRef } = useDroppable({ id });
+  const { setNodeRef, isOver } = useDroppable({ id });
+
+  const style = {
+    backgroundImage: `url(${Actbox})`,
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
+
   return (
-    <div 
-      ref={setNodeRef} 
-      className="w-100 h-15 bg-gradient-to-r from-blue-900 to-blue-1000 rounded-lg border border-white/100  font-bold rounded flex items-center justify-center text-white text-xl"
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`w-full sm:w-80 md:w-96 h-12 sm:h-14 md:h-16 rounded-lg font-bold flex items-center justify-center text-white text-sm sm:text-base md:text-xl transition-all duration-300 bg-opacity-80`}
     >
-      {answer || ""}
+      {answer ? (
+        <DraggableItem id={answer} fitContainer>{answer}</DraggableItem>
+      ) : (
+        <span className="text-white/50">Drop here</span>
+      )}
     </div>
   );
 }
 
 export default function Activity1() {
+  const { activityScores, markActivityComplete } = useLessonProgress(); // declaring the context
+  const navigate = useNavigate();
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState("");
+  const [score, setScore] = useState(null);
+
+  //added useEffect to get the score from the context
+  useEffect(() => {
+    if (activityScores && activityScores["activity1"] !== undefined) {
+      setScore(activityScores["activity1"]);
+      setFeedback(`Your previous score: ${activityScores["activity1"]}/100`);
+    }
+  }, [activityScores]);
 
   const handleDrop = (event) => {
     const { active, over } = event;
-    if (over) {
-      setAnswers((prev) => ({ ...prev, [over.id]: active.id }));
-    }
+    if (!over) return;
+
+    setAnswers((prev) => {
+      const newAnswers = { ...prev };
+      const previousDropArea = Object.keys(prev).find(key => prev[key] === active.id);
+      if (previousDropArea && previousDropArea !== over.id) {
+        delete newAnswers[previousDropArea];
+      }
+      newAnswers[over.id] = active.id;
+      return newAnswers;
+    });
   };
 
-  const handleSubmit = () => {
-    let isCorrect = true;
+  const handleSubmit = async () => {
+    setFeedback("Checking answers..."); //added feedback message for scores
+    let correctCount = 0;
     for (let desc in correctAnswers) {
-      if (answers[desc] !== correctAnswers[desc]) {
-        isCorrect = false;
-        break;
+      if (answers[desc] === correctAnswers[desc]) {
+        correctCount++;
       }
     }
-    setFeedback(isCorrect ? "Correct! Well done." : "Some answers are incorrect. Try again!");
-  };
-
+    const calculatedScore = correctCount * 20;
+    setScore(calculatedScore);
+    setFeedback(calculatedScore === 100 ? "🎉 Correct! You nailed it!" : `You scored ${calculatedScore}/100. Try again!`);
   
-  const goToNextActivity = () => {
-    window.location.href = "/week4activity2";
+    await markActivityComplete("activity1", calculatedScore); // Save the score in the context
+  
+    setTimeout(() => {
+      navigate("/week4activity2");
+    }, 3000);
   };
   
   return (
-    
-    <div className="bg-[#1c2452] min-h-screen flex flex-col">
-    
-      <Header />
-      <div className="flex justify-between items-center p-4 bg-[#1c2452] border-b border-[#2a3366]">
-      <button onClick={() => (window.location.href = "/week4Page")} className="text-white">          
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-        <h1 className="text-xl font-medium text-white">Activity 1 - Matching Type</h1>
-        <img src={hint} className="w-8 h-8"></img>
-      </div>
+    <>
+      <style>{`
+        @keyframes pulseBorder {
+          0% { border-color: #4f46e5; }
+          25% { border-color: #9333ea; }
+          50% { border-color: #f43f5e; }
+          75% { border-color: #9333ea; }
+          100% { border-color: #4f46e5; }
+        }
 
-      {/* Main content */}
-      <div className="flex-1 p-6 flex flex-col items-center justify-center">
-        <DndContext onDragEnd={handleDrop}>
-          <div className="flex gap-8 justify-center max-w-4xl">
-            {/* Left column with numbers and drop areas */}
-            <div className="flex flex-col item-center justify-center gap-2 border-r border-white/20 rounded-xl p-6 w-100 bg-[#141a35]">
-              {[1, 2, 3, ].map((num, index) => (
-                <div key={num} className="flex items-center gap-4 mb-4">
-                  <span className="text-white font-medium w-6">{num}.</span>
-                  <DroppableArea id={descriptions[index]} answer={answers[descriptions[index]]} />
+       @keyframes fall {
+          0% { 
+            transform: translateY(-10%); 
+            opacity: 1; 
+            background-color: #f43f5e; /* Initial Color (Red) */
+          }
+          25% { 
+            background-color: #9333ea; /* Purple */
+          }
+          50% { 
+            transform: translateY(50vh); 
+            opacity: 0.6; 
+            background-color: #4f46e5; /* Blue */
+          }
+          75% { 
+            background-color: #ffcc00; /* Yellow */
+          }
+          100% { 
+            transform: translateY(110vh); 
+            opacity: 0; 
+            background-color: #ffffff; /* White (Final Color) */
+          }
+        }
+
+        .particle {
+          position: fixed;
+          top: -10px;
+          width: 8px; /* Larger particles */
+          height: 8px; 
+          background: white;
+          border-radius: 50%;
+          opacity: 0.8;
+          box-shadow: 0 0 15px rgba(255, 255, 255, 0.9); /* Glowing effect */
+          animation: fall 4s linear infinite;
+          pointer-events: none;
+          z-index: 0;
+          animation-delay: calc(Math.random() * 5s);
+          animation-duration: calc(3 + Math.random() * 2)s;
+          transform: scale(calc(0.8 + Math.random() * 0.5));  /* Randomize size */
+        }
+
+      `}</style>
+
+      <div className="bg-[#1c2452] min-h-screen flex flex-col overflow-hidden relative z-10">
+        {Array.from({ length: 30 }).map((_, i) => (
+          <div
+            key={i}
+            className="particle"
+            style={{
+              left: `${Math.random() * 100}vw`,
+              animationDelay: `${Math.random() * 10}s`,
+              animationDuration: `${3 + Math.random() * 20}s`
+            }}
+          />
+        ))}
+
+        <Header />
+
+        <div className="flex justify-between items-center p-4 border-b border-blue-500/40 backdrop-blur-md bg-white/10">
+          <button onClick={() => (window.location.href = "/Week4Page")} className="text-white hover:text-red-400 transition-colors">          
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <h1 className="text-xl font-bold text-white tracking-wide"> Activity 1 - Matching Game</h1>
+          <img src={hint} className="w-8 h-8" alt="Hint Icon" />
+        </div>
+
+        <div className="flex-1 p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center">
+          <DndContext onDragEnd={handleDrop}>
+            
+            <div className="rounded-xl border-4 animate-[pulseBorder_3s_ease-in-out_infinite] shadow-inner shadow-indigo-500/20">
+
+              <div className="flex flex-row items-center justify-center rounded-xl p-4 sm:p-6 w-200 bg-[#141a35]/80 backdrop-blur-md">
+                <div className="flex flex-col gap-2">
+                  {[1, 2, 3, ].map((num, index) => (
+                    <div key={num} className="flex items-center gap-2 sm:gap-3 md:gap-4 mb-2 sm:mb-3 md:mb-4">
+                      <span className="text-white font-semibold w-5 sm:w-6">{num}.</span>
+                      <DroppableArea id={descriptions[index]} answer={answers[descriptions[index]]} />
+                    </div>
+                  ))}
                 </div>
-              ))}
+
+                <div className="p-4 sm:p-6 w-full md:w-1/2 flex flex-col gap-6 sm:gap-8 md:gap-10">
+                  {descriptions.map((desc, index) => (
+                    <p key={index} className="text-white/90 text-xs sm:text-sm md:text-base lg:text-lg font-light">{desc}</p>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Right column with descriptions */}
-            <div className="rounded p-6 w-100 flex flex-col item-center justify-center gap-13 rounded-xl  bg-[#141a35]">
-              {descriptions.map((desc, index) => (
-                <p key={index} className="text-white text-sm mb-4">{desc}</p>
+            <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 mt-4 sm:mt-6 md:mt-8 justify-center w-full max-w-5xl">
+              {options.map((opt) => (
+                !Object.values(answers).includes(opt) && (
+                  <DraggableItem key={opt} id={opt}>{opt}</DraggableItem>
+                )
               ))}
             </div>
-          </div>
+          </DndContext>
 
-          {/* Answer options */}
-          <div className="flex flex-wrap gap-4 mt-8 justify-centerflex w-5xl gap-4 mt-3 justify-center">
-            {options.map((opt) => (
-              !Object.values(answers).includes(opt) && (
-                <DraggableItem key={opt} id={opt}>{opt}</DraggableItem>
-              )
-            ))}
-          </div>
-        </DndContext>            
-        {/* Submit button */}
-        <button 
-          className="mt-8 px-6 py-2 bg-blue-600 text-white rounded" 
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
+          {feedback && (
+            <p className="mt-4 sm:mt-6 text-white font-medium text-base sm:text-lg md:text-xl animate-bounce">{feedback}</p>
+          )}
 
-        {feedback && (
-          <p className="mt-4 text-white font-medium">{feedback}</p>
-        )}
+          <div className="flex flex-col sm:flex-row justify-between items-center w-full px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 md:pb-8 mt-4 sm:mt-6">
+            <button 
+              className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm sm:text-base md:text-lg w-full sm:w-auto font-semibold shadow-md hover:scale-105 transition-transform"
+              onClick={handleSubmit}
+            >
+              Submit Answers
+            </button>
+          </div>
+        </div>
       </div>
-      <div className="flex justify-between align-center items-center w-full px-6 pb-6 mt-3">
-        <button className="px-4 h-10 bg-gray-600 text-white rounded flex items-center"
-          >Previous Activity
-         </button>
-        {/* Submit button */}
-        <button 
-          className=" px-20 py-4 bg-blue-600 text-white rounded" 
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
-        <button 
-          className="px-4 h-10 bg-blue-600 text-white rounded flex items-center"
-          onClick={goToNextActivity}
-        >
-          Next Activity
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-          </svg>
-        </button>
-      </div>
-    </div>
+    </>
   );
 }

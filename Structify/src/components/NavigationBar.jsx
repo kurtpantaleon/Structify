@@ -5,6 +5,8 @@ import LeaderboardIcon from "../assets/images/Leaderboard Icon.png";
 import LearnIcon from "../assets/images/Learn Icon.png";
 import PvPIcon from "../assets/images/PvP Icon.png";
 import ForumIcon from "../assets/images/Forum Icon.png";
+import ClassFieldIcon from "../assets/images/Instructor Materials Icon.png";
+import { useAuth } from "../context/authContextProvider";
 
 const NavigationBar = () => {
   return (
@@ -18,8 +20,9 @@ const NavigationBar = () => {
         <NavItem to="/mainPage" icon={LearnIcon} label="Learn" />
         <NavItem to="/codePlayground" icon={CodeIcon} label="Code" />
         <NavItem to="/Leaderboard" icon={LeaderboardIcon} label="Leaderboard" />
-        <NavItem to="/pvp" icon={PvPIcon} label="PvP" />
+        <NavItem to="/CodeChallengeLobby" icon={PvPIcon} label="PvP" />
         <NavItem to="/Forum" icon={ForumIcon} label="Forum" />
+        <NavItem to="/ClassField" icon={ClassFieldIcon} label="Class Field" />
       </nav>
     </div>
   );
@@ -28,9 +31,14 @@ const NavigationBar = () => {
 // Reusable Navigation Item Component with navigation path
 const NavItem = ({ to, icon, label }) => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   const handleNavigation = () => {
-    navigate(to);
+    if (to === '/ClassField' && currentUser?.section) {
+      navigate(to, { state: { section: currentUser.section } });
+    } else {
+      navigate(to);
+    }
   };
 
   return (

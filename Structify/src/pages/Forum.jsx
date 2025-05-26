@@ -8,7 +8,9 @@ import profile from '../assets/images/sample profile.png';
 import UploadIcon from '../assets/images/Upload Icon.png';
 import { useAuth } from '../context/authContextProvider';
 import ThreeDots from '../assets/images/Threedot Icon.png';
+import { MessageSquare, HelpCircle, Bell, Plus, Check, X, Send, Edit2, Trash2, Calendar, User, Clock, MessageCircle } from 'lucide-react';
 
+ 
 const Forum = () => {
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
@@ -32,23 +34,44 @@ const Forum = () => {
             setPosts(postsData);
         };
         fetchPosts();
-    }, []);
-
-    const openEditModal = (post) => {
+    }, []);    const openEditModal = (post) => {
+        // Check if current user is the post owner
+        if (!currentUser || !post.user || post.user.uid !== currentUser.uid) {
+            console.error("You don't have permission to edit this post");
+            alert("You don't have permission to edit this post");
+            return;
+        }
+        
         setEditPostId(post.id);
         setPostType(post.type);
         setTitle(post.title);
         setDescription(post.description);
         setShowModal(true);
         setMenuOpenId(null);
-    };
-
-    const handleAddPost = async (e) => {
+    };    const handleAddPost = async (e) => {
         e.preventDefault();
         if (!currentUser) return;
         try {
             if (editPostId) {
-                // Edit mode
+                // Edit mode - verify ownership before updating
+                const postDoc = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
+                const post = postDoc.docs.find(doc => doc.id === editPostId);
+                
+                if (!post) {
+                    console.error("Post not found");
+                    alert("Post not found");
+                    return;
+                }
+                
+                const postData = post.data();
+                
+                // Check if current user is the post owner
+                if (!postData.user || postData.user.uid !== currentUser.uid) {
+                    console.error("You don't have permission to edit this post");
+                    alert("You don't have permission to edit this post");
+                    return;
+                }
+                
                 const postRef = doc(db, "posts", editPostId);
                 await updateDoc(postRef, {
                     type: postType,
@@ -84,17 +107,39 @@ const Forum = () => {
             console.error("Error saving post:", error);
             alert("Failed to save post. Please try again.");
         }
-    };
-
-    const handleDeletePost = async (postId) => {
-        await deleteDoc(doc(db, "posts", postId));
-        setMenuOpenId(null);
-        setPostToDelete(null);
-        // Refetch posts after delete
-        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
-        const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setPosts(postsData);
+    };    const handleDeletePost = async (postId) => {
+        try {
+            // Get the post to verify ownership
+            const postDoc = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
+            const post = postDoc.docs.find(doc => doc.id === postId);
+            
+            if (!post) {
+                console.error("Post not found");
+                return;
+            }
+            
+            const postData = post.data();
+            
+            // Check if current user is the post owner
+            if (!currentUser || !postData.user || postData.user.uid !== currentUser.uid) {
+                console.error("You don't have permission to delete this post");
+                alert("You don't have permission to delete this post");
+                return;
+            }
+            
+            await deleteDoc(doc(db, "posts", postId));
+            setMenuOpenId(null);
+            setPostToDelete(null);
+            
+            // Refetch posts after delete
+            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setPosts(postsData);
+        } catch (error) {
+            console.error("Error deleting post:", error);
+            alert("Failed to delete post. Please try again.");
+        }
     };
 
     const handleAddComment = async (postId) => {
@@ -232,15 +277,25 @@ const Forum = () => {
 
         {/* 🔙 Exit Button */}
         <div className="flex justify-end m-8">
-            <button onClick={() => navigate(-1)} className="z-10">
-                <img src={exit} alt="Close" className="w-6 h-6 cursor-pointer" />
+            <button onClick={() => navigate(-1)} className="p-2 rounded-full bg-red-600 hover:bg-red-700 transition duration-200"
+>
+                <X className="w-6 h-6 text-white" />
             </button>
         </div>
 
-        <div className="max-w-7xl mx-auto mt-6 p-6 rounded-lg shadow h-[75vh] overflow-y-auto bg-gray-200">
-            <div className="flex justify-end mb-4">
+        <div className="max-w-7xl mx-auto mt-6 p-6 rounded-lg shadow h-[75vh] overflow-y-auto bg-gray-200">            <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center space-x-2">
+                    <div className="flex items-center bg-[#141a35]/80 text-white text-sm font-medium px-4 py-2.5 rounded-lg shadow-md">
+                        <MessageSquare className="w-5 h-5 mr-2 text-blue-400" />
+                        <span>Forum Discussion</span>
+                    </div>
+                    <div className="flex items-center bg-[#141a35]/60 text-white text-sm font-medium px-3 py-2 rounded-lg">
+                        <Bell className="w-4 h-4 mr-2 text-yellow-400" />
+                        <span>Notifications</span>
+                    </div>
+                </div>
                 <button
-                    className="bg-[#141a35] text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-[#1f274d] transition"
+                    className="bg-gradient-to-r from-blue-600 to-blue-800 text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:from-blue-700 hover:to-blue-900 transition shadow-md flex items-center"
                     onClick={() => {
                         setEditPostId(null);
                         setPostType('Posts');
@@ -249,6 +304,7 @@ const Forum = () => {
                         setShowModal(true);
                     }}
                 >
+                    <Plus className="w-4 h-4 mr-2" />
                     Add Post
                 </button>
             </div>
@@ -302,25 +358,39 @@ const Forum = () => {
             )}
             <div className="flex flex-wrap justify-center gap-4">
                 {posts.map(post => (
-                    <div key={post.id} className="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96">
-                        {/* Three-dot menu icon */}
-                        <button
-                            className="absolute top-3 right-3 z-20"
-                            onClick={() => setMenuOpenId(menuOpenId === post.id ? null : post.id)}
-                        >
-                            <img src={ThreeDots} alt="menu" className="w-1 h-4 filter invert opacity-40 cursor-pointer" />
-                        </button>
+                    <div key={post.id} className="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96">                        {/* Three-dot menu icon - only show for post owner */}
+                        {currentUser && post.user && post.user.uid === currentUser.uid && (
+                            <button
+                                className="absolute top-3 right-3 z-20"
+                                onClick={() => setMenuOpenId(menuOpenId === post.id ? null : post.id)}
+                            >
+                                <img src={ThreeDots} alt="menu" className="w-1 h-4 filter invert opacity-40 cursor-pointer" />
+                            </button>
+                        )}
                         {/* Dropdown menu */}
                         {menuOpenId === post.id && (
                             <div className="absolute top-10 right-3 bg-white border border-slate-200 rounded shadow-lg z-30 w-28">
-                                <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => openEditModal(post)}>Edit</button>
-                                <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 cursor-pointer" onClick={() => setPostToDelete(post.id)}>Delete</button>
+                                {currentUser && post.user && post.user.uid === currentUser.uid && (
+                                    <>
+                                        <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => openEditModal(post)}>Edit</button>
+                                        <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 cursor-pointer" onClick={() => setPostToDelete(post.id)}>Delete</button>
+                                    </>
+                                )}
+                                {(!currentUser || !post.user || post.user.uid !== currentUser.uid) && (
+                                    <div className="px-4 py-2 text-gray-500 text-sm">No options</div>
+                                )}
                             </div>
                         )}
                         {/* Content */}
                         <div className="p-4">
-                            {/* Type of Post */}
-                            <div className="mb-4 rounded-full bg-cyan-600 py-0.5 px-2.5 border border-transparent text-xs text-white transition-all shadow-sm w-20 text-center">
+                            {/* Type of Post */}                            <div className={`mb-4 rounded-full py-1 px-3 border border-transparent text-xs text-white transition-all shadow-sm inline-flex items-center ${
+                                post.type === 'Question' ? 'bg-orange-500' : 
+                                post.type === 'Announcement' ? 'bg-purple-600' : 
+                                'bg-cyan-600'
+                            }`}>
+                                {post.type === 'Question' && <HelpCircle className="w-3 h-3 mr-1" />}
+                                {post.type === 'Announcement' && <Bell className="w-3 h-3 mr-1" />}
+                                {post.type === 'Posts' && <MessageSquare className="w-3 h-3 mr-1" />}
                                 {post.type?.toUpperCase()}
                             </div>
                             {/* Title */}
@@ -350,8 +420,7 @@ const Forum = () => {
                                 </div>
                             </div>
                         </div>
-                        {/* Comment Section */}
-                        <div className="px-4 pb-4 flex items-center">
+                        {/* Comment Section */}                        <div className="px-4 pb-4 flex items-center">
                             <input
                                 type="text"
                                 placeholder="Add class comment..."
@@ -359,7 +428,12 @@ const Forum = () => {
                                 value={commentInputs[post.id] || ''}
                                 onChange={e => setCommentInputs(inputs => ({ ...inputs, [post.id]: e.target.value }))}
                             />
-                            <img src={UploadIcon} alt="upload" className="w-6 h-6 cursor-pointer ml-2 filter invert opacity-30" onClick={() => handleAddComment(post.id)} />
+                            <button 
+                                className="ml-2 p-2 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors text-white" 
+                                onClick={() => handleAddComment(post.id)}
+                            >
+                                <Send className="w-4 h-4" />
+                            </button>
                         </div>
                         {/* Display Comments */}
                         {Array.isArray(post.comments) && post.comments.length > 0 && (

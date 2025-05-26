@@ -269,10 +269,14 @@ import ViewProfile from './pages/ViewProfile'
 import InstructorPage from './pages/instructor/InstructorPage'
 import ViewScoresPage from './pages/instructor/ViewScoresPage'
 import ViewStudentLists from './pages/instructor/ViewStudentLists'
+import AddLessonMaterials from './pages/instructor/AddLessonMaterials'
 
 import Leaderboard from './pages/Leaderboard'
 import Forum from './pages/Forum'
- 
+import CodeChallengeLobby from './components/CodeChallengeLobby'
+import Match from './pages/PvP/Match'
+import ClassField from './pages/ClassField'
+
 function App() {
   const { currentUser, role } = useContext(AuthContext);
 
@@ -389,7 +393,7 @@ function App() {
       <Route path="/week3Activity1" element={<ProtectedRoute allowedRoles={['student']}><Week3Activity1 /></ProtectedRoute>} />
       <Route path="/week3Activity2" element={<ProtectedRoute allowedRoles={['student']}><Week3Activity2 /></ProtectedRoute>} />
       <Route path="/week3Activity3" element={<ProtectedRoute allowedRoles={['student']}><Week3Activity3 /></ProtectedRoute>} />
-
+ 
       {/* Week 4&5 */}
       <Route path="/week4Page" element={<ProtectedRoute allowedRoles={['student']}><Week4 /></ProtectedRoute>} />
       <Route path='/quizWeek4-5' element={<ProtectedRoute allowedRoles={['student']}><QuizWeek4 /></ProtectedRoute>} />
@@ -543,12 +547,16 @@ function App() {
       {/*Instructor Page */}
       <Route path="/ViewScoresPage" element={<ProtectedRoute allowedRoles={['instructor']}><ViewScoresPage /></ProtectedRoute>} />
       <Route path="/ViewStudentLists" element={<ProtectedRoute allowedRoles={['instructor']}><ViewStudentLists /></ProtectedRoute>} />
-
+      <Route path="/AddLessonMaterials" element={<ProtectedRoute allowedRoles={['instructor']}><AddLessonMaterials /></ProtectedRoute>} />
+      
       {/* Generic Pages */}
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="/ViewProfile" element={<ViewProfile />} />
-      <Route path="/Leaderboard" element={<Leaderboard />} />      
+      <Route path="/Leaderboard" element={<Leaderboard />} />        
       <Route path="/Forum" element={<Forum />} />
+      <Route path="/CodeChallengeLobby" element={<CodeChallengeLobby />} />
+      <Route path="/PvP/Match" element={<Match />} />
+      <Route path="/ClassField" element={<ClassField />} />
     </Routes> 
   )
 }

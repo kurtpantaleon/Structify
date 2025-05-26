@@ -8,7 +8,7 @@ function LearningPath({ isOpen, toggleLearningPath }) {
   const [progress, setProgress] = useState({});
   const [userId, setUserId] = useState(null); // State to store the authenticated userId
   const [authLoading, setAuthLoading] = useState(true); // State to handle auth loading
-
+ 
   // Initialize Firebase Auth
   const auth = getAuth();
 
@@ -28,40 +28,40 @@ function LearningPath({ isOpen, toggleLearningPath }) {
       expectedActivities: ["Week2activity1", "Week2activity2", "Week2activity3"],
       expectedLessons: ["Week2lesson1", "Week2lesson2", "Week2lesson3"]
     },
-    {
+    { 
       week: "Week 3",
       topic: "String Processing",
       path: "/week3Page",
-      expectedActivities: [],
-      expectedLessons: []
+      expectedActivities: ['Week3activity1', 'Week3activity2', 'Week3activity3'],
+      expectedLessons: ['Week3lesson1', 'Week3lesson2', 'Week3lesson3']
     },
     {
       week: "Week 4 and 5",
       topic: "Array, Records, and Pointers",
       path: "/week4Page",
-      expectedActivities: [],
-      expectedLessons: []
+      expectedActivities: ['Week4activity1', 'Week4activity2', 'Week4activity3'],
+      expectedLessons: ['Week4lesson1', 'Week4lesson2', 'Week4lesson3']
     },
     {
       week: "Week 6",
       topic: "Linked Lists",
       path: "/week6Page",
-      expectedActivities: [],
-      expectedLessons: []
+      expectedActivities: ['Week6activity1', 'Week6activity2', 'Week6activity3'],
+      expectedLessons: ['Week6lesson1', 'Week6lesson2', 'Week6lesson3']
     },
-    {
+    { 
       week: "Week 7 and 8",
       topic: "Stacks, Queues, and Recursion",
       path: "/week7Page",
-      expectedActivities: [],
-      expectedLessons: []
+      expectedActivities: ['Week7activity1', 'Week7activity2', 'Week7activity3'],
+      expectedLessons: ['Week7lesson1', 'Week7lesson2', 'Week7lesson3']
     },
     {
       week: "Week 10 and 11",
       topic: "Trees",
       path: "/week10Page",
-      expectedActivities: [],
-      expectedLessons: []
+      expectedActivities: ['Week10activity1', 'Week10activity2', 'Week10activity3'],
+      expectedLessons: ['Week10lesson1', 'Week10lesson2', 'Week10lesson3']
     },
     {
       week: "Week 12 and 13",

@@ -1,86 +1,89 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useRef, useState, useEffect } from "react";
+import Editor from "@monaco-editor/react";
 import Header from "../../../components/Header";
-import hint from "../../../assets/images/hint.png";
-import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
-import Actbox from "../../../assets/asset/ActBox.png";
-import { useLessonProgress } from "../../../context/lessonProgressContext"; // Importing the lesson progress context
+import { useNavigate } from "react-router-dom";
+import { useGameStats } from "../../../context/gameStatsContext";
+import { useLessonProgress } from "../../../context/lessonProgressContext";
 
-const options = ["LINKED LIST", "ARRAY", "STACK", "QUEUE", "HASH TABLE"];
-const descriptions = [
-  "Stores multiple elements in a fixed order.",
-  "Stores elements as nodes connected with pointers.",
-  "Follows Last In, First Out (LIFO).",
-  "Follows First In, First Out (FIFO).",
-  "Uses a key-value pair for quick data retrieval."
-];
+const problemDescription = `
+Write a function that takes a string as input and prints the reversed string.
 
-const correctAnswers = {
-  "Stores multiple elements in a fixed order.": "ARRAY",
-  "Stores elements as nodes connected with pointers.": "LINKED LIST",
-  "Follows Last In, First Out (LIFO).": "STACK",
-  "Follows First In, First Out (FIFO).": "QUEUE",
-  "Uses a key-value pair for quick data retrieval.": "HASH TABLE"
+**Input:** A single string (e.g., "hello")
+**Output:** Print the reversed string (e.g., "olleh")
+
+**Example:**
+Input: hello
+Output: olleh
+`;
+
+const defaultCodes = {
+  javascript: `function reverseString(str) {
+  
+}
+
+reverseString("hello");
+`,
+  python: `def reverse_string(s):
+    pass
+
+reverse_string("hello")
+`,
+  cpp: `#include <iostream>
+using namespace std;
+
+void reverseString(string s) {
+}
+
+int main() {
+    reverseString("hello");
+    return 0;
+}`,
+  csharp: `using System;
+
+class Program {
+    static void ReverseString(string str) {
+    }
+
+    static void Main() {
+        ReverseString("hello");
+    }
+}`,
+  java: `public class Main {
+    public static void reverseString(String str) {
+    }
+
+    public static void main(String[] args) {
+        reverseString("hello");
+    }
+}`
 };
 
-function DraggableItem({ id, children, fitContainer = false }) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
-
-  const style = {
-    backgroundImage: `url(${Actbox})`,
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      className={`flex items-center justify-center text-white rounded text-center uppercase text-sm sm:text-base md:text-lg font-bold cursor-pointer hover:scale-105 
-        ${fitContainer ? 'w-full h-full p-0' : 'w-36 sm:w-44 md:w-48 p-2 sm:p-3'}`}
-    >
-      {children}
-    </div>
-  );
-}
-
-function DroppableArea({ id, answer }) {
-  const { setNodeRef, isOver } = useDroppable({ id });
-
-  const style = {
-    backgroundImage: `url(${Actbox})`,
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`w-full sm:w-80 md:w-96 h-12 sm:h-14 md:h-16 rounded-lg font-bold flex items-center justify-center text-white text-sm sm:text-base md:text-xl transition-all duration-300 bg-opacity-80`}
-    >
-      {answer ? (
-        <DraggableItem id={answer} fitContainer>{answer}</DraggableItem>
-      ) : (
-        <span className="text-white/50">Drop here</span>
-      )}
-    </div>
-  );
-}
+const expectedOutput = "olleh";
+const totalTimeInSeconds = 60;
 
 export default function Activity1() {
-  const { activityScores, markActivityComplete } = useLessonProgress(); // declaring the context
-  const navigate = useNavigate();
-  const [answers, setAnswers] = useState({});
+  const editorRef = useRef(null);
+  const [consoleOutput, setConsoleOutput] = useState("");
+  const [language, setLanguage] = useState("javascript");
+  const [availableLanguages] = useState([
+    { id: "javascript", label: "JavaScript" },
+    { id: "python", label: "Python" },
+    { id: "cpp", label: "C++" },
+    { id: "csharp", label: "C#" },
+    { id: "java", label: "Java" }
+  ]);
   const [feedback, setFeedback] = useState("");
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [hasRunCode, setHasRunCode] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(totalTimeInSeconds);
+  const [showTimeoutModal, setShowTimeoutModal] = useState(false);
+  const navigate = useNavigate();
+  const { deductHeart } = useGameStats();
+  const { activityScores, markActivityComplete } = useLessonProgress();
   const [score, setScore] = useState(null);
+  const timerRef = useRef(null);
+  const [hasDeductedHeart, setHasDeductedHeart] = useState(false);
 
-  //added useEffect to get the score from the context
   useEffect(() => {
     if (activityScores && activityScores["activity1"] !== undefined) {
       setScore(activityScores["activity1"]);
@@ -88,169 +91,214 @@ export default function Activity1() {
     }
   }, [activityScores]);
 
-  const handleDrop = (event) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    setAnswers((prev) => {
-      const newAnswers = { ...prev };
-      const previousDropArea = Object.keys(prev).find(key => prev[key] === active.id);
-      if (previousDropArea && previousDropArea !== over.id) {
-        delete newAnswers[previousDropArea];
-      }
-      newAnswers[over.id] = active.id;
-      return newAnswers;
-    });
+  const handleEditorDidMount = (editor, monaco) => {
+    editorRef.current = editor;
   };
 
-  const handleSubmit = async () => {
-    setFeedback("Checking answers..."); //added feedback message for scores
-    let correctCount = 0;
-    for (let desc in correctAnswers) {
-      if (answers[desc] === correctAnswers[desc]) {
-        correctCount++;
-      }
+  // Add effect to update editor content when language changes
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.setValue(defaultCodes[language] || "");
     }
-    const calculatedScore = correctCount * 20;
-    setScore(calculatedScore);
-    setFeedback(calculatedScore === 100 ? "🎉 Correct! You nailed it!" : `You scored ${calculatedScore}/100. Try again!`);
-  
-    await markActivityComplete("activity1", calculatedScore); // Save the score in the context
-  
-    setTimeout(() => {
-      navigate("/week1activity2");
-    }, 3000);
+  }, [language]);
+
+  useEffect(() => {
+    let timerHasDeductedHeart = false;
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setShowTimeoutModal(true);
+          if (!timerHasDeductedHeart && !hasDeductedHeart) {
+            deductHeart();
+            timerHasDeductedHeart = true;
+            setHasDeductedHeart(true);
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => {
+      clearInterval(timerRef.current);
+    };
+  }, [deductHeart, hasDeductedHeart]);
+
+  const runCode = () => {
+    setHasRunCode(true);
+    setConsoleOutput("");
+    setFeedback("");
+    setIsCorrect(false);
+    const code = editorRef.current?.getValue();
+
+    if (language === "javascript") {
+      try {
+        let output = "";
+        const originalLog = console.log;
+        console.log = (...args) => {
+          output += args.join(" ");
+        };
+        // eslint-disable-next-line no-eval
+        eval(code);
+        setConsoleOutput(output);
+        console.log = originalLog;
+        if (output.trim() === expectedOutput) {
+          setFeedback("✅ Correct! Output matches expected result.");
+          setIsCorrect(true);
+          clearInterval(timerRef.current); // Stop timer on success
+        } else {
+          setFeedback("❌ Output does not match expected result.");
+          setIsCorrect(false);
+        }
+      } catch (err) {
+        setConsoleOutput(`Error: ${err.message}`);
+        setFeedback("");
+        setIsCorrect(false);
+      }
+    } else {
+      setConsoleOutput("Code execution for this language is not supported in-browser. Please visually check your output.");
+      setFeedback("(Manual Check) If your output is 'olleh', you are correct!");
+      setIsCorrect(false);
+    }
   };
-  
+
+  const handleSubmit = async (force = false) => {
+    if (!hasRunCode && !force) return;
+
+    if (isCorrect) {
+      const calculatedScore = 100;
+      setScore(calculatedScore);
+      await markActivityComplete("activity1", calculatedScore);
+      navigate("/week1activity2");
+    } else if (!hasDeductedHeart) {
+      await deductHeart();
+      setHasDeductedHeart(true);
+      setFeedback("❌ Output does not match expected result. 1 heart has been deducted.");
+    } else {
+      setFeedback("❌ Output does not match expected result.");
+    }
+  };
+
+  const handleTryAgain = () => {
+    setShowTimeoutModal(false);
+    setTimeLeft(totalTimeInSeconds);
+    setHasRunCode(false);
+    setConsoleOutput("");
+    setFeedback("");
+    setIsCorrect(false);
+    setHasDeductedHeart(false);
+    if (editorRef.current) {
+      editorRef.current.setValue(defaultCodes[language] || "");
+    }
+    // Clear the timer and start a new one
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setShowTimeoutModal(true);
+          if (!hasDeductedHeart) {
+            deductHeart();
+            setHasDeductedHeart(true);
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
   return (
-    <>
-      <style>{`
-        @keyframes pulseBorder {
-          0% { border-color: #4f46e5; }
-          25% { border-color: #9333ea; }
-          50% { border-color: #f43f5e; }
-          75% { border-color: #9333ea; }
-          100% { border-color: #4f46e5; }
-        }
-
-       @keyframes fall {
-          0% { 
-            transform: translateY(-10%); 
-            opacity: 1; 
-            background-color: #f43f5e; /* Initial Color (Red) */
-          }
-          25% { 
-            background-color: #9333ea; /* Purple */
-          }
-          50% { 
-            transform: translateY(50vh); 
-            opacity: 0.6; 
-            background-color: #4f46e5; /* Blue */
-          }
-          75% { 
-            background-color: #ffcc00; /* Yellow */
-          }
-          100% { 
-            transform: translateY(110vh); 
-            opacity: 0; 
-            background-color: #ffffff; /* White (Final Color) */
-          }
-        }
-
-        .particle {
-          position: fixed;
-          top: -10px;
-          width: 8px; /* Larger particles */
-          height: 8px; 
-          background: white;
-          border-radius: 50%;
-          opacity: 0.8;
-          box-shadow: 0 0 15px rgba(255, 255, 255, 0.9); /* Glowing effect */
-          animation: fall 4s linear infinite;
-          pointer-events: none;
-          z-index: 0;
-          animation-delay: calc(Math.random() * 5s);
-          animation-duration: calc(3 + Math.random() * 2)s;
-          transform: scale(calc(0.8 + Math.random() * 0.5));  /* Randomize size */
-        }
-
-      `}</style>
-
-      <div className="bg-[#1c2452] min-h-screen flex flex-col overflow-hidden relative z-10">
-        {Array.from({ length: 30 }).map((_, i) => (
-          <div
-            key={i}
-            className="particle"
-            style={{
-              left: `${Math.random() * 100}vw`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${3 + Math.random() * 20}s`
-            }}
-          />
-        ))}
-
-        <Header />
-
-        <div className="flex justify-between items-center p-4 border-b border-blue-500/40 backdrop-blur-md bg-white/10">
-          <button onClick={() => (window.location.href = "/mainPage")} className="text-white hover:text-red-400 transition-colors">          
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-          <h1 className="text-xl font-bold text-white tracking-wide"> Activity 1 - Matching Game</h1>
-          <img src={hint} className="w-8 h-8" alt="Hint Icon" />
+    <div className="bg-[#1c2452] min-h-screen flex flex-col">
+      <Header />
+      <div className="flex justify-between items-center p-4 border-b border-blue-500/40 backdrop-blur-md bg-white/10">
+        <button onClick={() => navigate('/mainPage')} className="text-white hover:text-red-400 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <h2 className="text-xl font-bold text-cyan-400 mb-0">Coding Problem</h2>
+        <div className="text-sm text-white">Time Left: {timeLeft}s</div>
+      </div>
+      <div className="flex-1 flex flex-col min-h-0 p-4 items-center">
+        <div className="w-full max-w-2xl bg-[#141a35] rounded-lg p-6 mb-4">
+          <pre className="text-white whitespace-pre-wrap">{problemDescription}</pre>
         </div>
-
-        <div className="flex-1 p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center">
-          <DndContext onDragEnd={handleDrop}>
-            
-            <div className="rounded-xl border-4 animate-[pulseBorder_3s_ease-in-out_infinite] shadow-inner shadow-indigo-500/20">
-
-              <div className="flex flex-row items-center justify-center rounded-xl p-4 sm:p-6 w-200 bg-[#141a35]/80 backdrop-blur-md">
-                <div className="flex flex-col gap-2">
-                  {[1, 2, 3, 4, 5].map((num, index) => (
-                    <div key={num} className="flex items-center gap-2 sm:gap-3 md:gap-4 mb-2 sm:mb-3 md:mb-4">
-                      <span className="text-white font-semibold w-5 sm:w-6">{num}.</span>
-                      <DroppableArea id={descriptions[index]} answer={answers[descriptions[index]]} />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="p-4 sm:p-6 w-full md:w-1/2 flex flex-col gap-6 sm:gap-8 md:gap-10">
-                  {descriptions.map((desc, index) => (
-                    <p key={index} className="text-white/90 text-xs sm:text-sm md:text-base lg:text-lg font-light">{desc}</p>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 mt-4 sm:mt-6 md:mt-8 justify-center w-full max-w-5xl">
-              {options.map((opt) => (
-                !Object.values(answers).includes(opt) && (
-                  <DraggableItem key={opt} id={opt}>{opt}</DraggableItem>
-                )
-              ))}
-            </div>
-          </DndContext>
-
-          {feedback && (
-            <p className="mt-4 sm:mt-6 text-white font-medium text-base sm:text-lg md:text-xl animate-bounce">{feedback}</p>
-          )}
-
-          <div className="flex flex-col sm:flex-row justify-between items-center w-full px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 md:pb-8 mt-4 sm:mt-6">
-            <button 
-              className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-sm sm:text-base md:text-lg w-full sm:w-auto font-semibold shadow-md hover:scale-105 transition-transform"
-              onClick={handleSubmit}
+        <div className="w-full max-w-2xl flex-1 flex flex-col min-h-0">
+          <div className="w-full mb-2 flex flex-col sm:flex-row sm:items-center gap-2">
+            <label htmlFor="language-select" className="text-xs text-gray-300 font-semibold sm:mr-2">Language:</label>
+            <select
+              id="language-select"
+              className="w-full sm:w-auto p-2 rounded bg-[#1A2A4B] text-white"
+              value={language}
+              onChange={e => setLanguage(e.target.value)}
             >
-              Submit Answers
-            </button>
+              {availableLanguages.map(lang => (
+                <option key={lang.id} value={lang.id}>{lang.label || lang.id}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex-1 min-h-0 border-8 border-solid border-transparent overflow-hidden shadow-2xl mb-4"
+               style={{
+                 borderImageSource: 'linear-gradient(45deg, #0000ff, #0099cc)',
+                 borderImageSlice: 1,
+                 animation: 'gradientBorder 3s infinite'
+               }}>
+            <Editor
+              height="300px"
+              theme="vs-dark"
+              language={language}
+              defaultValue={defaultCodes[language] || ""}
+              onMount={handleEditorDidMount}
+            />
+          </div>
+          <button
+            onClick={runCode}
+            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transform transition-all duration-300 flex items-center justify-center"
+          >
+            <i className="far fa-play mr-2"></i>Run Code
+          </button>
+          <button
+            onClick={() => handleSubmit()}
+            className={`w-full mt-2 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transform transition-all duration-300 flex items-center justify-center ${!hasRunCode ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!hasRunCode}
+          >
+            <i className="far fa-check-circle mr-2"></i>Submit
+          </button>
+          <div className="mt-4 bg-[#1A2A4B] p-3 rounded-lg text-white font-mono min-h-[40px]">
+            <div className="font-bold mb-2">Console Output:</div>
+            {consoleOutput === "" ? (
+              <div className="text-gray-400">No output yet.</div>
+            ) : (
+              <div>{consoleOutput}</div>
+            )}
+            {feedback && <div className="mt-2 font-bold text-cyan-300">{feedback}</div>}
           </div>
         </div>
       </div>
-    </>
+
+      {showTimeoutModal && (
+        <div className="fixed inset-0 backdrop-blur-md bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-[#1A2A4B] p-6 rounded-xl text-white w-full max-w-md text-center shadow-2xl border border-blue-500/20">
+            <h2 className="text-2xl font-bold mb-4">⏱ Time's Up!</h2>
+            <p className="mb-4">Your time has ended. Would you like to retry or move to the next challenge?</p>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={handleTryAgain}
+                className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-700 transition-colors"
+              >
+                Try Again
+              </button>
+              <button
+                onClick={() => navigate("/week1activity2")}
+                className="px-4 py-2 bg-green-600 rounded hover:bg-green-700 transition-colors"
+              >
+                Next Activity
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
-  // Function to handle marking the lesson as complete
-  const handleComplete = () => {
-    markLessonComplete("lesson1");
-  };
 }
