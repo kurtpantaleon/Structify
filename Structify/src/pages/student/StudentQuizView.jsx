@@ -138,6 +138,13 @@ const StudentQuizView = () => {
       if (isCorrect) {
         setScore(prevScore => prevScore + currentQuestion.points);
       }
+    } else if (currentQuestion.type === 'true-false') {
+      userAnswer = selectedAnswer;
+      isCorrect = (selectedAnswer === 'True' && currentQuestion.correctAnswer === true) ||
+                  (selectedAnswer === 'False' && currentQuestion.correctAnswer === false);
+      if (isCorrect) {
+        setScore(prevScore => prevScore + currentQuestion.points);
+      }
     }
     
     // Store user's answer
@@ -448,6 +455,31 @@ const StudentQuizView = () => {
               </div>
             )}
             
+            {currentQuestion.type === 'true-false' && (
+              <div className="space-y-3 mt-6 flex flex-col sm:flex-row sm:space-y-0 sm:space-x-4">
+                <button
+                  className={`flex-1 p-4 rounded-lg font-medium transition-all text-white ${
+                    selectedAnswer === 'True' 
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-800 border border-blue-300/50 shadow-lg' 
+                      : 'bg-[#1a2142] border border-blue-500/30 hover:bg-[#232d5d]'
+                  }`}
+                  onClick={() => handleAnswerSelect('True')}
+                >
+                  True
+                </button>
+                <button
+                  className={`flex-1 p-4 rounded-lg font-medium transition-all text-white ${
+                    selectedAnswer === 'False' 
+                      ? 'bg-gradient-to-r from-blue-600 to blue-800 border border-blue-300/50 shadow-lg' 
+                      : 'bg-[#1a2142] border border-blue-500/30 hover:bg-[#232d5d]'
+                  }`}
+                  onClick={() => handleAnswerSelect('False')}
+                >
+                  False
+                </button>
+              </div>
+            )}
+            
             {currentQuestion.type === 'short-answer' && (
               <div className="mt-6">
                 <input
@@ -456,6 +488,18 @@ const StudentQuizView = () => {
                   onChange={handleTextChange}
                   className="w-full bg-[#1a2142] border border-blue-500/30 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-400"
                   placeholder="Type your answer here..."
+                />
+              </div>
+            )}
+            
+            {currentQuestion.type === 'text-field' && (
+              <div className="mt-6">
+                <textarea
+                  value={textAnswer}
+                  onChange={handleTextChange}
+                  className="w-full bg-[#1a2142] border border-blue-500/30 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-400"
+                  placeholder="Type your answer here..."
+                  rows="4"
                 />
               </div>
             )}
@@ -478,13 +522,17 @@ const StudentQuizView = () => {
           <button
             className={`px-10 py-3 rounded-lg text-lg font-bold transition-all text-white ${
               (currentQuestion.type === 'multiple-choice' && selectedAnswer) || 
-              (currentQuestion.type === 'short-answer' && textAnswer.trim() !== '')
+              (currentQuestion.type === 'true-false' && selectedAnswer) || 
+              (currentQuestion.type === 'short-answer' && textAnswer.trim() !== '') ||
+              (currentQuestion.type === 'text-field' && textAnswer.trim() !== '')
                 ? 'bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700' 
                 : 'bg-[#1a2142]/60 text-blue-300/50 border border-blue-500/20 cursor-not-allowed'
             }`}
             onClick={handleNextQuestion}
             disabled={(currentQuestion.type === 'multiple-choice' && !selectedAnswer) || 
-              (currentQuestion.type === 'short-answer' && textAnswer.trim() === '')}
+              (currentQuestion.type === 'true-false' && !selectedAnswer) ||
+              (currentQuestion.type === 'short-answer' && textAnswer.trim() === '') ||
+              (currentQuestion.type === 'text-field' && textAnswer.trim() === '')}
           >
             {currentQuestionIndex < quiz.questions.length - 1 ? 'Next Question' : 'Submit Quiz'}
           </button>
