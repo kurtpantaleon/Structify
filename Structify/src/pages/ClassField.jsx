@@ -4,7 +4,7 @@ import { collection, getDocs, query, where, doc, deleteDoc, updateDoc, serverTim
 import { db } from '../services/firebaseConfig';
 import Header from '../components/ProfileHeader ';
 import { useAuth } from '../context/authContextProvider';
-import { X, Book, Activity, FileQuestion, Clock, Calendar, Edit3, Trash2, Save, ExternalLink, Download, BarChart2, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, AlertOctagon, Info } from 'lucide-react';
+import { X, Book, Activity, FileQuestion, Clock, Calendar, Edit3, Trash2, Save, ExternalLink, Download, BarChart2, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, AlertOctagon, Info, AlertCircle } from 'lucide-react';
 
 const ClassField = () => {
     const [activeTab, setActiveTab] = useState('lessons');
@@ -52,6 +52,12 @@ const ClassField = () => {
         message: '',
         type: 'success', // success, error, info
     });
+
+    // Add states for confirmation modals
+    const [showQuizConfirmModal, setShowQuizConfirmModal] = useState(false);
+    const [showActivityConfirmModal, setShowActivityConfirmModal] = useState(false);
+    const [selectedQuiz, setSelectedQuiz] = useState(null);
+    const [selectedActivity, setSelectedActivity] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -128,17 +134,56 @@ const ClassField = () => {
         fetchData();
     }, [section, currentUser, role]);
     
-    // Function to fetch student progress data
+    // Enhanced function to fetch student progress data
     const fetchStudentProgress = async (userId) => {
         try {
             const userDoc = await getDoc(doc(db, 'users', userId));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
+                
+                // Get quiz submissions for this student
+                const quizSubmissionsQuery = query(
+                    collection(db, 'quiz_submissions'),
+                    where('studentId', '==', userId),
+                    where('section', '==', section)
+                );
+                const quizSubmissionsSnap = await getDocs(quizSubmissionsQuery);
+                const completedQuizIds = quizSubmissionsSnap.docs.map(doc => doc.data().quizId);
+                
+                // Get activity submissions for this student
+                const activitySubmissionsQuery = query(
+                    collection(db, 'activity_submissions'),
+                    where('studentId', '==', userId),
+                    where('section', '==', section)
+                );
+                const activitySubmissionsSnap = await getDocs(activitySubmissionsQuery);
+                const completedActivityIds = activitySubmissionsSnap.docs.map(doc => doc.data().activityId);
+                
+                // Extract scores from submissions
+                const quizScores = {};
+                quizSubmissionsSnap.docs.forEach(doc => {
+                    const data = doc.data();
+                    quizScores[data.quizId] = data.score;
+                });
+                
+                const activityScores = {};
+                activitySubmissionsSnap.docs.forEach(doc => {
+                    const data = doc.data();
+                    activityScores[data.activityId] = data.score;
+                });
+                
                 setStudentProgress({
-                    completedQuizzes: userData.completedQuizzes || [],
-                    completedActivities: userData.completedActivities || [],
-                    quizScores: userData.activityScores || {},
-                    activityScores: userData.activityScores || {},
+                    completedQuizzes: completedQuizIds,
+                    completedActivities: completedActivityIds,
+                    quizScores: quizScores,
+                    activityScores: activityScores,
+                });
+                
+                console.log('Student progress:', {
+                    completedQuizzes: completedQuizIds,
+                    completedActivities: completedActivityIds,
+                    quizScores,
+                    activityScores,
                 });
             }
         } catch (error) {
@@ -186,17 +231,28 @@ const ClassField = () => {
     // Handle student quiz click
     const handleQuizClick = (quiz) => {
         if (role === 'student') {
-            navigate(`/quiz/${quiz.id}`);
+            const isCompleted = studentProgress.completedQuizzes.includes(quiz.id);
+            
+            if (isCompleted) {
+                showToast('You have already completed this quiz.', 'info');
+                return;
+            }
+            
+            setSelectedQuiz(quiz);
+            setShowQuizConfirmModal(true);
         }
     };    // Handle student activity click
     const handleActivityClick = (activity) => {
         if (role === 'student') {
-            // Check if it's a code activity or a regular activity
-            if (activity.type === 'code') {
-                navigate(`/coding-activity/${activity.id}`);
-            } else {
-                navigate(`/activity/${activity.id}`);
+            const isCompleted = studentProgress.completedActivities.includes(activity.id);
+            
+            if (isCompleted) {
+                showToast('You have already completed this activity.', 'info');
+                return;
             }
+            
+            setSelectedActivity(activity);
+            setShowActivityConfirmModal(true);
         }
     };
 
@@ -527,6 +583,30 @@ const ClassField = () => {
         setToast(prev => ({...prev, visible: false}));
     };
 
+    // Navigation after confirmation
+    const startQuiz = () => {
+        setShowQuizConfirmModal(false);
+        navigate(`/quiz/${selectedQuiz.id}`);
+    };
+    
+    const startActivity = () => {
+        setShowActivityConfirmModal(false);
+        if (selectedActivity.type === 'code') {
+            navigate(`/coding-activity/${selectedActivity.id}`);
+        } else {
+            navigate(`/activity/${selectedActivity.id}`);
+        }
+    };
+    
+    // Check if an item is completed
+    const isQuizCompleted = (quizId) => {
+        return studentProgress.completedQuizzes.includes(quizId);
+    };
+    
+    const isActivityCompleted = (activityId) => {
+        return studentProgress.completedActivities.includes(activityId);
+    };
+
     return (
         <div className="bg-gradient-to-b from-blue-50 to-blue-100 min-h-screen">
             <Header />
@@ -574,7 +654,7 @@ const ClassField = () => {
                         )}
                     </h1>
                     
-                    {/* Improved tab navigation */}
+                    {/* Improved tab navigation - Hide scores tab for students */}
                     <div className="mb-6">
                         <div className="flex border-b border-gray-200">
                             <button
@@ -610,17 +690,21 @@ const ClassField = () => {
                                 <FileQuestion className="w-4 h-4 mr-2" />
                                 Quizzes {quizzes.length > 0 && <span className="ml-2 bg-blue-100 text-blue-600 rounded-full px-2 text-xs">{quizzes.length}</span>}
                             </button>
-                            <button
-                                className={`flex items-center px-4 py-3 font-medium transition-all duration-200 ${
-                                    activeTab === 'scores' 
-                                    ? 'border-b-2 border-blue-500 text-blue-600' 
-                                    : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
-                                }`}
-                                onClick={() => setActiveTab('scores')}
-                            >
-                                <BarChart2 className="w-4 h-4 mr-2" />
-                                Scores
-                            </button>
+                            
+                            {/* Only show scores tab for instructors */}
+                            {role === 'instructor' && (
+                                <button
+                                    className={`flex items-center px-4 py-3 font-medium transition-all duration-200 ${
+                                        activeTab === 'scores' 
+                                        ? 'border-b-2 border-blue-500 text-blue-600' 
+                                        : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                                    }`}
+                                    onClick={() => setActiveTab('scores')}
+                                >
+                                    <BarChart2 className="w-4 h-4 mr-2" />
+                                    Scores
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -799,9 +883,19 @@ const ClassField = () => {
                                                             {role === 'student' && (
                                                                 <button 
                                                                     onClick={() => handleActivityClick(activity)} 
-                                                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center"
+                                                                    className={`${isActivityCompleted(activity.id) 
+                                                                        ? 'bg-gray-500 hover:bg-gray-600 cursor-not-allowed' 
+                                                                        : 'bg-green-600 hover:bg-green-700'} 
+                                                                    text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center`}
                                                                 >
-                                                                    Start Activity
+                                                                    {isActivityCompleted(activity.id) ? (
+                                                                        <>
+                                                                            <CheckCircle className="h-4 w-4 mr-1.5" />
+                                                                            Completed
+                                                                        </>
+                                                                    ) : (
+                                                                        'Start Activity'
+                                                                    )}
                                                                 </button>
                                                             )}
                                                         </div>
@@ -814,10 +908,16 @@ const ClassField = () => {
                                                             <span className="inline-flex items-center bg-green-100 px-2.5 py-0.5 rounded-full text-green-800">
                                                                 {activity.type}
                                                             </span>
-                                                            {studentProgress?.activityScores?.[`activity_${activity.id}`] && (
+                                                            {studentProgress?.activityScores?.[activity.id] && (
                                                                 <span className="inline-flex items-center bg-green-100 px-2.5 py-0.5 rounded-full text-green-800">
                                                                     <CheckCircle className="h-3.5 w-3.5 mr-1" />
-                                                                    Score: {studentProgress.activityScores[`activity_${activity.id}`]}%
+                                                                    Score: {studentProgress.activityScores[activity.id]}%
+                                                                </span>
+                                                            )}
+                                                            {isActivityCompleted(activity.id) && !studentProgress?.activityScores?.[activity.id] && (
+                                                                <span className="inline-flex items-center bg-green-100 px-2.5 py-0.5 rounded-full text-green-800">
+                                                                    <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                                                                    Completed
                                                                 </span>
                                                             )}
                                                         </div>
@@ -950,9 +1050,19 @@ const ClassField = () => {
                                                             {role === 'student' && (
                                                                 <button 
                                                                     onClick={() => handleQuizClick(quiz)} 
-                                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center"
+                                                                    className={`${isQuizCompleted(quiz.id) 
+                                                                        ? 'bg-gray-500 hover:bg-gray-600 cursor-not-allowed' 
+                                                                        : 'bg-blue-600 hover:bg-blue-700'} 
+                                                                    text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2`}
                                                                 >
-                                                                    Start Quiz
+                                                                    {isQuizCompleted(quiz.id) ? (
+                                                                        <>
+                                                                            <CheckCircle className="h-4 w-4" />
+                                                                            Completed
+                                                                        </>
+                                                                    ) : (
+                                                                        'Start Quiz'
+                                                                    )}
                                                                 </button>
                                                             )}
                                                         </div>
@@ -966,10 +1076,16 @@ const ClassField = () => {
                                                                 <Clock className="h-3.5 w-3.5 mr-1" />
                                                                 {quiz.timeLimit} minutes
                                                             </span>
-                                                            {studentProgress?.quizScores?.[`quiz_${quiz.id}`] && (
+                                                            {studentProgress?.quizScores?.[quiz.id] && (
                                                                 <span className="inline-flex items-center bg-green-100 px-2.5 py-0.5 rounded-full text-green-800">
                                                                     <CheckCircle className="h-3.5 w-3.5 mr-1" />
-                                                                    Score: {studentProgress.quizScores[`quiz_${quiz.id}`]}%
+                                                                    Score: {studentProgress.quizScores[quiz.id]}%
+                                                                </span>
+                                                            )}
+                                                            {isQuizCompleted(quiz.id) && !studentProgress?.quizScores?.[quiz.id] && (
+                                                                <span className="inline-flex items-center bg-green-100 px-2.5 py-0.5 rounded-full text-green-800">
+                                                                    <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                                                                    Completed
                                                                 </span>
                                                             )}
                                                         </div>
@@ -1056,8 +1172,8 @@ const ClassField = () => {
                             </div>
                         )}
 
-                        {/* Scores Tab */}
-                        {activeTab === 'scores' && !loading && (
+                        {/* Scores Tab - Only accessible to instructors */}
+                        {activeTab === 'scores' && !loading && role === 'instructor' && (
                             <div>
                                 {scores.quizzes.length === 0 && scores.activities.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-64 text-gray-500">
@@ -1147,6 +1263,23 @@ const ClassField = () => {
                                         )}
                                     </div>
                                 )}
+                            </div>
+                        )}
+                        
+                        {/* Show unauthorized message if a student somehow accesses scores tab */}
+                        {activeTab === 'scores' && role === 'student' && (
+                            <div className="flex flex-col items-center justify-center h-64">
+                                <div className="bg-red-50 text-red-600 p-6 rounded-lg flex flex-col items-center mb-4">
+                                    <AlertTriangle className="h-12 w-12 mb-4" />
+                                    <h3 className="text-xl font-semibold mb-2">Unauthorized Access</h3>
+                                    <p className="text-center">You don't have permission to access this section.</p>
+                                </div>
+                                <button 
+                                    onClick={() => setActiveTab('lessons')}
+                                    className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors duration-200"
+                                >
+                                    Return to Lessons
+                                </button>
                             </div>
                         )}
                     </div>
@@ -1714,62 +1847,120 @@ const ClassField = () => {
                 </>
             )}
             
-            {/* Quiz Delete Confirmation Modal */}
-            {quizToDelete && (
+            {/* Quiz Confirmation Modal */}
+            {showQuizConfirmModal && selectedQuiz && (
                 <>
                     <div 
                         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
-                        onClick={handleCancelQuizDelete}
+                        onClick={() => setShowQuizConfirmModal(false)}
                     />
                     <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
                         <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all animate-scale-in">
-                            <div className="bg-gradient-to-r from-red-500 to-red-600 p-5 text-white">
+                            <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-5 text-white">
                                 <div className="flex items-center">
                                     <div className="bg-white/20 rounded-full p-2.5 mr-4">
-                                        <Trash2 className="h-6 w-6 text-white" />
+                                        <FileQuestion className="h-6 w-6 text-white" />
                                     </div>
-                                    <h3 className="text-xl font-bold">Delete Quiz</h3>
+                                    <h3 className="text-xl font-bold">Start Quiz</h3>
                                 </div>
                             </div>
                             
                             <div className="p-6">
-                                <p className="text-gray-700 mb-4 text-lg">
-                                    Are you sure you want to delete <span className="font-semibold">"{quizToDelete.title}"</span>?
-                                </p>
-                                <p className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border-l-4 border-red-400 mb-6">
-                                    <strong>Warning:</strong> This action cannot be undone. All associated questions and student submissions will be permanently removed.
+                                <h4 className="text-lg font-semibold mb-2">{selectedQuiz.title}</h4>
+                                <p className="text-gray-700 mb-4">
+                                    You are about to start this quiz. Once you begin, you must complete it in one session.
                                 </p>
                                 
-                                <div className="flex justify-end gap-3">
+                                <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mb-4">
+                                    <div className="flex">
+                                        <div className="flex-shrink-0">
+                                            <AlertCircle className="h-5 w-5 text-amber-400" />
+                                        </div>
+                                        <div className="ml-3">
+                                            <p className="text-sm text-amber-700">
+                                                <span className="font-medium">Important:</span> You can only take this quiz once. You'll have {selectedQuiz.timeLimit} minutes to complete it.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="mt-6 flex justify-end gap-3">
                                     <button
-                                        onClick={handleCancelQuizDelete}
+                                        onClick={() => setShowQuizConfirmModal(false)}
                                         className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium"
-                                        disabled={isDeletingItem}
                                     >
                                         Cancel
                                     </button>
                                     <button
-                                        onClick={handleConfirmQuizDelete}
-                                        className={`${isDeletingItem 
-                                            ? 'bg-red-400 cursor-not-allowed' 
-                                            : 'bg-red-600 hover:bg-red-700'} 
-                                        px-5 py-2.5 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium`}
-                                        disabled={isDeletingItem}
+                                        onClick={startQuiz}
+                                        className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium"
                                     >
-                                        {isDeletingItem ? (
-                                            <>
-                                                <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                                Deleting...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Trash2 className="w-4 h-4" />
-                                                Delete Permanently
-                                            </>
-                                        )}
+                                        Start Quiz
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
+            
+            {/* Activity Confirmation Modal */}
+            {showActivityConfirmModal && selectedActivity && (
+                <>
+                    <div 
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
+                        onClick={() => setShowActivityConfirmModal(false)}
+                    />
+                    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all animate-scale-in">
+                            <div className="bg-gradient-to-r from-green-500 to-green-600 p-5 text-white">
+                                <div className="flex items-center">
+                                    <div className="bg-white/20 rounded-full p-2.5 mr-4">
+                                        <Activity className="h-6 w-6 text-white" />
+                                    </div>
+                                    <h3 className="text-xl font-bold">Start Activity</h3>
+                                </div>
+                            </div>
+                            
+                            <div className="p-6">
+                                <h4 className="text-lg font-semibold mb-2">{selectedActivity.title}</h4>
+                                <p className="text-gray-700 mb-4">
+                                    You are about to start this activity. Please make sure you have enough time to complete it in one session.
+                                </p>
+                                
+                                <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
+                                    <div className="flex">
+                                        <div className="flex-shrink-0">
+                                            <AlertCircle className="h-5 w-5 text-green-400" />
+                                        </div>
+                                        <div className="ml-3">
+                                            <p className="text-sm text-green-700">
+                                                <span className="font-medium">Important:</span> You can only submit this activity once. Make sure to review your answers carefully before submitting.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {selectedActivity.type === 'code' && (
+                                    <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                                        <p className="text-sm text-blue-700">
+                                            <span className="font-medium">Note:</span> This is a coding activity. You'll be writing and testing code in an online editor.
+                                        </p>
+                                    </div>
+                                )}
+                                
+                                <div className="mt-6 flex justify-end gap-3">
+                                    <button
+                                        onClick={() => setShowActivityConfirmModal(false)}
+                                        className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={startActivity}
+                                        className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium"
+                                    >
+                                        Start Activity
                                     </button>
                                 </div>
                             </div>
