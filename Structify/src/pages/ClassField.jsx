@@ -566,7 +566,7 @@ const ClassField = () => {
                 <div className="bg-white p-6 rounded-xl shadow-lg h-[75vh] overflow-hidden flex flex-col">
                     <h1 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
                         <span className="inline-block w-2 h-8 bg-blue-500 rounded mr-2"></span>
-                        Class Materials
+                        Class Uploads
                         {section && (
                             <span className="text-lg bg-blue-100 text-blue-700 py-1 px-3 rounded-full ml-2">
                                 {section}

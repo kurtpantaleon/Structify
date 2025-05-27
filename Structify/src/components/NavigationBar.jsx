@@ -25,7 +25,7 @@ const NavigationBar = () => {
     { to: "/Leaderboard", icon: Trophy, label: "Leaderboard" },
     { to: "/CodeChallengeLobby", icon: Swords, label: "PvP" },
     { to: "/Forum", icon: MessageCircle, label: "Forum" },
-    { to: "/ClassField", icon: FolderArchive, label: "Class Materials" }
+    { to: "/ClassField", icon: FolderArchive, label: "Class Uploads" }
   ];
 
   return (
