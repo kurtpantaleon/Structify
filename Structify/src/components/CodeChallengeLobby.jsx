@@ -774,6 +774,15 @@ export default function CodeChallengeLobby() {
                               <img src={fireIcon} alt="rank" className="w-4 h-4 mr-1" />
                               <span className="font-semibold text-white text-sm">{leftPlayer?.rank}</span>
                             </div>
+                            <span className={`text-sm font-medium mt-1 ${leftLabel === 'Winner' ? 'text-green-400' : 'text-red-400'}`}>
+                              {leftLabel}
+                            </span>
+                            {leftLabel === 'Winner' && (
+                              <div className="flex items-center mt-1 bg-green-600/40 px-2 py-0.5 rounded-md">
+                                <img src={fireIcon} alt="rank points" className="w-3 h-3 mr-1" />
+                                <span className="text-xs text-green-300">+50 rank points</span>
+                              </div>
+                            )}
                           </div>
                           
                           {/* VS */}
@@ -800,6 +809,15 @@ export default function CodeChallengeLobby() {
                               <img src={fireIcon} alt="rank" className="w-4 h-4 mr-1" />
                               <span className="font-semibold text-white text-sm">{rightPlayer?.rank || ''}</span>
                             </div>
+                            <span className={`text-sm font-medium mt-1 ${rightLabel === 'Winner' ? 'text-green-400' : 'text-red-400'}`}>
+                              {rightLabel}
+                            </span>
+                            {rightLabel === 'Winner' && (
+                              <div className="flex items-center mt-1 bg-green-600/40 px-2 py-0.5 rounded-md">
+                                <img src={fireIcon} alt="rank points" className="w-3 h-3 mr-1" />
+                                <span className="text-xs text-green-300">+50 rank points</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                         
