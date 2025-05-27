@@ -148,20 +148,31 @@ const StudentQuizView = () => {
       correctAnswer: currentQuestion.correctAnswer
     }]);
     
-    setAnswerFeedback(quiz.showResultsImmediately ? isCorrect : null);
-    
-    setTimeout(() => {
-      if (currentQuestionIndex < quiz.questions.length - 1) {
-        setCurrentQuestionIndex(prev => prev + 1);
-        setSelectedAnswer(null);
-        setTextAnswer('');
-        setAnswerFeedback(null);
-      } else {
-        // Quiz finished
-        const finalScore = calculateFinalScore();
-        submitQuizResults(finalScore);
-      }
-    }, quiz.showResultsImmediately ? 1000 : 300);
+    // Only show immediate feedback if enabled in quiz settings
+    if (quiz.showResultsImmediately) {
+      setAnswerFeedback(isCorrect);
+      
+      setTimeout(() => {
+        moveToNextQuestionOrFinish();
+      }, 1000);
+    } else {
+      // Otherwise, move immediately to the next question without showing feedback
+      moveToNextQuestionOrFinish();
+    }
+  };
+  
+  const moveToNextQuestionOrFinish = () => {
+    if (currentQuestionIndex < quiz.questions.length - 1) {
+      // Move to next question
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setTextAnswer('');
+      setAnswerFeedback(null);
+    } else {
+      // Quiz finished - calculate final score and submit results
+      const finalScore = calculateFinalScore();
+      submitQuizResults(finalScore);
+    }
   };
   
   const calculateFinalScore = () => {
@@ -228,22 +239,23 @@ const StudentQuizView = () => {
   };
   
   if (isLoading) return (
-    <div className="bg-gradient-to-br from-slate-900 to-blue-950 min-h-screen text-white">
+    <div className="min-h-screen bg-gradient-to-tr from-[#1F274D] via-[#2e3a6c] to-[#1F274D] flex flex-col">
       <Header />
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-pulse text-xl">Loading quiz...</div>
+      <div className="flex-1 flex flex-col items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="mt-4 text-xl text-white">Loading quiz...</div>
       </div>
     </div>
   );
   
   if (error) return (
-    <div className="bg-gradient-to-br from-slate-900 to-blue-950 min-h-screen text-white">
+    <div className="min-h-screen bg-gradient-to-tr from-[#1F274D] via-[#2e3a6c] to-[#1F274D] flex flex-col">
       <Header />
-      <div className="flex flex-col justify-center items-center h-screen">
+      <div className="flex-1 flex flex-col items-center justify-center">
         <AlertCircle size={48} className="text-red-400 mb-4" />
         <div className="text-xl font-semibold text-red-400">{error}</div>
         <button 
-          className="mt-6 px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-700"
+          className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-lg transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-[#1F274D] focus:outline-none"
           onClick={navigateBack}
         >
           Go Back
@@ -254,41 +266,68 @@ const StudentQuizView = () => {
   
   if (showResults) {
     return (
-      <div className="bg-gradient-to-br from-blue-900 to-indigo-900 min-h-screen text-white p-4 flex flex-col items-center justify-center">
-        {showConfetti && <Confetti />}
-        <h1 className="text-4xl font-bold mb-6 animate-bounce">🎉 Quiz Results 🎉</h1>
-        <div className="bg-indigo-700 p-8 rounded-2xl w-full max-w-md shadow-xl">
-          <h2 className="text-2xl font-bold text-center mb-2">{quiz.title}</h2>
-          <p className="text-center text-sm mb-4 opacity-70">{quiz.description}</p>
+      <div className="min-h-screen bg-gradient-to-tr from-[#1F274D] via-[#2e3a6c] to-[#1F274D] flex flex-col">
+        <Header />
+        {showConfetti && <Confetti recycle={false} numberOfPieces={200} />}
+        
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+          <h1 className="text-4xl text-white font-bold mb-6 animate-bounce">🎉 Quiz Results 🎉</h1>
           
-          <div className="my-8 flex flex-col items-center">
-            <div className="text-6xl font-bold mb-2">{calculateFinalScore()}%</div>
-            <p className="text-lg">Your Score</p>
-            {previousScore && previousScore !== calculateFinalScore() && (
-              <p className="text-sm mt-2 text-yellow-300">Previous Score: {previousScore}%</p>
-            )}
-          </div>
-          
-          <p className="text-center mb-6 italic">
-            {calculateFinalScore() === 100 ? '🏆 Perfect! Excellent work!' : 
-             calculateFinalScore() >= 80 ? '👍 Great job!' : 
-             calculateFinalScore() >= 60 ? '👌 Good effort!' : 
-             '💪 Keep practicing!'}
-          </p>
-          
-          <div className="flex flex-col space-y-4">
-            <button 
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-all" 
-              onClick={resetQuiz}
-            >
-              Try Again
-            </button>
-            <button 
-              className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-lg font-medium transition-all" 
-              onClick={navigateBack}
-            >
-              Back to Course
-            </button>
+          <div className="bg-[#141a35] p-8 rounded-xl w-full max-w-md shadow-xl border border-blue-500/30 relative group">
+            <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue-900 to-blue-900 blur-lg opacity-50 group-hover:opacity-100 transition-all duration-500 z-0" />
+            
+            <div className="relative z-10 text-white">
+              <h2 className="text-2xl font-bold text-center mb-2 text-white">{quiz.title}</h2>
+              <p className="text-center text-white mb-4 opacity-70">{quiz.description}</p>
+              
+              <div className="my-8 flex flex-col items-center">
+                <div className="text-6xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-blue-400 bg-clip-text text-transparent">
+                  {calculateFinalScore()}%
+                </div>
+                <p className="text-lg text-white">Your Score</p>
+                {previousScore && previousScore !== calculateFinalScore() && (
+                  <p className="text-white mt-2">Previous Score: <span className="text-yellow-300">{previousScore}%</span></p>
+                )}
+              </div>
+              
+              <p className="text-center mb-6 italic text-white">
+                {calculateFinalScore() === 100 ? '🏆 Perfect! Excellent work!' : 
+                calculateFinalScore() >= 80 ? '👍 Great job!' : 
+                calculateFinalScore() >= 60 ? '👌 Good effort!' : 
+                '💪 Keep practicing!'}
+              </p>
+              
+              {/* Display summary instead of per-question results */}
+              <div className="mb-6 bg-[#1a2142] rounded-lg p-4 border border-blue-500/20">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-white">Total Questions:</span>
+                  <span className="font-medium text-white">{quiz.questions.length}</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-white">Correct Answers:</span>
+                  <span className="font-medium text-white">{userAnswers.filter(a => a.isCorrect).length}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-white">Points Earned:</span>
+                  <span className="font-medium text-white">{score} / {quiz.questions.reduce((sum, q) => sum + q.points, 0)}</span>
+                </div>
+              </div>
+              
+              <div className="flex flex-col space-y-4">
+                <button 
+                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 rounded-lg font-medium transition-all text-white focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-[#141a35] focus:outline-none" 
+                  onClick={resetQuiz}
+                >
+                  Try Again
+                </button>
+                <button 
+                  className="w-full py-3 border border-blue-500/30 rounded-lg font-medium transition-all hover:bg-[#1a2142] text-white" 
+                  onClick={navigateBack}
+                >
+                  Back to Course
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -297,42 +336,46 @@ const StudentQuizView = () => {
   
   if (!quizStarted) {
     return (
-      <div className="bg-gradient-to-br from-slate-900 to-blue-950 min-h-screen text-white">
+      <div className="min-h-screen bg-gradient-to-tr from-[#1F274D] via-[#2e3a6c] to-[#1F274D] flex flex-col text-white">
         <Header />
-        <div className="container mx-auto max-w-4xl px-4 py-8">
-          <div className="bg-indigo-800/60 rounded-2xl p-8 shadow-lg border border-indigo-600">
-            <h1 className="text-3xl font-bold mb-2">{quiz.title}</h1>
-            <p className="text-gray-300 mb-6">{quiz.description}</p>
+        <div className="flex-1 container mx-auto max-w-4xl px-4 py-8">
+          <div className="bg-[#141a35] rounded-xl p-8 shadow-lg border border-blue-500/30 relative group">
+            <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue-900 to-blue-900 blur-lg opacity-30 group-hover:opacity-60 transition-all duration-500 z-0" />
             
-            <div className="bg-indigo-900/70 rounded-xl p-5 mb-8">
-              <h3 className="font-semibold text-lg mb-3">Quiz Details</h3>
-              <ul className="space-y-2">
-                <li className="flex items-center">
-                  <Clock size={18} className="mr-2 text-blue-400" />
-                  <span>Time Limit: {quiz.timeLimit} minutes</span>
-                </li>
-                <li>
-                  <span>Total Questions: {quiz.questions.length}</span>
-                </li>
-                <li>
-                  <span>Total Points: {quiz.questions.reduce((sum, q) => sum + q.points, 0)}</span>
-                </li>
-                {previousScore !== null && (
+            <div className="relative z-10">
+              <h1 className="text-3xl font-bold mb-2 text-white">{quiz.title}</h1>
+              <p className="text-white mb-6">{quiz.description}</p>
+              
+              <div className="bg-[#1a2142] rounded-xl p-5 mb-8 border border-blue-500/20 text-white">
+                <h3 className="font-semibold text-lg mb-3">Quiz Details</h3>
+                <ul className="space-y-2">
                   <li className="flex items-center">
-                    <CheckCircle size={18} className="mr-2 text-green-400" />
-                    <span>Previous Score: {previousScore}%</span>
+                    <Clock size={18} className="mr-2 text-blue-400" />
+                    <span>Time Limit: {quiz.timeLimit} minutes</span>
                   </li>
-                )}
-              </ul>
-            </div>
-            
-            <div className="flex justify-center">
-              <button
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-bold transition-all"
-                onClick={handleStartQuiz}
-              >
-                Start Quiz
-              </button>
+                  <li>
+                    <span>Total Questions: {quiz.questions.length}</span>
+                  </li>
+                  <li>
+                    <span>Total Points: {quiz.questions.reduce((sum, q) => sum + q.points, 0)}</span>
+                  </li>
+                  {previousScore !== null && (
+                    <li className="flex items-center">
+                      <CheckCircle size={18} className="mr-2 text-green-400" />
+                      <span>Previous Score: {previousScore}%</span>
+                    </li>
+                  )}
+                </ul>
+              </div>
+              
+              <div className="flex justify-center">
+                <button
+                  className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white rounded-lg font-bold transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-[#1F274D] focus:outline-none"
+                  onClick={handleStartQuiz}
+                >
+                  Start Quiz
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -343,97 +386,101 @@ const StudentQuizView = () => {
   const currentQuestion = quiz.questions[currentQuestionIndex];
   
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-blue-950 min-h-screen text-white">
+    <div className="min-h-screen bg-gradient-to-tr from-[#1F274D] via-[#2e3a6c] to-[#1F274D] flex flex-col text-white">
       <Header />
       
-      <div className="p-4 sticky top-0 z-10 bg-gradient-to-r from-slate-900 to-blue-950">
-        <div className="container mx-auto">
+      <div className="sticky top-0 z-10 bg-gradient-to-r from-[#243bab] to-[#232d5d] shadow-lg">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm">
+            <div className="text-sm-white text-white">
               Question {currentQuestionIndex + 1} of {quiz.questions.length}
             </div>
             {timeLeft > 0 && (
-              <div className={`flex items-center ${timeLeft < 60 ? 'text-red-400 animate-pulse' : 'text-gray-300'}`}>
+              <div className={`flex items-center ${timeLeft < 60 ? 'text-red-400 animate-pulse' : 'text-white'}`}>
                 <Clock size={16} className="mr-1" />
                 <span>{formatTime(timeLeft)}</span>
               </div>
             )}
           </div>
           
-          <div className="w-full bg-gray-700 h-2 rounded-full overflow-hidden">
+          <div className="w-full bg-[#141a35] h-2 rounded-full overflow-hidden">
             <div 
-              className="bg-blue-500 h-full rounded-full transition-all duration-300" 
+              className="bg-gradient-to-r from-blue-600 to-blue-600 h-full rounded-full transition-all duration-300" 
               style={{ width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%` }}
             ></div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto max-w-4xl px-4 py-6">
-        <div className="bg-indigo-900/60 rounded-xl border border-indigo-700 p-6 mb-8 shadow-lg">
-          <div className="flex items-center mb-4">
-            <div className="bg-indigo-700 rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">
-              {currentQuestionIndex + 1}
+      <div className="flex-1 container mx-auto max-w-4xl px-4 py-6">
+        <div className="bg-[#141a35] rounded-xl border border-blue-500/30 p-6 mb-8 shadow-lg relative group text-white">
+          <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue-900 to-blue-900 blur-lg opacity-30 group-hover:opacity-50 transition-all duration-500 z-0" />
+          
+          <div className="relative z-10">
+            <div className="flex items-center mb-4">
+              <div className="bg-blue-900/60 rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0 border border-blue-500/40 text-white">
+                {currentQuestionIndex + 1}
+              </div>
+              <h2 className="text-xl font-medium text-white">{currentQuestion.question}</h2>
             </div>
-            <h2 className="text-xl font-medium">{currentQuestion.question}</h2>
+            
+            {currentQuestion.points > 1 && (
+              <div className="mb-4 text-sm-white text-white">
+                {currentQuestion.points} points
+              </div>
+            )}
+            
+            {currentQuestion.type === 'multiple-choice' && (
+              <div className="space-y-3 mt-6">
+                {currentQuestion.options.map((option, index) => (
+                  <button
+                    key={index}
+                    className={`w-full p-4 rounded-lg font-medium transition-all text-white ${
+                      selectedAnswer === option 
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-800 border border-blue-300/50 shadow-lg' 
+                        : 'bg-[#1a2142] border border-blue-500/30 hover:bg-[#232d5d]'
+                    }`}
+                    onClick={() => handleAnswerSelect(option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            {currentQuestion.type === 'short-answer' && (
+              <div className="mt-6">
+                <input
+                  type="text"
+                  value={textAnswer}
+                  onChange={handleTextChange}
+                  className="w-full bg-[#1a2142] border border-blue-500/30 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-400"
+                  placeholder="Type your answer here..."
+                />
+              </div>
+            )}
+            
+            {answerFeedback !== null && (
+              <div className={`mt-6 flex items-center justify-center text-xl font-semibold ${
+                answerFeedback ? 'text-green-400' : 'text-red-400'
+              }`}>
+                {answerFeedback ? (
+                  <><CheckCircle className="mr-2" />Correct!</>
+                ) : (
+                  <><XCircle className="mr-2" />Incorrect</>
+                )}
+              </div>
+            )}
           </div>
-          
-          {currentQuestion.points > 1 && (
-            <div className="mb-4 text-sm text-indigo-300">
-              {currentQuestion.points} points
-            </div>
-          )}
-          
-          {currentQuestion.type === 'multiple-choice' && (
-            <div className="space-y-3 mt-6">
-              {currentQuestion.options.map((option, index) => (
-                <button
-                  key={index}
-                  className={`w-full p-4 rounded-lg font-medium border transition-all ${
-                    selectedAnswer === option 
-                      ? 'bg-blue-600 border-blue-300 shadow-lg' 
-                      : 'bg-indigo-800/60 border-indigo-600 hover:bg-indigo-800/80'
-                  }`}
-                  onClick={() => handleAnswerSelect(option)}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          )}
-          
-          {currentQuestion.type === 'short-answer' && (
-            <div className="mt-6">
-              <input
-                type="text"
-                value={textAnswer}
-                onChange={handleTextChange}
-                className="w-full bg-indigo-800/60 border border-indigo-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Type your answer here..."
-              />
-            </div>
-          )}
-          
-          {answerFeedback !== null && (
-            <div className={`mt-6 flex items-center justify-center text-xl font-semibold ${
-              answerFeedback ? 'text-green-400' : 'text-red-400'
-            }`}>
-              {answerFeedback ? (
-                <><CheckCircle className="mr-2" />Correct!</>
-              ) : (
-                <><XCircle className="mr-2" />Incorrect</>
-              )}
-            </div>
-          )}
         </div>
         
         <div className="flex justify-center">
           <button
-            className={`px-10 py-3 rounded-xl text-lg font-bold transition-all ${
+            className={`px-10 py-3 rounded-lg text-lg font-bold transition-all text-white ${
               (currentQuestion.type === 'multiple-choice' && selectedAnswer) || 
               (currentQuestion.type === 'short-answer' && textAnswer.trim() !== '')
-                ? 'bg-blue-600 hover:bg-blue-700' 
-                : 'bg-indigo-800/60 text-indigo-300 cursor-not-allowed'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700' 
+                : 'bg-[#1a2142]/60 text-blue-300/50 border border-blue-500/20 cursor-not-allowed'
             }`}
             onClick={handleNextQuestion}
             disabled={(currentQuestion.type === 'multiple-choice' && !selectedAnswer) || 
