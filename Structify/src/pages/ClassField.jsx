@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, deleteDoc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { db } from '../services/firebaseConfig';
 import Header from '../components/ProfileHeader ';
 import { useAuth } from '../context/authContextProvider';
-import { doc, deleteDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { X, Book, Activity, FileQuestion, Clock, Calendar, Edit3, Trash2, Save, ExternalLink, Download, BarChart2 } from 'lucide-react';
+import { X, Book, Activity, FileQuestion, Clock, Calendar, Edit3, Trash2, Save, ExternalLink, Download, BarChart2, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, AlertOctagon, Info } from 'lucide-react';
 
 const ClassField = () => {
     const [activeTab, setActiveTab] = useState('lessons');
@@ -25,6 +24,34 @@ const ClassField = () => {
     const [lessonToDelete, setLessonToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [expandedItems, setExpandedItems] = useState({ activities: {}, quizzes: {} });
+    const [studentProgress, setStudentProgress] = useState({
+        completedQuizzes: [],
+        completedActivities: [],
+        quizScores: {},
+        activityScores: {},
+    });
+    const [questionToEdit, setQuestionToEdit] = useState(null);
+    const [questionToDelete, setQuestionToDelete] = useState(null);
+    const [questionType, setQuestionType] = useState(null); // 'activity' or 'quiz'
+    const [questionParentId, setQuestionParentId] = useState(null);
+    const [questionEditForm, setQuestionEditForm] = useState({
+        question: '',
+        type: '',
+        points: 1,
+        options: [],
+        correctAnswer: ''
+    });
+    const [activityToDelete, setActivityToDelete] = useState(null);
+    const [quizToDelete, setQuizToDelete] = useState(null);
+    const [isDeletingItem, setIsDeletingItem] = useState(false);
+
+    // Toast notification state
+    const [toast, setToast] = useState({
+        visible: false,
+        message: '',
+        type: 'success', // success, error, info
+    });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -84,14 +111,40 @@ const ClassField = () => {
                     quizzes: quizScores,
                     activities: activityScores
                 });
-            } catch (err) {
-                console.error('Error fetching data:', err); // Debug log
-                setError('Failed to fetch class materials.');
+
+                // If the user is a student, fetch their progress data
+                if (role === 'student' && currentUser) {
+                    await fetchStudentProgress(currentUser.uid);
+                }
+                
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setError('Failed to load data. Please try again later.');
+                setLoading(false);
             }
-            setLoading(false);
         };
+
         fetchData();
-    }, [section]);
+    }, [section, currentUser, role]);
+    
+    // Function to fetch student progress data
+    const fetchStudentProgress = async (userId) => {
+        try {
+            const userDoc = await getDoc(doc(db, 'users', userId));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                setStudentProgress({
+                    completedQuizzes: userData.completedQuizzes || [],
+                    completedActivities: userData.completedActivities || [],
+                    quizScores: userData.activityScores || {},
+                    activityScores: userData.activityScores || {},
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching student progress:', error);
+        }
+    };
 
     // Debug log for rendered lessons
     useEffect(() => {
@@ -114,17 +167,34 @@ const ClassField = () => {
             setShowDeleteModal(false);
             setLessonToDelete(null);
             setError(null);
+            showToast(`Lesson "${lessonToDelete.title}" has been deleted successfully`, 'success');
         } catch (err) {
             console.error('Error deleting lesson:', err);
             setError('Failed to delete lesson. Please try again.');
+            showToast('Failed to delete lesson. Please try again.', 'error');
         } finally {
             setIsDeleting(false);
         }
     };
 
+    // Cancel delete operation
     const handleDeleteCancel = () => {
         setShowDeleteModal(false);
         setLessonToDelete(null);
+    };
+
+    // Handle student quiz click
+    const handleQuizClick = (quiz) => {
+        if (role === 'student') {
+            navigate(`/quiz/${quiz.id}`);
+        }
+    };
+
+    // Handle student activity click
+    const handleActivityClick = (activity) => {
+        if (role === 'student') {
+            navigate(`/activity/${activity.id}`);
+        }
     };
 
     // Edit lesson
@@ -176,16 +246,16 @@ const ClassField = () => {
             setEditingLesson(null);
             setEditForm({ title: '', description: '', week: '', text: '' });
             setError(null);
+            showToast(`Lesson "${updateData.title}" has been updated successfully`, 'success');
         } catch (err) {
             console.error('Error updating lesson:', err);
             setError('Failed to update lesson. Please try again.');
+            showToast('Failed to update lesson. Please try again.', 'error');
         } finally {
             setIsSaving(false);
         }
-    };
-
-    // Function to handle file opening
-    const handleOpenFile = (url, name) => {
+    };    // Function to handle file opening
+    const handleOpenFile = (url) => {
         window.open(url, '_blank', 'noopener,noreferrer');
     };
     
@@ -208,6 +278,250 @@ const ClassField = () => {
         }
     };
 
+    // Toggle expanded state for an item
+    const toggleExpanded = (type, id) => {
+        setExpandedItems(prev => ({
+            ...prev,
+            [type]: {
+                ...prev[type],
+                [id]: !prev[type][id]
+            }
+        }));
+    };
+
+    // Handle editing a question
+    const handleEditQuestion = (type, parentId, question, index) => {
+        setQuestionType(type);
+        setQuestionParentId(parentId);
+        setQuestionToEdit({...question, index});
+        setQuestionEditForm({
+            question: question.question,
+            type: question.type,
+            points: question.points || 1,
+            options: question.options || [],
+            correctAnswer: question.correctAnswer || ''
+        });
+    };
+    
+    // Handle deleting a question
+    const handleDeleteQuestion = (type, parentId, questionIndex) => {
+        setQuestionType(type);
+        setQuestionParentId(parentId);
+        setQuestionToDelete({ index: questionIndex });
+    };
+    
+    // Confirm question deletion
+    const handleDeleteQuestionConfirm = async () => {
+        if (!questionType || !questionParentId || questionToDelete === null) return;
+        
+        try {
+            const docRef = doc(db, questionType === 'activity' ? 'activities' : 'quizzes', questionParentId);
+            const currentDoc = questionType === 'activity' 
+                ? activities.find(a => a.id === questionParentId)
+                : quizzes.find(q => q.id === questionParentId);
+                
+            if (!currentDoc) return;
+            
+            const updatedQuestions = [...currentDoc.questions];
+            const deletedQuestion = updatedQuestions[questionToDelete.index];
+            updatedQuestions.splice(questionToDelete.index, 1);
+            
+            await updateDoc(docRef, {
+                questions: updatedQuestions,
+                lastUpdated: serverTimestamp()
+            });
+            
+            // Update local state
+            if (questionType === 'activity') {
+                setActivities(prev => prev.map(item => 
+                    item.id === questionParentId 
+                        ? {...item, questions: updatedQuestions, lastUpdated: new Date().toISOString()}
+                        : item
+                ));
+            } else {
+                setQuizzes(prev => prev.map(item => 
+                    item.id === questionParentId 
+                        ? {...item, questions: updatedQuestions, lastUpdated: new Date().toISOString()}
+                        : item
+                ));
+            }
+            
+            setQuestionToDelete(null);
+            showToast(`Question has been deleted successfully`, 'success');
+        } catch (err) {
+            console.error('Error deleting question:', err);
+            setError('Failed to delete question. Please try again.');
+            showToast('Failed to delete question. Please try again.', 'error');
+        }
+    };
+    
+    // Handle question edit form changes
+    const handleQuestionFormChange = (e) => {
+        const { name, value } = e.target;
+        setQuestionEditForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+    
+    // Handle option changes for multiple choice questions
+    const handleOptionChange = (index, value) => {
+        const newOptions = [...questionEditForm.options];
+        newOptions[index] = value;
+        setQuestionEditForm(prev => ({
+            ...prev,
+            options: newOptions
+        }));
+    };
+    
+    // Add a new option to multiple choice question
+    const addOption = () => {
+        setQuestionEditForm(prev => ({
+            ...prev,
+            options: [...prev.options, '']
+        }));
+    };
+    
+    // Remove an option from multiple choice question
+    const removeOption = (index) => {
+        const newOptions = [...questionEditForm.options];
+        newOptions.splice(index, 1);
+        setQuestionEditForm(prev => ({
+            ...prev,
+            options: newOptions
+        }));
+    };
+    
+    // Submit question edit form
+    const handleQuestionEditSubmit = async (e) => {
+        e.preventDefault();
+        if (!questionType || !questionParentId || !questionToEdit) return;
+        
+        try {
+            const docRef = doc(db, questionType === 'activity' ? 'activities' : 'quizzes', questionParentId);
+            const currentDoc = questionType === 'activity' 
+                ? activities.find(a => a.id === questionParentId)
+                : quizzes.find(q => q.id === questionParentId);
+                
+            if (!currentDoc) return;
+            
+            const updatedQuestions = [...currentDoc.questions];
+            updatedQuestions[questionToEdit.index] = {
+                question: questionEditForm.question,
+                type: questionEditForm.type,
+                points: Number(questionEditForm.points) || 1,
+                options: questionEditForm.options,
+                correctAnswer: questionEditForm.correctAnswer
+            };
+            
+            await updateDoc(docRef, {
+                questions: updatedQuestions,
+                lastUpdated: serverTimestamp()
+            });
+            
+            // Update local state
+            if (questionType === 'activity') {
+                setActivities(prev => prev.map(item => 
+                    item.id === questionParentId 
+                        ? {...item, questions: updatedQuestions, lastUpdated: new Date().toISOString()}
+                        : item
+                ));
+            } else {
+                setQuizzes(prev => prev.map(item => 
+                    item.id === questionParentId 
+                        ? {...item, questions: updatedQuestions, lastUpdated: new Date().toISOString()}
+                        : item
+                ));
+            }
+            
+            setQuestionToEdit(null);
+            showToast('Question has been updated successfully', 'success');
+        } catch (err) {
+            console.error('Error updating question:', err);
+            setError('Failed to update question. Please try again.');
+            showToast('Failed to update question. Please try again.', 'error');
+        }
+    };
+
+    // Handle deleting an activity
+    const handleDeleteActivity = (activity) => {
+        setActivityToDelete(activity);
+    };
+
+    // Handle deleting a quiz
+    const handleDeleteQuiz = (quiz) => {
+        setQuizToDelete(quiz);
+    };
+
+    // Cancel activity deletion
+    const handleCancelActivityDelete = () => {
+        setActivityToDelete(null);
+    };
+
+    // Cancel quiz deletion
+    const handleCancelQuizDelete = () => {
+        setQuizToDelete(null);
+    };
+
+    // Confirm activity deletion
+    const handleConfirmActivityDelete = async () => {
+        if (!activityToDelete) return;
+        
+        setIsDeletingItem(true);
+        try {
+            await deleteDoc(doc(db, 'activities', activityToDelete.id));
+            setActivities(prev => prev.filter(activity => activity.id !== activityToDelete.id));
+            setActivityToDelete(null);
+            setError(null);
+            showToast(`Activity "${activityToDelete.title}" has been deleted successfully`, 'success');
+        } catch (err) {
+            console.error('Error deleting activity:', err);
+            setError('Failed to delete activity. Please try again.');
+            showToast('Failed to delete activity. Please try again.', 'error');
+        } finally {
+            setIsDeletingItem(false);
+        }
+    };
+
+    // Confirm quiz deletion
+    const handleConfirmQuizDelete = async () => {
+        if (!quizToDelete) return;
+        
+        setIsDeletingItem(true);
+        try {
+            await deleteDoc(doc(db, 'quizzes', quizToDelete.id));
+            setQuizzes(prev => prev.filter(quiz => quiz.id !== quizToDelete.id));
+            setQuizToDelete(null);
+            setError(null);
+            showToast(`Quiz "${quizToDelete.title}" has been deleted successfully`, 'success');
+        } catch (err) {
+            console.error('Error deleting quiz:', err);
+            setError('Failed to delete quiz. Please try again.');
+            showToast('Failed to delete quiz. Please try again.', 'error');
+        } finally {
+            setIsDeletingItem(false);
+        }
+    };
+
+    // Toast notification function
+    const showToast = (message, type = 'success') => {
+        setToast({
+            visible: true,
+            message,
+            type,
+        });
+        
+        // Auto hide after 3 seconds
+        setTimeout(() => {
+            setToast(prev => ({...prev, visible: false}));
+        }, 3000);
+    };
+    
+    // Hide toast manually
+    const hideToast = () => {
+        setToast(prev => ({...prev, visible: false}));
+    };
+
     return (
         <div className="bg-gradient-to-b from-blue-50 to-blue-100 min-h-screen">
             <Header />
@@ -221,6 +535,28 @@ const ClassField = () => {
                     <X className="w-5 h-5 text-white" />
                 </button>
             </div>
+            
+            {/* Toast Notification */}
+            {toast.visible && (
+                <div className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in ${
+                    toast.type === 'success' ? 'bg-green-500 text-white' :
+                    toast.type === 'error' ? 'bg-red-500 text-white' :
+                    'bg-blue-500 text-white'
+                }`}>
+                    {toast.type === 'success' && <CheckCircle className="w-5 h-5" />}
+                    {toast.type === 'error' && <AlertOctagon className="w-5 h-5" />}
+                    {toast.type === 'info' && <Info className="w-5 h-5" />}
+                    <div className="mr-8">{toast.message}</div>
+                    <button 
+                        onClick={hideToast} 
+                        className="absolute top-1.5 right-1.5 text-white/80 hover:text-white"
+                        aria-label="Close notification"
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+            )}
+            
             <div className="max-w-7xl mx-auto mt-2 px-4 sm:px-6">
                 <div className="bg-white p-6 rounded-xl shadow-lg h-[75vh] overflow-hidden flex flex-col">
                     <h1 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
@@ -379,9 +715,8 @@ const ClassField = () => {
                                                                                 </svg>
                                                                                 <span className="text-sm text-gray-700">{file.name}</span>
                                                                             </div>
-                                                                            <div className="flex gap-2">
-                                                                                <button 
-                                                                                    onClick={() => handleOpenFile(file.url, file.name)}
+                                                                            <div className="flex gap-2">                                                                                <button 
+                                                                                    onClick={() => handleOpenFile(file.url)}
                                                                                     className="p-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-md transition-colors"
                                                                                     title="Open file in new tab"
                                                                                 >
@@ -434,14 +769,37 @@ const ClassField = () => {
                                         {activities.map(activity => (
                                             <div 
                                                 key={activity.id} 
-                                                className="p-5 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200"
+                                                className="p-5 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 relative"
                                             >
+                                                {/* Activity management buttons for instructors */}
+                                                {role === 'instructor' && (
+                                                    <div className="absolute top-4 right-4 flex gap-2">
+                                                        <button
+                                                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition-colors duration-200 flex items-center gap-1 text-sm"
+                                                            onClick={() => handleDeleteActivity(activity)}
+                                                            title="Delete activity"
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                            <span className="hidden sm:inline">Delete</span>
+                                                        </button>
+                                                    </div>
+                                                )}
                                                 <div className="flex items-start">
                                                     <div className="bg-green-100 p-3 rounded-md mr-4">
                                                         <Activity className="h-5 w-5 text-green-600" />
                                                     </div>
-                                                    <div>
-                                                        <h2 className="text-xl font-bold mb-2 text-gray-800">{activity.title}</h2>
+                                                    <div className="flex-1">
+                                                        <div className="flex items-start justify-between">
+                                                            <h2 className="text-xl font-bold mb-2 text-gray-800">{activity.title}</h2>
+                                                            {role === 'student' && (
+                                                                <button 
+                                                                    onClick={() => handleActivityClick(activity)} 
+                                                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center"
+                                                                >
+                                                                    Start Activity
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                         
                                                         <div className="flex flex-wrap gap-3 mb-3 text-sm">
                                                             <span className="inline-flex items-center bg-gray-100 px-2.5 py-0.5 rounded-full text-gray-800">
@@ -451,45 +809,85 @@ const ClassField = () => {
                                                             <span className="inline-flex items-center bg-green-100 px-2.5 py-0.5 rounded-full text-green-800">
                                                                 {activity.type}
                                                             </span>
+                                                            {studentProgress?.activityScores?.[`activity_${activity.id}`] && (
+                                                                <span className="inline-flex items-center bg-green-100 px-2.5 py-0.5 rounded-full text-green-800">
+                                                                    <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                                                                    Score: {studentProgress.activityScores[`activity_${activity.id}`]}%
+                                                                </span>
+                                                            )}
                                                         </div>
                                                         
                                                         <div className="text-gray-700 mb-3">{activity.description}</div>
                                                         
-                                                        {activity.questions && activity.questions.length > 0 && (
-                                                            <div className="mt-4 bg-gray-50 p-4 rounded-lg">
-                                                                <h4 className="font-semibold text-gray-700 mb-3">Questions ({activity.questions.length})</h4>
-                                                                <ul className="space-y-4">
-                                                                    {activity.questions.map((q, idx) => (
-                                                                        <li key={idx} className="pb-3 border-b border-gray-200 last:border-0">
-                                                                            <div className="font-medium mb-1">{idx + 1}. {q.question}</div>
-                                                                            <div className="flex space-x-2 text-xs mb-2">
-                                                                                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-                                                                                    Type: {q.type}
-                                                                                </span>
-                                                                                <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded">
-                                                                                    Points: {q.points}
-                                                                                </span>
-                                                                            </div>
-                                                                            {q.type === 'multiple-choice' && q.options && (
-                                                                                <ul className="text-sm ml-4 mt-1 space-y-1">
-                                                                                    {q.options.map((opt, i) => (
-                                                                                        <li key={i} className="flex items-center">
-                                                                                            <span className="w-5 h-5 flex items-center justify-center bg-gray-200 rounded-full mr-2 text-xs">
-                                                                                                {String.fromCharCode(65 + i)}
-                                                                                            </span>
-                                                                                            {opt}
-                                                                                        </li>
-                                                                                    ))}
-                                                                                </ul>
-                                                                            )}
-                                                                            {q.type === 'true-false' && (
-                                                                                <div className="text-sm ml-4 text-gray-700">
-                                                                                    Correct Answer: <span className="font-medium">{q.correctAnswer}</span>
-                                                                                </div>
-                                                                            )}
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
+                                                        {activity.questions && activity.questions.length > 0 && role === 'instructor' && (
+                                                            <div className="mt-4">
+                                                                <button 
+                                                                    onClick={() => toggleExpanded('activities', activity.id)}
+                                                                    className="flex items-center justify-between w-full bg-gray-50 hover:bg-gray-100 p-3 rounded-md transition-colors text-gray-700 font-medium"
+                                                                >
+                                                                    <span>Questions ({activity.questions.length})</span>
+                                                                    {expandedItems.activities?.[activity.id] ? (
+                                                                        <ChevronUp className="h-4 w-4" />
+                                                                    ) : (
+                                                                        <ChevronDown className="h-4 w-4" />
+                                                                    )}
+                                                                </button>
+                                                                
+                                                                {expandedItems.activities?.[activity.id] && (
+                                                                    <div className="mt-2 bg-gray-50 p-4 rounded-lg">
+                                                                        <ul className="space-y-4">
+                                                                            {activity.questions.map((q, idx) => (
+                                                                                <li key={idx} className="pb-3 border-b border-gray-200 last:border-0 relative">
+                                                                                    {/* Question management buttons for instructors */}
+                                                                                    {role === 'instructor' && (
+                                                                                        <div className="absolute top-0 right-0 flex gap-1">
+                                                                                            <button
+                                                                                                className="p-1 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded"
+                                                                                                onClick={() => handleEditQuestion('activity', activity.id, q, idx)}
+                                                                                                title="Edit question"
+                                                                                            >
+                                                                                                <Edit3 className="h-3.5 w-3.5" />
+                                                                                            </button>
+                                                                                            <button
+                                                                                                className="p-1 bg-red-100 hover:bg-red-200 text-red-600 rounded"
+                                                                                                onClick={() => handleDeleteQuestion('activity', activity.id, idx)}
+                                                                                                title="Delete question"
+                                                                                            >
+                                                                                                <Trash2 className="h-3.5 w-3.5" />
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    )}
+                                                                                    <div className="font-medium mb-1">{idx + 1}. {q.question}</div>
+                                                                                    <div className="flex space-x-2 text-xs mb-2">
+                                                                                        <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                                                                                            Type: {q.type}
+                                                                                        </span>
+                                                                                        <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded">
+                                                                                            Points: {q.points}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    {q.type === 'multiple-choice' && q.options && (
+                                                                                        <ul className="text-sm ml-4 mt-1 space-y-1">
+                                                                                            {q.options.map((opt, i) => (
+                                                                                                <li key={i} className="flex items-center">
+                                                                                                    <span className="w-5 h-5 flex items-center justify-center bg-gray-200 rounded-full mr-2 text-xs">
+                                                                                                        {String.fromCharCode(65 + i)}
+                                                                                                    </span>
+                                                                                                    {opt}
+                                                                                                </li>
+                                                                                            ))}
+                                                                                        </ul>
+                                                                                    )}
+                                                                                    {q.type === 'true-false' && (
+                                                                                        <div className="text-sm ml-4 text-gray-700">
+                                                                                            Correct Answer: <span className="font-medium">{q.correctAnswer}</span>
+                                                                                        </div>
+                                                                                    )}
+                                                                                </li>
+                                                                            ))}
+                                                                        </ul>
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         )}
                                                     </div>
@@ -522,14 +920,37 @@ const ClassField = () => {
                                         {quizzes.map(quiz => (
                                             <div 
                                                 key={quiz.id} 
-                                                className="p-5 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200"
+                                                className="p-5 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 relative"
                                             >
+                                                {/* Quiz management buttons for instructors */}
+                                                {role === 'instructor' && (
+                                                    <div className="absolute top-4 right-4 flex gap-2">
+                                                        <button
+                                                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition-colors duration-200 flex items-center gap-1 text-sm"
+                                                            onClick={() => handleDeleteQuiz(quiz)}
+                                                            title="Delete quiz"
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                            <span className="hidden sm:inline">Delete</span>
+                                                        </button>
+                                                    </div>
+                                                )}
                                                 <div className="flex items-start">
                                                     <div className="bg-purple-100 p-3 rounded-md mr-4">
                                                         <FileQuestion className="h-5 w-5 text-purple-600" />
                                                     </div>
-                                                    <div>
-                                                        <h2 className="text-xl font-bold mb-2 text-gray-800">{quiz.title}</h2>
+                                                    <div className="flex-1">
+                                                        <div className="flex items-start justify-between">
+                                                            <h2 className="text-xl font-bold mb-2 text-gray-800">{quiz.title}</h2>
+                                                            {role === 'student' && (
+                                                                <button 
+                                                                    onClick={() => handleQuizClick(quiz)} 
+                                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center"
+                                                                >
+                                                                    Start Quiz
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                         
                                                         <div className="flex flex-wrap gap-3 mb-3 text-sm">
                                                             <span className="inline-flex items-center bg-gray-100 px-2.5 py-0.5 rounded-full text-gray-800">
@@ -540,45 +961,85 @@ const ClassField = () => {
                                                                 <Clock className="h-3.5 w-3.5 mr-1" />
                                                                 {quiz.timeLimit} minutes
                                                             </span>
+                                                            {studentProgress?.quizScores?.[`quiz_${quiz.id}`] && (
+                                                                <span className="inline-flex items-center bg-green-100 px-2.5 py-0.5 rounded-full text-green-800">
+                                                                    <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                                                                    Score: {studentProgress.quizScores[`quiz_${quiz.id}`]}%
+                                                                </span>
+                                                            )}
                                                         </div>
                                                         
                                                         <div className="text-gray-700 mb-3">{quiz.description}</div>
                                                         
-                                                        {quiz.questions && quiz.questions.length > 0 && (
-                                                            <div className="mt-4 bg-gray-50 p-4 rounded-lg">
-                                                                <h4 className="font-semibold text-gray-700 mb-3">Questions ({quiz.questions.length})</h4>
-                                                                <ul className="space-y-4">
-                                                                    {quiz.questions.map((q, idx) => (
-                                                                        <li key={idx} className="pb-3 border-b border-gray-200 last:border-0">
-                                                                            <div className="font-medium mb-1">{idx + 1}. {q.question}</div>
-                                                                            <div className="flex space-x-2 text-xs mb-2">
-                                                                                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-                                                                                    Type: {q.type}
-                                                                                </span>
-                                                                                <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded">
-                                                                                    Points: {q.points}
-                                                                                </span>
-                                                                            </div>
-                                                                            {q.type === 'multiple-choice' && q.options && (
-                                                                                <ul className="text-sm ml-4 mt-1 space-y-1">
-                                                                                    {q.options.map((opt, i) => (
-                                                                                        <li key={i} className="flex items-center">
-                                                                                            <span className="w-5 h-5 flex items-center justify-center bg-gray-200 rounded-full mr-2 text-xs">
-                                                                                                {String.fromCharCode(65 + i)}
-                                                                                            </span>
-                                                                                            {opt}
-                                                                                        </li>
-                                                                                    ))}
-                                                                                </ul>
-                                                                            )}
-                                                                            {q.type === 'true-false' && (
-                                                                                <div className="text-sm ml-4 text-gray-700">
-                                                                                    Correct Answer: <span className="font-medium">{q.correctAnswer}</span>
-                                                                                </div>
-                                                                            )}
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
+                                                        {quiz.questions && quiz.questions.length > 0 && role === 'instructor' && (
+                                                            <div className="mt-4">
+                                                                <button 
+                                                                    onClick={() => toggleExpanded('quizzes', quiz.id)}
+                                                                    className="flex items-center justify-between w-full bg-gray-50 hover:bg-gray-100 p-3 rounded-md transition-colors text-gray-700 font-medium"
+                                                                >
+                                                                    <span>Questions ({quiz.questions.length})</span>
+                                                                    {expandedItems.quizzes?.[quiz.id] ? (
+                                                                        <ChevronUp className="h-4 w-4" />
+                                                                    ) : (
+                                                                        <ChevronDown className="h-4 w-4" />
+                                                                    )}
+                                                                </button>
+                                                                
+                                                                {expandedItems.quizzes?.[quiz.id] && (
+                                                                    <div className="mt-2 bg-gray-50 p-4 rounded-lg">
+                                                                        <ul className="space-y-4">
+                                                                            {quiz.questions.map((q, idx) => (
+                                                                                <li key={idx} className="pb-3 border-b border-gray-200 last:border-0 relative">
+                                                                                    {/* Question management buttons for instructors */}
+                                                                                    {role === 'instructor' && (
+                                                                                        <div className="absolute top-0 right-0 flex gap-1">
+                                                                                            <button
+                                                                                                className="p-1 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded"
+                                                                                                onClick={() => handleEditQuestion('quiz', quiz.id, q, idx)}
+                                                                                                title="Edit question"
+                                                                                            >
+                                                                                                <Edit3 className="h-3.5 w-3.5" />
+                                                                                            </button>
+                                                                                            <button
+                                                                                                className="p-1 bg-red-100 hover:bg-red-200 text-red-600 rounded"
+                                                                                                onClick={() => handleDeleteQuestion('quiz', quiz.id, idx)}
+                                                                                                title="Delete question"
+                                                                                            >
+                                                                                                <Trash2 className="h-3.5 w-3.5" />
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    )}
+                                                                                    <div className="font-medium mb-1">{idx + 1}. {q.question}</div>
+                                                                                    <div className="flex space-x-2 text-xs mb-2">
+                                                                                        <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                                                                                            Type: {q.type}
+                                                                                        </span>
+                                                                                        <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded">
+                                                                                            Points: {q.points}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    {q.type === 'multiple-choice' && q.options && (
+                                                                                        <ul className="text-sm ml-4 mt-1 space-y-1">
+                                                                                            {q.options.map((opt, i) => (
+                                                                                                <li key={i} className="flex items-center">
+                                                                                                    <span className="w-5 h-5 flex items-center justify-center bg-gray-200 rounded-full mr-2 text-xs">
+                                                                                                        {String.fromCharCode(65 + i)}
+                                                                                                    </span>
+                                                                                                    {opt}
+                                                                                                </li>
+                                                                                            ))}
+                                                                                        </ul>
+                                                                                    )}
+                                                                                    {q.type === 'true-false' && (
+                                                                                        <div className="text-sm ml-4 text-gray-700">
+                                                                                            Correct Answer: <span className="font-medium">{q.correctAnswer}</span>
+                                                                                        </div>
+                                                                                    )}
+                                                                                </li>
+                                                                            ))}
+                                                                        </ul>
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         )}
                                                     </div>
@@ -703,7 +1164,7 @@ const ClassField = () => {
                                 </h2>
                                 <button 
                                     onClick={() => setEditingLesson(null)}
-                                    className="text-white/80 hover:text-white hover:bg-white/10 transition-colors p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-white/30"
+                                    className="text-white/80 hover:text-white hover:bg-white/10 transition-colors p-2 rounded-full"
                                     aria-label="Close"
                                 >
                                     <X className="w-6 h-6" />
@@ -948,17 +1409,369 @@ const ClassField = () => {
                 </>
             )}
             
-            {/* Custom animations - updated to replace slide-in-right with scale-in */}
-            <style jsx>{`
-                @keyframes scale-in {
-                    0% { transform: scale(0.9); opacity: 0; }
-                    100% { transform: scale(1); opacity: 1; }
-                }
-                
-                .animate-scale-in {
-                    animation: scale-in 0.2s ease-out forwards;
-                }
-            `}</style>
+            {/* Question Edit Modal */}
+            {questionToEdit && (
+                <>
+                    <div 
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
+                        onClick={() => setQuestionToEdit(null)}
+                    />
+                    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white shadow-2xl rounded-xl max-w-3xl w-[95%] max-h-[90vh] transition-all duration-300 transform animate-scale-in flex flex-col overflow-hidden">
+                            <div className="bg-gradient-to-r from-amber-500 to-amber-600 p-5 text-white flex justify-between items-center">
+                                <h2 className="text-xl font-bold flex items-center">
+                                    <Edit3 className="w-5 h-5 mr-2" />
+                                    Edit Question
+                                </h2>
+                                <button 
+                                    onClick={() => setQuestionToEdit(null)}
+                                    className="text-white/80 hover:text-white hover:bg-white/10 transition-colors p-2 rounded-full"
+                                    aria-label="Close"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                            
+                            <div className="p-6 flex-1 overflow-y-auto">
+                                <form onSubmit={handleQuestionEditSubmit} className="space-y-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Question Text
+                                        </label>
+                                        <textarea 
+                                            name="question"
+                                            value={questionEditForm.question}
+                                            onChange={handleQuestionFormChange}
+                                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                                            rows="3"
+                                            required
+                                        ></textarea>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Question Type
+                                            </label>
+                                            <select
+                                                name="type"
+                                                value={questionEditForm.type}
+                                                onChange={handleQuestionFormChange}
+                                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                                                required
+                                            >
+                                                <option value="">Select Type</option>
+                                                <option value="multiple-choice">Multiple Choice</option>
+                                                <option value="true-false">True/False</option>
+                                                <option value="short-answer">Short Answer</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Points
+                                            </label>
+                                            <input 
+                                                type="number"
+                                                name="points"
+                                                value={questionEditForm.points}
+                                                onChange={handleQuestionFormChange}
+                                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                                                min="1"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    {questionEditForm.type === 'multiple-choice' && (
+                                        <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                                            <div className="flex justify-between mb-2">
+                                                <h3 className="font-medium text-gray-700">Options</h3>
+                                                <button 
+                                                    type="button" 
+                                                    onClick={addOption}
+                                                    className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors"
+                                                >
+                                                    Add Option
+                                                </button>
+                                            </div>
+                                            
+                                            <div className="space-y-2">
+                                                {questionEditForm.options.map((option, index) => (
+                                                    <div key={index} className="flex items-center gap-2">
+                                                        <span className="w-7 h-7 flex items-center justify-center bg-gray-200 rounded-full text-xs font-medium">
+                                                            {String.fromCharCode(65 + index)}
+                                                        </span>
+                                                        <input 
+                                                            type="text"
+                                                            value={option}
+                                                            onChange={(e) => handleOptionChange(index, e.target.value)}
+                                                            className="flex-1 border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                            placeholder={`Option ${String.fromCharCode(65 + index)}`}
+                                                            required
+                                                        />
+                                                        <button 
+                                                            type="button"
+                                                            onClick={() => removeOption(index)}
+                                                            className="p-1.5 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-700"
+                                                            title="Remove option"
+                                                        >
+                                                            <X className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                                
+                                                {questionEditForm.options.length === 0 && (
+                                                    <p className="text-sm text-gray-500 italic">Click "Add Option" to add answer choices</p>
+                                                )}
+                                            </div>
+                                            
+                                            {questionEditForm.options.length > 0 && (
+                                                <div className="mt-4">
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                        Correct Answer
+                                                    </label>
+                                                    <select
+                                                        name="correctAnswer"
+                                                        value={questionEditForm.correctAnswer}
+                                                        onChange={handleQuestionFormChange}
+                                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                                                        required
+                                                    >
+                                                        <option value="">Select Correct Answer</option>
+                                                        {questionEditForm.options.map((option, index) => (
+                                                            <option key={index} value={option}>
+                                                                {String.fromCharCode(65 + index)}: {option}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                    
+                                    {questionEditForm.type === 'true-false' && (
+                                        <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Correct Answer
+                                            </label>
+                                            <div className="flex space-x-4">
+                                                <label className="inline-flex items-center">
+                                                    <input
+                                                        type="radio"
+                                                        name="correctAnswer"
+                                                        value="True"
+                                                        checked={questionEditForm.correctAnswer === "True"}
+                                                        onChange={handleQuestionFormChange}
+                                                        className="h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                                                    />
+                                                    <span className="ml-2">True</span>
+                                                </label>
+                                                
+                                                <label className="inline-flex items-center">
+                                                    <input
+                                                        type="radio"
+                                                        name="correctAnswer"
+                                                        value="False"
+                                                        checked={questionEditForm.correctAnswer === "False"}
+                                                        onChange={handleQuestionFormChange}
+                                                        className="h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                                                    />
+                                                    <span className="ml-2">False</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    )}
+                                </form>
+                            </div>
+                            
+                            <div className="border-t border-gray-200 p-4 flex justify-end gap-2">
+                                <button 
+                                    type="button"
+                                    onClick={() => setQuestionToEdit(null)}
+                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="button"
+                                    onClick={handleQuestionEditSubmit}
+                                    className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md transition-colors"
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
+            
+            {/* Question Delete Confirmation Modal */}
+            {questionToDelete && (
+                <>
+                    <div 
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
+                        onClick={() => setQuestionToDelete(null)}
+                    />
+                    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white shadow-xl rounded-lg max-w-sm w-full transition-all duration-300 transform animate-scale-in">
+                            <div className="bg-red-500 p-4 text-white flex items-center">
+                                <AlertTriangle className="h-5 w-5 mr-2" />
+                                <h3 className="text-lg font-semibold">Delete Question</h3>
+                            </div>
+                            <div className="p-6">
+                                <p className="text-gray-700 mb-6">
+                                    Are you sure you want to delete this question? This action cannot be undone.
+                                </p>
+                                
+                                <div className="flex justify-end gap-3">
+                                    <button
+                                        onClick={() => setQuestionToDelete(null)}
+                                        className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleDeleteQuestionConfirm}
+                                        className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors flex items-center"
+                                    >
+                                        <Trash2 className="h-4 w-4 mr-1" />
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
+            
+            {/* Activity Delete Confirmation Modal */}
+            {activityToDelete && (
+                <>
+                    <div 
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
+                        onClick={handleCancelActivityDelete}
+                    />
+                    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all animate-scale-in">
+                            <div className="bg-gradient-to-r from-red-500 to-red-600 p-5 text-white">
+                                <div className="flex items-center">
+                                    <div className="bg-white/20 rounded-full p-2.5 mr-4">
+                                        <Trash2 className="h-6 w-6 text-white" />
+                                    </div>
+                                    <h3 className="text-xl font-bold">Delete Activity</h3>
+                                </div>
+                            </div>
+                            
+                            <div className="p-6">
+                                <p className="text-gray-700 mb-4 text-lg">
+                                    Are you sure you want to delete <span className="font-semibold">"{activityToDelete.title}"</span>?
+                                </p>
+                                <p className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border-l-4 border-red-400 mb-6">
+                                    <strong>Warning:</strong> This action cannot be undone. All associated questions and student submissions will be permanently removed.
+                                </p>
+                                
+                                <div className="flex justify-end gap-3">
+                                    <button
+                                        onClick={handleCancelActivityDelete}
+                                        className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium"
+                                        disabled={isDeletingItem}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleConfirmActivityDelete}
+                                        className={`${isDeletingItem 
+                                            ? 'bg-red-400 cursor-not-allowed' 
+                                            : 'bg-red-600 hover:bg-red-700'} 
+                                        px-5 py-2.5 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium`}
+                                        disabled={isDeletingItem}
+                                    >
+                                        {isDeletingItem ? (
+                                            <>
+                                                <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Deleting...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Trash2 className="w-4 h-4" />
+                                                Delete Permanently
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
+            
+            {/* Quiz Delete Confirmation Modal */}
+            {quizToDelete && (
+                <>
+                    <div 
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
+                        onClick={handleCancelQuizDelete}
+                    />
+                    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all animate-scale-in">
+                            <div className="bg-gradient-to-r from-red-500 to-red-600 p-5 text-white">
+                                <div className="flex items-center">
+                                    <div className="bg-white/20 rounded-full p-2.5 mr-4">
+                                        <Trash2 className="h-6 w-6 text-white" />
+                                    </div>
+                                    <h3 className="text-xl font-bold">Delete Quiz</h3>
+                                </div>
+                            </div>
+                            
+                            <div className="p-6">
+                                <p className="text-gray-700 mb-4 text-lg">
+                                    Are you sure you want to delete <span className="font-semibold">"{quizToDelete.title}"</span>?
+                                </p>
+                                <p className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border-l-4 border-red-400 mb-6">
+                                    <strong>Warning:</strong> This action cannot be undone. All associated questions and student submissions will be permanently removed.
+                                </p>
+                                
+                                <div className="flex justify-end gap-3">
+                                    <button
+                                        onClick={handleCancelQuizDelete}
+                                        className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium"
+                                        disabled={isDeletingItem}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleConfirmQuizDelete}
+                                        className={`${isDeletingItem 
+                                            ? 'bg-red-400 cursor-not-allowed' 
+                                            : 'bg-red-600 hover:bg-red-700'} 
+                                        px-5 py-2.5 text-white rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm font-medium`}
+                                        disabled={isDeletingItem}
+                                    >
+                                        {isDeletingItem ? (
+                                            <>
+                                                <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Deleting...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Trash2 className="w-4 h-4" />
+                                                Delete Permanently
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

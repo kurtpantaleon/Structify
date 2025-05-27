@@ -464,7 +464,7 @@ const AddLessonMaterials = () => {
                                     onClick={() => setActiveTab('mystructify')}
                                 >
                                     <BookOpen size={18} />
-                                    <span>Structify Lessons Uploads</span>
+                                    <span>Uploaded Structify Lessons</span>
                                 </button>
                             </div>
                         </div>

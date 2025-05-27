@@ -208,13 +208,22 @@ function Header() {
         <div className="flex items-center text-white px-2 sm:px-3 py-1 rounded-lg bg-gradient-to-r from-yellow-500 to-amber-500 shadow-md">
           <img src={coin} alt="Coin Icon" className="h-6 w-6 sm:h-7 sm:w-7" />
           <span className="ml-1 text-base sm:text-lg font-medium">{coins}</span>
-        </div>
-
-        {/* Rank Points Indicator */}
+        </div>        {/* Rank Points Indicator */}
         <div className="flex items-center text-white px-2 sm:px-3 py-1 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 shadow-md">
           <img src={fire} alt="Fire Icon" className="h-6 w-6 sm:h-7 sm:w-7" />
           <span className="ml-1 text-base sm:text-lg font-medium">{rankPoints}</span>
         </div>
+        
+        {/* My Progress Button */}
+        <button 
+          onClick={() => navigate('/my-progress')}
+          className="flex items-center text-white px-2 sm:px-3 py-1 rounded-lg bg-gradient-to-r bg-blue-600 shadow-md hover:shadow-lg transition-all"
+          title="View My Progress"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          <span className="ml-1 text-xs sm:text-sm font-medium hidden sm:inline">Progress</span>
+        </button>
 
         {/* Profile Indicator */}
         <div
