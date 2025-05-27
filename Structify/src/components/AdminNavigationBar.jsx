@@ -4,6 +4,31 @@ import HomeIcon from "../assets/images/Home Icon.png";
 import InstructorIcon from "../assets/images/Instructor Icon.png"; 
 import StudentIcon from "../assets/images/Student Icon.png"; 
 
+// Add CSS keyframes for animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  @keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+    100% { transform: translateY(0); }
+  }
+  
+  .nav-pulse {
+    animation: pulse 2s infinite ease-in-out;
+  }
+  
+  .nav-float:hover {
+    animation: float 1.5s infinite ease-in-out;
+  }
+`;
+document.head.appendChild(style);
+
 const AdminNavigationBar = () => {
   // Get the current location to determine active nav item
   const location = useLocation();
@@ -46,43 +71,45 @@ const NavItem = ({ to, icon, label, isActive }) => {
 
   return (
     <div 
-      className={`relative flex flex-col items-center cursor-pointer group p-3 rounded-xl transition-all duration-200
-        ${isActive ? 'bg-blue-600/20' : 'hover:bg-white/10'}`}
+      className={`relative flex flex-col items-center cursor-pointer group p-3 rounded-xl transition-all duration-300
+        ${isActive ? 'bg-blue-600/20' : 'hover:bg-white/10'} 
+        nav-float hover:shadow-lg hover:shadow-blue-500/10 
+        active:scale-95 active:shadow-inner active:bg-blue-700/30`}
       onClick={handleNavigation}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && handleNavigation()}
     >
       {/* Image Icon with enhanced states */}
-      <div className="relative">
+      <div className={`relative ${isActive ? 'nav-pulse' : ''}`}>
         <div className={`p-1 rounded-lg transition-transform duration-200 ${isActive ? 'transform scale-110' : 'group-hover:scale-105'}`}>
           <img 
             src={icon} 
             alt={label} 
-            className={`h-8 w-8 transition-all duration-200 
-              ${isActive ? 'filter brightness-110' : 'group-hover:brightness-110'}`}
+            className={`h-8 w-8 transition-all duration-300 
+              ${isActive ? 'filter brightness-110' : 'group-hover:brightness-110 group-hover:rotate-[5deg]'}`}
           />
         </div>
         
         {/* Active indicator glow effect */}
         {isActive && (
-          <div className="absolute inset-0 bg-blue-400/20 blur-md rounded-full -z-10"></div>
+          <div className="absolute inset-0 bg-blue-400/20 blur-md rounded-full -z-10 animate-pulse"></div>
         )}
       </div>
       
       {/* Label with enhanced active state */}
       <span className={`text-xs mt-2 transition-all duration-200 
-        ${isActive ? 'text-blue-300 font-medium' : 'text-gray-300 group-hover:text-white'}`}>
+        ${isActive ? 'text-blue-300 font-medium' : 'text-gray-300 group-hover:text-white group-hover:translate-y-0.5'}`}>
         {label}
       </span>
       
-      {/* Active indicator line */}
+      {/* Active indicator line with animation */}
       {isActive && (
-        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full"></div>
+        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-blue-400 via-blue-500 to-blue-400 rounded-r-full animate-pulse"></div>
       )}
       
-      {/* Tooltip on hover */}
-      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+      {/* Animated tooltip on hover */}
+      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-10 transform translate-x-0 group-hover:translate-x-1">
         {label}
       </div>
     </div>
