@@ -22,6 +22,13 @@ const AddLessonMaterials = () => {
     const [activeTab, setActiveTab] = useState('lessons');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [notification, setNotification] = useState({ show: false, type: '', message: '' });
+    
+    // Add delete modal state
+    const [deleteModal, setDeleteModal] = useState({
+        isOpen: false,
+        lessonId: null,
+        lessonTitle: ''
+    });
 
     // Lesson state
     const [lessonContent, setLessonContent] = useState({
@@ -328,18 +335,28 @@ const AddLessonMaterials = () => {
         }
     }, [activeTab]);
 
-    // Delete a structify lesson
+    // Delete a structify lesson - Updated to use modal
     const handleDeleteStructifyLesson = async (lessonId) => {
-        if (!window.confirm('Are you sure you want to delete this lesson? This action cannot be undone.')) return;
         try {
-            // Optionally: delete associated files from storage if needed
             // Remove lesson from Firestore
             await deleteDoc(doc(db, 'structifyLessons', lessonId));
             setMyStructifyLessons(prev => prev.filter(lesson => lesson.id !== lessonId));
             showNotification('success', 'Lesson deleted successfully');
+            
+            // Close the modal
+            setDeleteModal({ isOpen: false, lessonId: null, lessonTitle: '' });
         } catch (err) {
             showNotification('error', 'Failed to delete lesson');
         }
+    };
+
+    // Open delete confirmation modal
+    const openDeleteModal = (lesson) => {
+        setDeleteModal({
+            isOpen: true,
+            lessonId: lesson.id,
+            lessonTitle: lesson.title
+        });
     };
 
     return (
@@ -589,7 +606,7 @@ const AddLessonMaterials = () => {
                                                             </Link>
                                                             <button
                                                                 className="inline-flex items-center bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md font-medium transition-colors"
-                                                                onClick={() => handleDeleteStructifyLesson(lesson.id)}
+                                                                onClick={() => openDeleteModal(lesson)}
                                                                 title="Delete Lesson"
                                                             >
                                                                 <Trash2 size={18} className="mr-1" /> Delete
@@ -694,6 +711,66 @@ const AddLessonMaterials = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteModal.isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 backdrop-blur flex items-center justify-center z-50 p-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+                        >
+                            <div className="text-center mb-6">
+                                <div className="mx-auto flex items-center justify-center h-16 w-16 bg-red-100 rounded-full mb-4">
+                                    <AlertCircle size={30} className="text-red-600" />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                                    Delete Lesson
+                                </h3>
+                                <p className="text-gray-600">
+                                    Are you sure you want to delete <span className="font-medium">{deleteModal.lessonTitle}</span>?
+                                    This action cannot be undone.
+                                </p>
+                            </div>
+                            
+                            <div className="bg-red-50 p-4 rounded mb-6">
+                                <div className="flex items-start">
+                                    <AlertCircle size={20} className="text-red-600 mr-2 mt-0.5" />
+                                    <div>
+                                        <p className="text-sm text-red-800">
+                                            Deleting this lesson will remove it permanently from your collection. 
+                                            Students will no longer be able to access this content.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={() => setDeleteModal({ isOpen: false, lessonId: null, lessonTitle: '' })}
+                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition font-medium"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteStructifyLesson(deleteModal.lessonId)}
+                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium flex items-center"
+                                >
+                                    <Trash2 size={18} className="mr-2" />
+                                    Delete Permanently
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

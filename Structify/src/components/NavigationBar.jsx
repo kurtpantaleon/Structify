@@ -21,11 +21,11 @@ const NavigationBar = () => {
   // Navigation items configuration
   const navItems = [
     { to: "/mainPage", icon: Book, label: "Learn" },
-    { to: "/codePlayground", icon: Code, label: "Code" },
+    { to: "/codePlayground", icon: Code, label: "Code Playground" },
     { to: "/Leaderboard", icon: Trophy, label: "Leaderboard" },
     { to: "/CodeChallengeLobby", icon: Swords, label: "PvP" },
     { to: "/Forum", icon: MessageCircle, label: "Forum" },
-    { to: "/ClassField", icon: FolderArchive, label: "Class" }
+    { to: "/ClassField", icon: FolderArchive, label: "Class Materials" }
   ];
 
   return (
