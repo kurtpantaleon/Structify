@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLessonProgress } from '../../context/lessonProgressContext';
+import StudentCodingActivityView from './StudentCodingActivityView';
 import { doc, getDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
 import { useAuth } from '../../context/authContextProvider';
@@ -35,6 +36,13 @@ const StudentActivityView = () => {
         const activityDoc = await getDoc(doc(db, 'activities', activityId));
         if (activityDoc.exists()) {
           const activityData = activityDoc.data();
+          
+          // Check if this is a coding activity, if so redirect to coding view
+          if (activityData.type === 'code') {
+            navigate(`/student/coding-activity/${activityId}`);
+            return;
+          }
+          
           setActivity({
             ...activityData,
             id: activityId
@@ -69,7 +77,7 @@ const StudentActivityView = () => {
     };
     
     fetchActivity();
-  }, [activityId, activityScores]);
+  }, [activityId, activityScores, navigate]);
   
   const handleAnswerSelect = (questionIndex, answer) => {
     setAnswers(prev => ({

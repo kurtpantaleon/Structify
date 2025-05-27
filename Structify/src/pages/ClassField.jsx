@@ -188,12 +188,15 @@ const ClassField = () => {
         if (role === 'student') {
             navigate(`/quiz/${quiz.id}`);
         }
-    };
-
-    // Handle student activity click
+    };    // Handle student activity click
     const handleActivityClick = (activity) => {
         if (role === 'student') {
-            navigate(`/activity/${activity.id}`);
+            // Check if it's a code activity or a regular activity
+            if (activity.type === 'code') {
+                navigate(`/coding-activity/${activity.id}`);
+            } else {
+                navigate(`/activity/${activity.id}`);
+            }
         }
     };
 
@@ -354,6 +357,8 @@ const ClassField = () => {
             showToast('Failed to delete question. Please try again.', 'error');
         }
     };
+
+
     
     // Handle question edit form changes
     const handleQuestionFormChange = (e) => {

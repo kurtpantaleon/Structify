@@ -162,9 +162,9 @@ const AddLessonMaterials = () => {
                 throw new Error('Title is required');
             }
             
-            if (activityContent.questions.length === 0) {
-                throw new Error('Add at least one question');
-            }
+            // if (activityContent.questions.length === 0) {
+            //     throw new Error('Add at least one question');
+            // }
             
             await addDoc(collection(db, 'activities'), {
                 ...activityContent,

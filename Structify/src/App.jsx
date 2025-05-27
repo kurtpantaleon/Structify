@@ -8,6 +8,7 @@ import { AuthContext } from './context/authContext'
 // Custom instructor-created content views
 import StudentQuizView from './pages/student/StudentQuizView'
 import StudentActivityView from './pages/student/StudentActivityView'
+import StudentCodingActivityView from './pages/student/StudentCodingActivityView'
 import StudentProgressView from './pages/student/StudentProgressView'
 
 /*WEEK 1 */
@@ -528,6 +529,7 @@ function App() {
       {/* Custom instructor-created content routes */}
       <Route path="/quiz/:quizId" element={<ProtectedRoute allowedRoles={['student']}><StudentQuizView /></ProtectedRoute>} />
       <Route path="/activity/:activityId" element={<ProtectedRoute allowedRoles={['student']}><StudentActivityView /></ProtectedRoute>} />
+      <Route path="/coding-activity/:activityId" element={<ProtectedRoute allowedRoles={['student']}><StudentCodingActivityView /></ProtectedRoute>} />
       <Route path="/my-progress" element={<ProtectedRoute allowedRoles={['student']}><StudentProgressView /></ProtectedRoute>} />
       {/* Week 10&11 lesson 3 pages */}
       <Route path="/week10L3Page1" element={<ProtectedRoute allowedRoles={['student']}><Week10L3Page1 /></ProtectedRoute>} />
