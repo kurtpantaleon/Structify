@@ -157,7 +157,7 @@ function ViewProfile() {
           <div className="bg-white rounded-3xl shadow-xl p-6 text-center text-gray-800 transform transition-all duration-300 hover:shadow-2xl">
             <div className="flex flex-col items-center mb-4">
               <div className="relative">
-                <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-r from-blue-500 to-purple-500 p-1">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-blue-500 p-1">
                   <div className="w-full h-full rounded-full overflow-hidden bg-white">
                     <img src={profile} alt="Profile" className="w-full h-full object-cover" />
                   </div>
@@ -168,7 +168,7 @@ function ViewProfile() {
                   </div>
                 )}
               </div>
-              <h2 className="text-2xl font-bold mt-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h2 className="text-2xl font-bold mt-3 bg-gradient-to-r bg-blue-500 bg-clip-text text-transparent">
                 {userData?.name || currentUser?.name || 'Player'}
               </h2>
               {isStudent && (
