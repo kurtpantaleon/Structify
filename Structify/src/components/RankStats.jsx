@@ -112,6 +112,9 @@ const RankStats = () => {
   const [matches, setmatches] = useState([]);
   const [battleLoading, setBattleLoading] = useState(true);
   const [battleError, setBattleError] = useState(null);
+  // add states for dynamic rank points
+  const [rankPoints, setRankPoints] = useState(0);
+  const [highestRankPoints, setHighestRankPoints] = useState(0);
   const auth = getAuth();
   const location = useLocation();
 
@@ -145,11 +148,14 @@ const RankStats = () => {
         const userRef = doc(db, 'users', userId);
         const snapshot = await getDoc(userRef);
         if (snapshot.exists()) {
-          const userData = snapshot.data();
-          setUserName(userData.name || '');
-          setUserSection(userData.section || '');
-          const completedActivities = userData.completedActivities || [];
-          const completedLessons = userData.completedLessons || [];
+          const data = snapshot.data();
+          setUserName(data.name || '');
+          setUserSection(data.section || '');
+          // capture dynamic ranks
+          setRankPoints(data.rankPoints || 0);
+          setHighestRankPoints(data.highestRankPoints || data.rankPoints || 0);
+          const completedActivities = data.completedActivities || [];
+          const completedLessons = data.completedLessons || [];
           const week = weeks[selectedWeek];
           const percentage = calculateProgress(
             completedActivities,
@@ -457,7 +463,7 @@ const RankStats = () => {
                 }}
               >
                 <p className="text-lg font-bold flex items-center gap-x-1 mb-1">
-                  <img src={FireIcon} alt="fire" className="w-5 h-5" /> 3000
+                  <img src={FireIcon} alt="fire" className="w-5 h-5" /> {rankPoints}
                 </p>
               </div>
             </div>
@@ -473,7 +479,7 @@ const RankStats = () => {
                 }}
               >
                 <p className="text-lg font-bold flex items-center gap-x-1 mb-1">
-                  <img src={FireIcon} alt="fire" className="w-5 h-5" /> 10000
+                  <img src={FireIcon} alt="fire" className="w-5 h-5" /> {highestRankPoints}
                 </p>
               </div>
             </div>
