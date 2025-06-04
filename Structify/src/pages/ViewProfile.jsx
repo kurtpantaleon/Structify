@@ -338,57 +338,57 @@ function ViewProfile() {
                   setShowPasswordModal(false);
                   setError('');
                   setSuccess(false);
-                  setPasswordForm({ email: '', currentPassword: '', newPassword: '', confirmPassword: '' });
-                }}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                ✕
-              </button>
-            </div>
+                    setPasswordForm({ email: '', currentPassword: '', newPassword: '', confirmPassword: '' });
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                  ✕
+                  </button>
+                </div>
 
-            {error && (
-              <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm flex items-start gap-3 border border-red-100">
-                <div className="w-5 h-5 mt-0.5 flex-shrink-0">⚠️</div>
-                <p className="leading-relaxed">{error}</p>
-              </div>
-            )}
+                {error && (
+                  <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm flex items-start gap-3 border border-red-100">
+                  <div className="w-5 h-5 mt-0.5 flex-shrink-0">⚠️</div>
+                  <p className="leading-relaxed">{error}</p>
+                  </div>
+                )}
 
-            {success && (
-              <div className="bg-green-50 text-green-600 p-4 rounded-xl text-sm flex items-center gap-3 border border-green-100">
-                <div className="w-5 h-5">✅</div>
-                <p className="leading-relaxed">Password updated successfully!</p>
-              </div>
-            )}
+                {success && (
+                  <div className="bg-green-50 text-green-600 p-4 rounded-xl text-sm flex items-center gap-3 border border-green-100">
+                  <div className="w-5 h-5">✅</div>
+                  <p className="leading-relaxed">Password updated successfully!</p>
+                  </div>
+                )}
 
-            <form onSubmit={handlePasswordChange} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-                <input
-                  type="email"
-                  value={passwordForm.email}
-                  onChange={(e) => setPasswordForm(prev => ({ ...prev, email: e.target.value }))}
-                  className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow text-sm"
-                  placeholder={currentUser?.email || "Confirm your email"}
-                  required
-                />
-              </div>
+                <form onSubmit={handlePasswordChange} className="space-y-6">
+                  <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">Email</label>
+                  <input
+                    type="email"
+                    value={passwordForm.email}
+                    onChange={(e) => setPasswordForm(prev => ({ ...prev, email: e.target.value }))}
+                    className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow text-sm text-left"
+                    placeholder={currentUser?.email || "Confirm your email"}
+                    required
+                  />
+                  </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Current Password</label>
-                <input
-                  type="password"
-                  value={passwordForm.currentPassword}
-                  onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
-                  className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow text-sm"
-                  placeholder="Enter current password"
-                  required
-                />
-              </div>
+                  <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Current Password</label>
+                  <input
+                    type="password"
+                    value={passwordForm.currentPassword}
+                    onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+                    className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow text-sm"
+                    placeholder="Enter current password"
+                    required
+                  />
+                  </div>
 
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">New Password</label>
-                  <div className="relative">
+                  <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">New Password</label>
+                    <div className="relative">
                     <input
                       type="password"
                       value={passwordForm.newPassword}
@@ -399,58 +399,58 @@ function ViewProfile() {
                       minLength={8}
                     />
                     <div className={`absolute right-3 top-3 w-2 h-2 rounded-full ${getStrengthColor(passwordForm.newPassword)}`} />
+                    </div>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className={`flex items-center gap-2 ${checkRequirement(passwordForm.newPassword, /[A-Z]/) ? 'text-green-600' : 'text-gray-500'}`}>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className={`flex items-center gap-2 ${checkRequirement(passwordForm.newPassword, /[A-Z]/) ? 'text-green-600' : 'text-gray-500'}`}>
                     <div className="w-4">{checkRequirement(passwordForm.newPassword, /[A-Z]/) ? '✓' : '○'}</div>
                     Uppercase letter
-                  </div>
-                  <div className={`flex items-center gap-2 ${checkRequirement(passwordForm.newPassword, /[a-z]/) ? 'text-green-600' : 'text-gray-500'}`}>
+                    </div>
+                    <div className={`flex items-center gap-2 ${checkRequirement(passwordForm.newPassword, /[a-z]/) ? 'text-green-600' : 'text-gray-500'}`}>
                     <div className="w-4">{checkRequirement(passwordForm.newPassword, /[a-z]/) ? '✓' : '○'}</div>
                     Lowercase letter
-                  </div>
-                  <div className={`flex items-center gap-2 ${checkRequirement(passwordForm.newPassword, /\d/) ? 'text-green-600' : 'text-gray-500'}`}>
+                    </div>
+                    <div className={`flex items-center gap-2 ${checkRequirement(passwordForm.newPassword, /\d/) ? 'text-green-600' : 'text-gray-500'}`}>
                     <div className="w-4">{checkRequirement(passwordForm.newPassword, /\d/) ? '✓' : '○'}</div>
                     Number
-                  </div>
-                  <div className={`flex items-center gap-2 ${checkRequirement(passwordForm.newPassword, /[!@#$%^&*(),.?":{}|<>]/) ? 'text-green-600' : 'text-gray-500'}`}>
+                    </div>
+                    <div className={`flex items-center gap-2 ${checkRequirement(passwordForm.newPassword, /[!@#$%^&*(),.?":{}|<>]/) ? 'text-green-600' : 'text-gray-500'}`}>
                     <div className="w-4">{checkRequirement(passwordForm.newPassword, /[!@#$%^&*(),.?":{}|<>]/) ? '✓' : '○'}</div>
                     Special character
-                  </div>
-                  <div className={`flex items-center gap-2 ${passwordForm.newPassword.length >= 8 ? 'text-green-600' : 'text-gray-500'}`}>
+                    </div>
+                    <div className={`flex items-center gap-2 ${passwordForm.newPassword.length >= 8 ? 'text-green-600' : 'text-gray-500'}`}>
                     <div className="w-4">{passwordForm.newPassword.length >= 8 ? '✓' : '○'}</div>
                     8+ characters
+                    </div>
                   </div>
-                </div>
-              </div>
+                  </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm New Password</label>
-                <input
-                  type="password"
-                  value={passwordForm.confirmPassword}
-                  onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  className={`block w-full px-4 py-3 bg-gray-50 border rounded-xl text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow text-sm ${
+                  <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm New Password</label>
+                  <input
+                    type="password"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    className={`block w-full px-4 py-3 bg-gray-50 border rounded-xl text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow text-sm ${
                     passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword
                       ? 'border-red-300'
                       : passwordForm.confirmPassword && passwordForm.newPassword === passwordForm.confirmPassword
                       ? 'border-green-300'
                       : 'border-gray-200'
-                  }`}
-                  placeholder="Confirm new password"
-                  required
-                />
-                {passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword && (
-                  <p className="mt-1 text-xs text-red-500">Passwords do not match</p>
-                )}
-              </div>
+                    }`}
+                    placeholder="Confirm new password"
+                    required
+                  />
+                  {passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword && (
+                    <p className="mt-1 text-xs text-red-500">Passwords do not match</p>
+                  )}
+                  </div>
 
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
+                  <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
                     setShowPasswordModal(false);
                     setError('');
                     setSuccess(false);
