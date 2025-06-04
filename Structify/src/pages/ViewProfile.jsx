@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { getAuth, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/authContext';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '../services/firebaseConfig';
 import Header from '../components/ProfileHeader ';
 import exit from '../assets/images/X Icon.png';
@@ -25,6 +25,7 @@ function ViewProfile() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [leaderboard, setLeaderboard] = useState([]);
 
   // Password validation function
   const validatePassword = (password) => {
@@ -75,6 +76,27 @@ function ViewProfile() {
 
     fetchUserData();
   }, [currentUser?.uid]);
+
+  // Fetch top users by rankPoints when viewing "Stats"
+  useEffect(() => {
+    if (role !== 'student' || activeTab !== 'ranks') return;
+    const fetchLeaderboard = async () => {
+      try {
+        const q = query(
+          collection(db, 'users'),
+          orderBy('rankPoints', 'desc'),
+          limit(10)
+        );
+        const snap = await getDocs(q);
+        setLeaderboard(
+          snap.docs.map((d, i) => ({ uid: d.id, ...d.data(), position: i + 1 }))
+        );
+      } catch (err) {
+        console.error('Error fetching leaderboard:', err);
+      }
+    };
+    fetchLeaderboard();
+  }, [role, activeTab]);
 
   const handleLogout = () => {
     const auth = getAuth();
@@ -178,7 +200,7 @@ function ViewProfile() {
                     <span className={`px-4 py-1.5 rounded-full text-sm font-semibold shadow-md ${
                       userData?.rankPoints >= 1000 
                         ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white' 
-                        : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
+                        : 'bg-gradient-to-r from-blue-500 to-blue-500 text-white'
                     }`}>
                       {userData?.rankPoints >= 1000 ? '🏆 Gold' : '🥉 Bronze'}
                     </span>
@@ -258,28 +280,36 @@ function ViewProfile() {
             {activeTab === 'ranks' && isStudent && (
               <div className="space-y-4 bg-gray-50 rounded-xl p-4">
                 <h3 className="text-lg font-semibold text-purple-600 mb-4 flex items-center gap-2 justify-center">
-                  <Trophy className="w-5 h-5" />
-                  Leaderboard
+                  <Trophy className="w-5 h-5" /> Leaderboard
                 </h3>
                 <div className="space-y-2">
-                  <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 p-3 rounded-lg flex justify-between items-center">
-                    <span className="flex items-center gap-2 font-medium">
-                      🥇 <span className="text-yellow-700">Alice</span>
-                    </span>
-                    <span className="text-sm text-yellow-600 font-medium">1200 pts</span>
-                  </div>
-                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-3 rounded-lg flex justify-between items-center">
-                    <span className="flex items-center gap-2 font-medium">
-                      🥈 <span className="text-gray-700">Bob</span>
-                    </span>
-                    <span className="text-sm text-gray-600 font-medium">1150 pts</span>
-                  </div>
-                  <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-3 rounded-lg flex justify-between items-center">
-                    <span className="flex items-center gap-2 font-medium">
-                      🥉 <span className="text-orange-700">You</span>
-                    </span>
-                    <span className="text-sm text-orange-600 font-medium">{userData?.rankPoints || 0} pts</span>
-                  </div>
+                  {leaderboard.map(user => {
+                    const bg = user.position === 1
+                      ? 'from-yellow-50 to-yellow-100'
+                      : user.position === 2
+                      ? 'from-gray-50 to-gray-100'
+                      : user.position === 3
+                      ? 'from-orange-50 to-orange-100'
+                      : 'from-white to-white';
+                    const emoji = {1:'🥇',2:'🥈',3:'🥉'}[user.position] || `${user.position}.`;
+                    return (
+                      <div
+                        key={user.uid}
+                        className={`bg-gradient-to-r ${bg} p-3 rounded-lg flex justify-between items-center`}
+                      >
+                        <span className="flex items-center gap-2 font-medium">
+                          {emoji} <span className={`${user.position===1?'text-yellow-700':user.position===2?'text-gray-700':user.position===3?'text-orange-700':'text-gray-800'}`}>
+                            {user.name || user.email}
+                          </span>
+                        </span>
+                        <span className={`text-sm font-medium ${
+                          user.position===1?'text-yellow-600':user.position===2?'text-gray-600':user.position===3?'text-orange-600':'text-gray-600'
+                        }`}>
+                          {user.rankPoints || 0} pts
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
