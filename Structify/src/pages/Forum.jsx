@@ -31,6 +31,9 @@ const Forum = () => {
     const [notifications, setNotifications] = useState([]);
     const [showNotifications, setShowNotifications] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
+    // add states for reply feature
+    const [replyInputs, setReplyInputs] = useState({});
+    const [expandedReplies, setExpandedReplies] = useState({});
     
     // Check if user has scrolled down enough to show the scroll-to-top button
     useEffect(() => {
@@ -400,6 +403,33 @@ const Forum = () => {
             console.error("Error deleting comment:", error);
             alert("Failed to delete comment. Please try again.");
         }
+    };
+
+    // Add a new handler for adding replies
+    const handleAddReply = async (postId, commentIdx) => {
+        if (!currentUser || !replyInputs[`${postId}-${commentIdx}`]?.trim()) return;
+        const postRef = doc(db, "posts", postId);
+        const postSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
+        const currentPost = postSnap.docs.find(d => d.id === postId)?.data();
+        if (!currentPost) return;
+        const updatedComments = [...currentPost.comments];
+        const comment = { ...updatedComments[commentIdx] };
+        const newReply = {
+            user: { uid: currentUser.uid, name: currentUser.name, email: currentUser.email },
+            reply: replyInputs[`${postId}-${commentIdx}`],
+            date: new Date().toISOString()
+        };
+        comment.replies = Array.isArray(comment.replies)
+            ? [...comment.replies, newReply]
+            : [newReply];
+        updatedComments[commentIdx] = comment;
+        await updateDoc(postRef, { comments: updatedComments });
+        setReplyInputs(inputs => ({ ...inputs, [`${postId}-${commentIdx}`]: '' }));
+        setExpandedReplies(prev => ({ ...prev, [`${postId}-${commentIdx}`]: false }));
+        // refresh posts
+        const q2 = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+        const qs = await getDocs(q2);
+        setPosts(qs.docs.map(d => ({ id: d.id, ...d.data() })));
     };
 
     // Filter posts based on activeFilter and searchQuery
@@ -934,6 +964,51 @@ const Forum = () => {
                                                                     {c.date ? new Date(c.date).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
                                                                     {c.edited && <span className="ml-1">(edited)</span>}
                                                                 </span>
+                                                                {/* Reply button */}
+                                                                <button
+                                                                    className="text-xs text-blue-600 ml-4"
+                                                                    onClick={() =>
+                                                                        setExpandedReplies(prev => ({
+                                                                            ...prev,
+                                                                            [`${post.id}-${idx}`]: !prev[`${post.id}-${idx}`]
+                                                                        }))
+                                                                    }
+                                                                >
+                                                                    Reply
+                                                                </button>
+                                                                {/* Reply input */}
+                                                                {expandedReplies[`${post.id}-${idx}`] && (
+                                                                    <div className="mt-2 ml-8 flex items-center">
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="Write a reply..."
+                                                                            className="flex-1 border border-gray-300 rounded-full px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                            value={replyInputs[`${post.id}-${idx}`] || ''}
+                                                                            onChange={e =>
+                                                                                setReplyInputs(inputs => ({
+                                                                                    ...inputs,
+                                                                                    [`${post.id}-${idx}`]: e.target.value
+                                                                                }))
+                                                                            }
+                                                                        />
+                                                                        <button
+                                                                            className="ml-2 px-3 py-1 text-white bg-green-600 rounded-full hover:bg-green-700"
+                                                                            onClick={() => handleAddReply(post.id, idx)}
+                                                                        >
+                                                                            Send
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                                {/* Render replies */}
+                                                                {Array.isArray(c.replies) && c.replies.length > 0 && (
+                                                                    <div className="mt-2 ml-8">
+                                                                        {c.replies.map((r, ri) => (
+                                                                            <div key={ri} className="text-sm text-gray-700 mb-1">
+                                                                                <span className="font-semibold">{r.user?.name}:</span> {r.reply}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
                                                             </>
                                                         )}
                                                     </div>
