@@ -25,6 +25,13 @@ function AdminPage() {
   const [newAcademicYear, setNewAcademicYear] = useState(''); // Add state for new academic year
   const [academicYears, setAcademicYears] = useState([]); // Store available academic years
 
+  // Add state for bulk actions
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedClasses, setSelectedClasses] = useState([]);
+  const [bulkActionType, setBulkActionType] = useState(null); // 'delete', 'changeYear'
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
+  const [bulkTargetYear, setBulkTargetYear] = useState('');
+  
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editedSection, setEditedSection] = useState(null);
   const [editedName, setEditedName] = useState('');
@@ -476,6 +483,172 @@ function AdminPage() {
     localStorage.setItem('classViewMode', newMode);
   };
 
+  // Toggle selection mode for bulk actions
+  const toggleSelectionMode = () => {
+    setIsSelectionMode(!isSelectionMode);
+    if (isSelectionMode) {
+      // Exit selection mode, clear selections
+      setSelectedClasses([]);
+    }
+  };
+
+  // Toggle class selection
+  const toggleClassSelection = (classId) => {
+    setSelectedClasses(prev => {
+      if (prev.includes(classId)) {
+        return prev.filter(id => id !== classId);
+      } else {
+        return [...prev, classId];
+      }
+    });
+  };
+
+  // Select all classes that are currently filtered/visible
+  const selectAllClasses = () => {
+    if (selectedClasses.length === filteredSections.length) {
+      // If all are selected, deselect all
+      setSelectedClasses([]);
+    } else {
+      // Otherwise, select all filtered classes
+      setSelectedClasses(filteredSections.map(section => section.id));
+    }
+  };
+
+  // Initialize bulk delete action
+  const initBulkDelete = () => {
+    setBulkActionType('delete');
+    setShowBulkConfirmModal(true);
+  };
+
+  // Initialize bulk change academic year
+  const initBulkChangeYear = () => {
+    setBulkActionType('changeYear');
+    setShowBulkConfirmModal(true);
+  };
+
+  // Handle bulk delete confirmation
+  const confirmBulkDelete = async () => {
+    if (selectedClasses.length === 0) return;
+    
+    try {
+      setIsLoading(true);
+      
+      // Get all selected classes
+      const classesToDelete = sections.filter(section => selectedClasses.includes(section.id));
+      
+      // Process each class - similar to single class deletion but in batch
+      for (const section of classesToDelete) {
+        // Get users in this section
+        const studentsQuery = query(
+          collection(db, 'users'),
+          where('section', '==', section.sectionName),
+          where('role', '==', 'student')
+        );
+        const instructorsQuery = query(
+          collection(db, 'users'),
+          where('section', '==', section.sectionName),
+          where('role', '==', 'instructor')
+        );
+        
+        const [studentSnapshot, instructorSnapshot] = await Promise.all([
+          getDocs(studentsQuery),
+          getDocs(instructorsQuery)
+        ]);
+
+        // Handle students based on deleteStudents option (reusing the same option)
+        const studentUpdates = deleteStudents
+          ? studentSnapshot.docs.map(doc => deleteDoc(doc.ref))
+          : studentSnapshot.docs.map(doc => updateDoc(doc.ref, { section: '' }));
+
+        // Always unassign instructors
+        const instructorUpdates = instructorSnapshot.docs.map(doc => 
+          updateDoc(doc.ref, { section: '' })
+        );
+        
+        // Execute all updates and delete the section
+        await Promise.all([
+          ...studentUpdates,
+          ...instructorUpdates,
+          deleteDoc(doc(db, 'classes', section.id))
+        ]);
+      }
+
+      // Update local state
+      setSections(prev => prev.filter(section => !selectedClasses.includes(section.id)));
+      
+      // Exit selection mode and clear selections
+      setIsSelectionMode(false);
+      setSelectedClasses([]);
+      setShowBulkConfirmModal(false);
+      setBulkActionType(null);
+      setIsLoading(false);
+      
+      showToast(
+        `Successfully deleted ${classesToDelete.length} classes`, 
+        'success'
+      );
+    } catch (error) {
+      console.error('Error performing bulk delete:', error);
+      setIsLoading(false);
+      showToast('Failed to delete classes', 'error');
+    }
+  };
+    // Handle bulk change academic year
+  const confirmBulkChangeYear = async () => {
+    if (selectedClasses.length === 0 || !bulkTargetYear.trim()) {
+      showToast('Please select a valid academic year', 'error');
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      
+      // Get all selected classes
+      const classesToUpdate = sections.filter(section => selectedClasses.includes(section.id));
+      
+      // Update each class with the new academic year
+      const updatePromises = classesToUpdate.map(section => 
+        updateDoc(doc(db, 'classes', section.id), {
+          academicYear: bulkTargetYear.trim()
+        })
+      );
+      
+      await Promise.all(updatePromises);
+      
+      // Update local state
+      const updatedSections = sections.map(section => {
+        if (selectedClasses.includes(section.id)) {
+          return { ...section, academicYear: bulkTargetYear.trim() };
+        }
+        return section;
+      });
+      
+      setSections(updatedSections);
+      
+      // Update academic years list if this is a new year
+      if (!academicYears.includes(bulkTargetYear.trim())) {
+        setAcademicYears([...academicYears, bulkTargetYear.trim()].sort());
+      }
+      
+      // Exit selection mode and clear selections
+      setIsSelectionMode(false);
+      setSelectedClasses([]);
+      setShowBulkConfirmModal(false);
+      setBulkActionType(null);
+      setBulkTargetYear('');
+      setIsLoading(false);
+      
+      showToast(
+        `Successfully updated ${classesToUpdate.length} classes to ${bulkTargetYear} academic year`, 
+        'success'
+      );
+    } catch (error) {
+      console.error('Error performing bulk academic year update:', error);
+      setIsLoading(false);
+      showToast('Failed to update classes', 'error');
+    }
+  };
+
   return (
     <div className="h-screen bg-gray-100 relative overflow-hidden">
       <Header />
@@ -578,11 +751,33 @@ function AdminPage() {
           <>
             {/* Academic Year Filter Section */}
             <div className="py-3 px-2 border-b">
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center text-sm font-medium text-gray-700">
+              <div className="flex flex-wrap items-center gap-2">                <div className="flex items-center text-sm font-medium text-gray-700">
                   <Calendar className="h-4 w-4 mr-1.5 text-blue-600" />
                   <span>Academic Year:</span>
                 </div>
+                
+                {/* Bulk Actions Toggle */}
+                <button
+                  onClick={toggleSelectionMode}
+                  className={`ml-2 flex items-center px-2 py-1 rounded text-xs font-medium ${
+                    isSelectionMode 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                  }`}
+                  title={isSelectionMode ? "Exit selection mode" : "Enter selection mode"}
+                >
+                  {isSelectionMode ? (
+                    <>
+                      <X className="h-3 w-3 mr-1" />
+                      <span>Cancel Selection</span>
+                    </>
+                  ) : (
+                    <>
+                      <Filter className="h-3 w-3 mr-1" />
+                      <span>Bulk Actions</span>
+                    </>
+                  )}
+                </button>
                 
                 <div className="flex flex-wrap items-center gap-2">
                   <button
@@ -620,14 +815,40 @@ function AdminPage() {
                   ))}
                 </div>
               </div>
-              
-              {academicYearFilter && academicYearFilter !== 'all' && (
+                {academicYearFilter && academicYearFilter !== 'all' && (
                 <div className="mt-2 pl-6 flex items-center">
                   <span className="text-xs text-gray-500 mr-2">Showing classes for year:</span>
                   <span className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded font-medium">
                     {academicYearFilter}
                   </span>
                   <span className="mx-2 text-xs text-gray-500">({filteredSections.length} classes)</span>
+                </div>
+              )}
+              
+              {/* Bulk Actions Bar */}
+              {isSelectionMode && selectedClasses.length > 0 && (
+                <div className="mt-2 flex flex-col sm:flex-row items-center justify-between bg-blue-50 border border-blue-100 rounded-lg p-3">
+                  <div className="flex items-center mb-2 sm:mb-0">
+                    <span className="font-medium text-blue-800 text-sm">
+                      {selectedClasses.length} class{selectedClasses.length !== 1 ? 'es' : ''} selected
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={initBulkChangeYear}
+                      className="flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700"
+                    >
+                      <Calendar className="h-3.5 w-3.5 mr-1" />
+                      Change Academic Year
+                    </button>
+                    <button
+                      onClick={initBulkDelete}
+                      className="flex items-center px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 mr-1" />
+                      Delete Selected
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -697,8 +918,19 @@ function AdminPage() {
               <div className="p-4 overflow-y-auto pr-2 flex-grow">
                 <div className="overflow-hidden border border-gray-200 sm:rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
+                    <thead className="bg-gray-50">                      <tr>
+                        {isSelectionMode && (
+                          <th scope="col" className="pl-6 pr-2 py-3 w-12">
+                            <div className="flex items-center">
+                              <input
+                                type="checkbox"
+                                className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                                checked={selectedClasses.length === filteredSections.length && filteredSections.length > 0}
+                                onChange={selectAllClasses}
+                              />
+                            </div>
+                          </th>
+                        )}
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Class Name
                         </th>
@@ -717,14 +949,26 @@ function AdminPage() {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredSections.map((section) => (
-                        <tr 
+                      {filteredSections.map((section) => (                        <tr 
                           key={section.id} 
-                          className="hover:bg-gray-50 cursor-pointer transition"
+                          className={`hover:bg-gray-50 cursor-pointer transition ${isSelectionMode && selectedClasses.includes(section.id) ? 'bg-blue-50' : ''}`}
                         >
+                          {isSelectionMode && (
+                            <td className="pl-6 pr-2 py-4 whitespace-nowrap w-12" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                                  checked={selectedClasses.includes(section.id)}
+                                  onChange={() => toggleClassSelection(section.id)}
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                              </div>
+                            </td>
+                          )}
                           <td 
                             className="px-6 py-4 whitespace-nowrap"
-                            onClick={() => navigate('/ViewClassPage', { state: { section } })}
+                            onClick={isSelectionMode ? () => toggleClassSelection(section.id) : () => navigate('/ViewClassPage', { state: { section } })}
                           >
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-800">
@@ -1021,8 +1265,118 @@ function AdminPage() {
               </div>
             </div>
           </div>
+        )}        {/* Bulk Action Confirmation Modal */}
+        {showBulkConfirmModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white px-8 py-6 rounded-lg shadow-xl w-full max-w-md">
+              <div className="text-center mb-4">
+                <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-blue-50 text-blue-600 mb-4">
+                  {bulkActionType === 'delete' ? (
+                    <AlertTriangle className="h-8 w-8" />
+                  ) : (
+                    <Calendar className="h-8 w-8" />
+                  )}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  {bulkActionType === 'delete' ? 'Delete Selected Classes' : 'Change Academic Year'}
+                </h3>
+                <p className="text-gray-600">
+                  {bulkActionType === 'delete' 
+                    ? `You are about to delete ${selectedClasses.length} class${selectedClasses.length !== 1 ? 'es' : ''}.` 
+                    : `Update academic year for ${selectedClasses.length} class${selectedClasses.length !== 1 ? 'es' : ''}.`}
+                </p>
+              </div>
+              
+              {bulkActionType === 'changeYear' && (
+                <div className="mb-4">
+                  <label htmlFor="bulkTargetYear" className="block text-sm font-medium text-gray-700 mb-1">
+                    Select Academic Year
+                  </label>
+                  <select
+                    id="bulkTargetYear"
+                    value={bulkTargetYear}
+                    onChange={(e) => setBulkTargetYear(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select academic year...</option>
+                    {academicYears.map((year, index) => (
+                      <option key={index} value={year}>{year}</option>
+                    ))}
+                    <option value="new">+ Add new year</option>
+                  </select>
+                  
+                  {bulkTargetYear === 'new' && (
+                    <input
+                      type="text"
+                      placeholder="Enter new academic year"
+                      value={bulkTargetYear === 'new' ? '' : bulkTargetYear}
+                      onChange={(e) => setBulkTargetYear(e.target.value)}
+                      className="mt-2 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  )}
+                </div>
+              )}
+              
+              {bulkActionType === 'delete' && (
+                <div className="bg-amber-50 border-l-4 border-amber-400 rounded-md p-4 mb-6">
+                  <div className="flex items-start">
+                    <AlertTriangle className="h-5 w-5 text-amber-400 mr-2 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-amber-800 font-medium mb-1">Warning:</p>
+                      <p className="text-sm text-amber-700 mb-3">
+                        This will affect all students and instructors assigned to these classes.
+                      </p>
+                      
+                      <div className="flex items-center mt-1 p-2 bg-white rounded border border-amber-300">
+                        <input
+                          type="checkbox"
+                          id="bulkDeleteStudents"
+                          checked={deleteStudents}
+                          onChange={(e) => setDeleteStudents(e.target.checked)}
+                          className="h-4 w-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
+                        />
+                        <label htmlFor="bulkDeleteStudents" className="ml-2 text-sm font-medium text-red-700">
+                          Also delete student accounts
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex justify-end gap-3 border-t pt-4 mt-4">
+                <button
+                  onClick={() => {
+                    setShowBulkConfirmModal(false);
+                    setBulkActionType(null);
+                    setBulkTargetYear('');
+                  }}
+                  className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
+                >
+                  Cancel
+                </button>
+                {bulkActionType === 'delete' ? (
+                  <button
+                    onClick={confirmBulkDelete}
+                    className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition font-medium"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Processing...' : 'Delete Classes'}
+                  </button>
+                ) : (
+                  <button
+                    onClick={confirmBulkChangeYear}
+                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition font-medium"
+                    disabled={isLoading || !bulkTargetYear}
+                  >
+                    {isLoading ? 'Processing...' : 'Update Classes'}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         )}
-
+        
         {/* Academic Year Editor Modal */}
         {isYearEditorOpen && (
           <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
