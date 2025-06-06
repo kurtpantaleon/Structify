@@ -43,8 +43,7 @@ function AdminPage() {
 
   // View mode state (grid or list)
   const [viewMode, setViewMode] = useState(() => {
-    // Get from localStorage or default to 'grid'
-    return localStorage.getItem('classViewMode') || 'grid';
+    return localStorage.getItem('classViewMode') || 'list';
   });
 
   useEffect(() => {
@@ -478,7 +477,7 @@ function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 relative">
+    <div className="h-screen bg-gray-100 relative overflow-hidden">
       <Header />
       <AdminSubHeading toggleNav={() => setIsNavOpen(!isNavOpen)} title="Class Management" />
       {isNavOpen && (
@@ -487,7 +486,7 @@ function AdminPage() {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto mt-7 bg-white p-6 rounded-lg shadow-lg h-[90vh] flex flex-col relative border border-gray-200">
+      <div className="max-w-7xl mx-auto mt-7 bg-white p-6 rounded-lg shadow-lg h-[90vh] overflow-hidden flex flex-col relative border border-gray-200">
         {/* Top section with actions */}
         <div className="flex flex-col md:flex-row justify-between items-center py-4 px-2 gap-4 border-b pb-4">
           <div className="flex items-center gap-2 w-full md:w-auto">
