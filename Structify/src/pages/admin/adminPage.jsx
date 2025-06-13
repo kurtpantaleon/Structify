@@ -659,7 +659,7 @@ function AdminPage() {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto mt-7 bg-white p-6 rounded-lg shadow-lg h-[90vh] overflow-hidden flex flex-col relative border border-gray-200">
+      <div className="max-w-7xl mx-auto mt-7 bg-white p-6 rounded-lg shadow-lg h-[75vh] overflow-y-auto flex flex-col relative border border-gray-200">
         {/* Top section with actions */}
         <div className="flex flex-col md:flex-row justify-between items-center py-4 px-2 gap-4 border-b pb-4">
           <div className="flex items-center gap-2 w-full md:w-auto">
@@ -899,7 +899,7 @@ function AdminPage() {
               </div>
             ) : viewMode === 'grid' ? (
               /* Grid View */
-              <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 overflow-y-auto pr-2 flex-grow">
+              <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pr-2 flex-grow">
                 {filteredSections.map((item) => (
                   <SectionCard
                     key={item.id}
@@ -915,7 +915,7 @@ function AdminPage() {
               </div>
             ) : (
               /* List View */
-              <div className="p-4 overflow-y-auto pr-2 flex-grow">
+              <div className="p-4 overflow-y-auto pr-2 flex-grow" style={{ maxHeight: 'calc(80vh - 200px)', minHeight: '200px' }}>
                 <div className="overflow-hidden border border-gray-200 sm:rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50"><tr>
