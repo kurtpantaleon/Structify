@@ -5,7 +5,7 @@ import { useAuth } from '../../context/authContextProvider';
 import Header from '../../components/AdminHeader';
 import AdminSubHeading from '../../components/AdminSubHeading';
 import { BookOpen, Plus, Loader, CheckCircle, AlertCircle, Trash2, X } from 'lucide-react';
-import useFileUpload from './useFileUpload';
+import useFileUpload from '../../hooks/useFileUpload';
 import { getStorage, ref, deleteObject } from 'firebase/storage';
 
 const EditStructifyLesson = () => {

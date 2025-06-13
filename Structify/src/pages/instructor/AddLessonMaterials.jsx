@@ -10,7 +10,7 @@ import LessonForm from './LessonForm';
 import ActivityForm from './ActivityForm';
 import QuizForm from './QuizForm';
 import EditStructifyLesson from './EditStructifyLesson';
-import useFileUpload from './useFileUpload';
+import useFileUpload from '../../hooks/useFileUpload';
 import { getStorage, ref, deleteObject } from 'firebase/storage';
 import { BookOpen, FileText, HelpCircle, Plus, Loader, CheckCircle, AlertCircle, X, BarChart2, Edit, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
