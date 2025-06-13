@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
 import { useAuth } from '../../context/authContextProvider';
-import Header from '../../components/AdminHeader';
-import AdminSubHeading from '../../components/AdminSubHeading';
+import Header from '../../components/admin/AdminHeader';
+import AdminSubHeading from '../../components/admin/AdminSubHeading';
 import { BookOpen, Plus, Loader, CheckCircle, AlertCircle, Trash2, X } from 'lucide-react';
 import useFileUpload from '../../hooks/useFileUpload';
 import { getStorage, ref, deleteObject } from 'firebase/storage';

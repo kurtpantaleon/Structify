@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, where, getDoc, doc } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
-import Header from '../../components/AdminHeader';
-import AdminNavigationBar from '../../components/InstructorNavigationBar';
-import AdminSubHeading from '../../components/AdminSubHeading';
+import Header from '../../components/admin/AdminHeader';
+import AdminNavigationBar from '../../components/instructor/InstructorNavigationBar';
+import AdminSubHeading from '../../components/admin/AdminSubHeading';
 import { Search, ArrowLeft, User, Mail, Users, ChevronDown, Award, Activity } from 'lucide-react';
 
 function ViewStudentLists() {

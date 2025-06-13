@@ -3,9 +3,9 @@ import { collection, addDoc, serverTimestamp, getDocs, query, where, deleteDoc, 
 import { db } from '../../services/firebaseConfig';
 import { useAuth } from '../../context/authContextProvider';
 import { useNavigate, Link } from 'react-router-dom';
-import Header from '../../components/AdminHeader';
-import AdminSubHeading from '../../components/AdminSubHeading';
-import InstructorNavigationBar from '../../components/InstructorNavigationBar';
+import Header from '../../components/admin/AdminHeader';
+import AdminSubHeading from '../../components/admin/AdminSubHeading';
+import InstructorNavigationBar from '../../components/instructor/InstructorNavigationBar';
 import LessonForm from './LessonForm';
 import ActivityForm from './ActivityForm';
 import QuizForm from './QuizForm';

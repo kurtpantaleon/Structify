@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom"; // Added useLocation
-import HomeIcon from "../assets/images/Home Icon.png"; 
-import InstructorIcon from "../assets/images/Instructor Icon.png"; 
-import StudentIcon from "../assets/images/Student Icon.png"; 
+import HomeIcon from "../../assets/images/Home Icon.png"; 
+import InstructorIcon from "../../assets/images/Instructor Icon.png"; 
+import StudentIcon from "../../assets/images/Student Icon.png"; 
 
 // Add CSS keyframes for animations
 const style = document.createElement('style');

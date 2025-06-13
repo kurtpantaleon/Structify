@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { collection, query, where, orderBy, onSnapshot, getDocs } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom'; 
 import { db } from '../services/firebaseConfig';
-import Header from '../components/AdminHeader';
+import Header from '../components/admin/AdminHeader';
 import Goldrank from '../assets/images/Gold Rank.png';
 import Silverrank from '../assets/images/Silver Rank.png';
 import Bronzerank from '../assets/images/Bronze Rank.png';

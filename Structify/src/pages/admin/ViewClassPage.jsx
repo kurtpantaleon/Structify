@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, where, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, adminDeleteUser } from '../../services/firebaseConfig';
-import Header from '../../components/AdminHeader';
-import AdminNavigationBar from '../../components/AdminNavigationBar';
-import AdminSubHeading from '../../components/AdminSubHeading';
+import Header from '../../components/admin/AdminHeader';
+import AdminNavigationBar from '../../components/admin/AdminNavigationBar';
+import AdminSubHeading from '../../components/admin/AdminSubHeading';
 import { Users, ChevronLeft, UserCheck, GraduationCap, Search, BarChart, Edit3, Trash2, X, Save, AlertTriangle, CheckCircle } from 'lucide-react';
 
 function ViewClassPage() {

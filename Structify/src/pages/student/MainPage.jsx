@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../services/firebaseConfig';
+import { useAuth } from '../../context/authContextProvider';
 import NavigationBar from '../../components/NavigationBar';
 import SubHeading from '../../components/SubHeading';
 import Header from '../../components/Header';
 import CardSection from '../../components/CardSection';
 import WeekButton from '../../components/WeekButton';
 import LearningPath from '../../components/LearningPath';
-import InstructorEditedLessons from '../../components/InstructorEditedLessons';
+import InstructorEditedLessons from '../../components/instructor/InstructorEditedLessons';
 
 import CheckIcon from '../../assets/images/Check Icon.png';
 import UncheckIcon from '../../assets/images/Uncheck Icon.png';

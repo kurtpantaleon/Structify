@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../services/firebaseConfig';
-import WeekButton from './WeekButton';
-import CheckIcon from '../assets/images/Check Icon.png';
-import UncheckIcon from '../assets/images/Uncheck Icon.png';
-import StudyIcon from '../assets/images/Study Icon.png';
+import { db } from '../../services/firebaseConfig';
+import WeekButton from '../WeekButton';
+import CheckIcon from '../../assets/images/Check Icon.png';
+import UncheckIcon from '../../assets/images/Uncheck Icon.png';
+import StudyIcon from '../../assets/images/Study Icon.png';
 
 function InstructorEditedLessons({ lessonType, onLessonTypeChange }) {
   const [lessons, setLessons] = useState([]);

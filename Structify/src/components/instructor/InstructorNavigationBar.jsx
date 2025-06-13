@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Trophy, MessageCircle, Upload, FolderOpen } from "lucide-react";
-import { useAuth } from "../context/authContextProvider";
+import { useAuth } from "../../context/authContextProvider";
 
 const InstructorNavigationBar = () => {
   const [expanded, setExpanded] = useState(false);

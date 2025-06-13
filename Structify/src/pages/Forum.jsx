@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { collection, getDocs, addDoc, serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc, arrayUnion, where, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/AdminHeader';
+import Header from '../components/admin/AdminHeader';
 import profile from '../assets/images/sample profile.png';
 import { useAuth } from '../context/authContextProvider';
 import ThreeDots from '../assets/images/Threedot Icon.png';

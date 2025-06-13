@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
-import Header from '../../components/AdminHeader';
-import AdminNavigationBar from '../../components/AdminNavigationBar';
-import AdminSubHeading from '../../components/AdminSubHeading';
-import SectionCard from '../../components/AdminSectionCard';
-import AcademicYearEditor from '../../components/AcademicYearEditor';
+import Header from '../../components/admin/AdminHeader';
+import AdminNavigationBar from '../../components/admin/AdminNavigationBar';
+import AdminSubHeading from '../../components/admin/AdminSubHeading';
+import SectionCard from '../../components/admin/AdminSectionCard';
+import AcademicYearEditor from '../../components/admin/AcademicYearEditor';
 import { 
   Search, Plus, RefreshCw, AlertTriangle, CheckCircle, XCircle, Calendar, 
   Filter, X, Layers, LayoutGrid, List, Edit3, Trash2, ExternalLink, Save
@@ -237,7 +237,8 @@ function AdminPage() {
       console.error('Error updating section name:', error);
       showToast('Failed to update class', 'error');
     }
-  };const [affectedUsers, setAffectedUsers] = useState({ students: 0, instructor: null });
+  };
+  const [affectedUsers, setAffectedUsers] = useState({ students: 0, instructor: null });
   const [deleteStudents, setDeleteStudents] = useState(false);
   const handleDeleteSection = async (section) => {
     // Get count of affected users
