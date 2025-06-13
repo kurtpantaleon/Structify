@@ -1067,7 +1067,7 @@ const Forum = () => {
         )}
         
         {/* Add this style to enable custom scrollbar */}
-        <style jsx>{`
+        <style>{`
             .scrollbar-hide::-webkit-scrollbar {
                 display: none;
             }

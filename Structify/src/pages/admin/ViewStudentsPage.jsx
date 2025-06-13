@@ -84,15 +84,22 @@ function ViewStudentsPage() {
   const [toastVisible, setToastVisible] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchStudents = async () => {
+      if (!isMounted) return;
       setIsLoading(true);
       try {
         const q = query(collection(db, 'users'), where('role', '==', 'student'));
         const querySnapshot = await getDocs(q);
+        if (!isMounted) return;
+        
         const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         
         // Fetch all class information to get academic years
         const classesSnapshot = await getDocs(collection(db, 'classes'));
+        if (!isMounted) return;
+        
         const classesData = {};
         classesSnapshot.docs.forEach(doc => {
           const classData = doc.data();
@@ -109,16 +116,27 @@ function ViewStudentsPage() {
           academicYear: student.section ? classesData[student.section]?.academicYear || 'Not specified' : ''
         }));
         
-        setStudents(enhancedData);
-        setFilteredStudents(enhancedData);
+        if (isMounted) {
+          setStudents(enhancedData);
+          setFilteredStudents(enhancedData);
+        }
       } catch (error) {
         console.error('Error fetching students:', error);
+        if (isMounted) {
+          showErrorToast('Failed to load students. Please try again.');
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
- 
+
     fetchStudents();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
   
   // Filter students based on search term
@@ -516,7 +534,10 @@ function ViewStudentsPage() {
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();    reader.onload = async (event) => {
+    let isMounted = true;
+    const reader = new FileReader();
+    
+    reader.onload = async (event) => {
       try {
         const csvData = event.target.result;
         const rows = csvData.split('\n').filter(row => row.trim());
@@ -532,125 +553,64 @@ function ViewStudentsPage() {
 
         // Create a map to track new sections and their student counts
         const newSections = new Map();
-          // Skip header row and process each student
+
+        // Skip header row and process each student
         for (let i = 1; i < rows.length; i++) {
+          if (!isMounted) break; // Stop processing if component unmounted
+          
           const [lastName, firstName, email, password, section] = rows[i].split(',').map(field => field.trim());
           const name = `${firstName} ${lastName}`;
-            // If section provided and doesn't exist, create it
-          if (section && !existingSections.has(section)) {
-            try {
-              // Check if section name is valid
-              if (!section.match(/^[A-Za-z0-9\s-]+$/)) {
-                errors.push({
-                  name,
-                  email,
-                  error: `Invalid section name: ${section}. Only letters, numbers, spaces, and hyphens are allowed.`
-                });
-                continue;
-              }
-
-              // Add new section to Firestore
-              const newSectionRef = doc(collection(db, 'classes'));
-              await setDoc(newSectionRef, {
-                sectionName: section,
-                studentCount: 0,
-                createdAt: new Date().toISOString()
-              });
-              
-              existingSections.set(section, newSectionRef.id);
-              newSections.set(section, 0);
-              console.log(`Created new section: ${section}`);
-            } catch (error) {
-              console.error(`Error creating section ${section}:`, error);
-              errors.push({ 
-                name, 
-                email, 
-                error: `Failed to create new section: ${section}. Error: ${error.message}` 
-              });
-              continue;
-            }
-          }
 
           try {
+            // Create user account
             const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-            const uid = userCredential.user.uid;
+            const user = userCredential.user;
 
-            await setDoc(doc(db, 'users', uid), {
+            // Create user document
+            await setDoc(doc(db, 'users', user.uid), {
               name,
               email,
-              section: section || '',
               role: 'student',
-              hearts: 3,
-              coins: 100,
-              rankPoints: 0,
-            });            // Update section's student count if section is assigned
-            if (section) {
-              const classId = existingSections.get(section);
-              if (classId) {
-                // Update the count in our tracking map
-                if (newSections.has(section)) {
-                  newSections.set(section, newSections.get(section) + 1);
-                } else {
-                  const studentsQuery = query(
-                    collection(db, 'users'),
-                    where('role', '==', 'student'),
-                    where('section', '==', section)
-                  );
-                  const studentsSnapshot = await getDocs(studentsQuery);
-                  const currentCount = studentsSnapshot.size;
-                  
-                  // Update the class document with new count
-                  await setDoc(doc(db, 'classes', classId), {
-                    sectionName: section,
-                    studentCount: currentCount + 1,
-                  }, { merge: true });
-                }
-              }
+              section: section || '',
+              createdAt: new Date().toISOString()
+            });
+
+            if (isMounted) {
+              success++;
+              setUploadProgress(Math.floor((success / total) * 100));
             }
-
-            await secondaryAuth.signOut();
-            success++;
-            setUploadProgress(Math.floor((success / total) * 100));              const newStudent = {
-                id: uid, 
-                name, 
-                email, 
-                section: section || '', 
-                role: 'student'
-              };
-              
-              // Update both arrays
-              setStudents(prev => [...prev, newStudent]);
-              setFilteredStudents(prev => [...prev, newStudent]);
           } catch (error) {
-            errors.push({ name, email, error: error.message });
+            if (isMounted) {
+              errors.push({ name, email, error: error.message });
+            }
           }
         }
 
-        setBulkUploadErrors(errors);
-        if (errors.length === 0) {
-          setShowBulkUploadModal(false);
-          setShowSuccessModal(true);
-        }        // Update all new sections with their final counts
-        for (const [section, count] of newSections.entries()) {
-          const classId = existingSections.get(section);
-          if (classId) {
-            await setDoc(doc(db, 'classes', classId), {
-              sectionName: section,
-              studentCount: count,
-            }, { merge: true });
+        if (isMounted) {
+          setBulkUploadErrors(errors);
+          if (errors.length === 0) {
+            setShowBulkUploadModal(false);
+            setShowSuccessModal(true);
           }
         }
-
       } catch (error) {
         console.error('Error processing CSV:', error);
-        setBulkUploadErrors([{ name: 'CSV Processing', email: '', error: error.message }]);
+        if (isMounted) {
+          setBulkUploadErrors([{ name: 'CSV Processing', email: '', error: error.message }]);
+        }
       } finally {
-        setUploadProgress(0);
-        e.target.value = ''; // Reset file input
+        if (isMounted) {
+          setUploadProgress(0);
+          e.target.value = ''; // Reset file input
+        }
       }
     };
 
     reader.readAsText(file);
+
+    return () => {
+      isMounted = false;
+    };
   };
   const downloadCsvTemplate = () => {
     const template = 'Last Name,First Name,Email,Password,Section\nDoe,John,john@example.com,password123,Section A\n';
@@ -732,175 +692,95 @@ function ViewStudentsPage() {
     return students.filter(student => selectedStudents.includes(student.id));
   };
 
-  // Bulk reassign students
   const handleBulkReassign = async () => {
-    if (selectedStudents.length === 0 || !bulkReassignSection) return;
-    
+    if (!selectedSection) {
+      showErrorToast('Please select a section to reassign students to');
+      return;
+    }
+
+    let isMounted = true;
     setIsLoading(true);
     try {
-      const selectedStudentObjects = getSelectedStudentObjects();
-      const newSection = bulkReassignSection === '__unassign__' ? '' : bulkReassignSection;
-      
-      // Group students by their current section for batch updates
-      const studentsBySection = {};
-      selectedStudentObjects.forEach(student => {
-        const currentSection = student.section || '';
-        if (!studentsBySection[currentSection]) {
-          studentsBySection[currentSection] = [];
-        }
-        studentsBySection[currentSection].push(student);
-      });
-      
-      // Update each student document
-      const updatePromises = selectedStudentObjects.map(student => 
+      const selectedStudents = getSelectedStudentObjects();
+      const updates = selectedStudents.map(student => 
         setDoc(doc(db, 'users', student.id), {
-          ...student,
-          section: newSection,
-        })
+          section: selectedSection
+        }, { merge: true })
       );
-      
-      await Promise.all(updatePromises);
-      
-      // Update student counts for all affected classes
-      const classUpdates = [];
-      
-      // 1. Update source classes (decrease counts)
-      for (const [section, students] of Object.entries(studentsBySection)) {
-        if (section) { // Only if section is not empty
-          const sourceClassQuery = query(
-            collection(db, 'classes'),
-            where('sectionName', '==', section)
-          );
-          const sourceClassSnapshot = await getDocs(sourceClassQuery);
-          
-          if (!sourceClassSnapshot.empty) {
-            const classDoc = sourceClassSnapshot.docs[0];
-            const classId = classDoc.id;
-            const currentCount = classDoc.data().studentCount || 0;
-            const newCount = Math.max(0, currentCount - students.length);
-            
-            classUpdates.push(
-              setDoc(doc(db, 'classes', classId), {
-                ...classDoc.data(),
-                studentCount: newCount
-              })
-            );
-          }
-        }
-      }
-      
-      // 2. Update destination class (increase count)
-      if (newSection) {
-        const destClassQuery = query(
-          collection(db, 'classes'),
-          where('sectionName', '==', newSection)
-        );
-        const destClassSnapshot = await getDocs(destClassQuery);
 
-        if (!destClassSnapshot.empty) {
-          const classDoc = destClassSnapshot.docs[0];
-          const classId = classDoc.id;
-          const currentCount = classDoc.data().studentCount || 0;
-          
-          classUpdates.push(
-            setDoc(doc(db, 'classes', classId), {
-              ...classDoc.data(),
-              studentCount: currentCount + selectedStudents.length
-            })
-          );
-        }
+      await Promise.all(updates);
+
+      if (isMounted) {
+        // Update local state
+        const updatedStudents = students.map(student => 
+          selectedStudents.some(s => s.id === student.id)
+            ? { ...student, section: selectedSection }
+            : student
+        );
+        setStudents(updatedStudents);
+        setFilteredStudents(updatedStudents);
+        setSelectedStudents([]);
+        setShowReassignModal(false);
+        showSuccessToast('Students reassigned successfully');
       }
-      
-      // Execute all class updates
-      await Promise.all(classUpdates);
-      
-      // Update local state
-      const updatedStudents = students.map(student => {
-        if (selectedStudents.includes(student.id)) {
-          return { ...student, section: newSection };
-        }
-        return student;
-      });
-      
-      setStudents(updatedStudents);
-      setFilteredStudents(updatedStudents);
-      
-      // Clear selection and reset UI
-      setShowBulkConfirmModal(false);
-      setSelectedStudents([]);
-      setBulkActionType(null);
-      setBulkReassignSection('');
-      
-      const newSectionName = bulkReassignSection === '__unassign__' ? 'Unassigned' : bulkReassignSection;
-      showSuccessToast(`Successfully reassigned ${selectedStudents.length} students to ${newSectionName}`);
     } catch (error) {
       console.error('Error reassigning students:', error);
-      showErrorToast(`Failed to reassign students: ${error.message}`);
+      if (isMounted) {
+        showErrorToast('Failed to reassign students');
+      }
     } finally {
-      setIsLoading(false);
+      if (isMounted) {
+        setIsLoading(false);
+      }
     }
+
+    return () => {
+      isMounted = false;
+    };
   };
 
-  // Bulk delete students
   const handleBulkDelete = async () => {
-    if (selectedStudents.length === 0) return;
-    
+    let isMounted = true;
     setIsLoading(true);
     try {
-      const selectedStudentObjects = getSelectedStudentObjects();
-      
-      for (const student of selectedStudentObjects) {
-        // Update class counts if needed
-        if (student.section) {
-          const classQuery = query(
-            collection(db, 'classes'),
-            where('sectionName', '==', student.section)
-          );
-          const classSnapshot = await getDocs(classQuery);
-          
-          if (!classSnapshot.empty) {
-            const classDoc = classSnapshot.docs[0];
-            const classId = classDoc.id;
-            
-            // Calculate new student count
-            const currentCount = classDoc.data().studentCount || 0;
-            const newCount = Math.max(0, currentCount - 1);
-            
-            await setDoc(doc(db, 'classes', classId), {
-              ...classDoc.data(),
-              studentCount: newCount
-            });
-          }
-        }
-        
-        // Delete student document
-        await deleteDoc(doc(db, 'users', student.id));
-        
-        // Delete auth record
+      const selectedStudents = getSelectedStudentObjects();
+      const deletePromises = selectedStudents.map(async (student) => {
         try {
-          await adminDeleteUser(null, null, student.id);
-        } catch (authError) {
-          console.error('Error deleting auth record:', authError);
+          await adminDeleteUser(student.id);
+          await deleteDoc(doc(db, 'users', student.id));
+        } catch (error) {
+          console.error(`Error deleting student ${student.name}:`, error);
+          throw error;
         }
+      });
+
+      await Promise.all(deletePromises);
+
+      if (isMounted) {
+        // Update local state
+        const updatedStudents = students.filter(
+          student => !selectedStudents.some(s => s.id === student.id)
+        );
+        setStudents(updatedStudents);
+        setFilteredStudents(updatedStudents);
+        setSelectedStudents([]);
+        setShowDeleteModal(false);
+        showSuccessToast('Students deleted successfully');
       }
-      
-      // Update local state
-      const remainingStudents = students.filter(student => !selectedStudents.includes(student.id));
-      setStudents(remainingStudents);
-      setFilteredStudents(remainingStudents);
-      
-      // Clear selection and reset UI
-      setShowBulkConfirmModal(false);
-      setSelectedStudents([]);
-      setBulkActionType(null);
-      
-      showSuccessToast(`Successfully deleted ${selectedStudentObjects.length} students`);
     } catch (error) {
       console.error('Error deleting students:', error);
-      showErrorToast(`Failed to delete students: ${error.message}`);
+      if (isMounted) {
+        showErrorToast('Failed to delete students');
+      }
     } finally {
-      setIsLoading(false);
+      if (isMounted) {
+        setIsLoading(false);
+      }
     }
+
+    return () => {
+      isMounted = false;
+    };
   };
 
   // Show success toast

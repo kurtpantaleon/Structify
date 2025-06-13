@@ -954,7 +954,7 @@ function Leaderboard() {
         )}
       </div>
         {/* CSS for animations */}
-      <style jsx="true">{`
+      <style>{`
         .highlight-rank {
           animation: highlight-pulse 2s ease-in-out;
         }

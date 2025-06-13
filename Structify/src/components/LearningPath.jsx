@@ -390,7 +390,7 @@ function LearningPath({ isOpen, toggleLearningPath }) {
       </div>
       
       {/* Custom scrollbar styling */}
-      <style jsx>{`
+      <style>{`
         .hide-scrollbar::-webkit-scrollbar {
           width: 4px;
         }

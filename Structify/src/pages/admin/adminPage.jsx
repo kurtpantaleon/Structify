@@ -918,7 +918,7 @@ function AdminPage() {
               <div className="p-4 overflow-y-auto pr-2 flex-grow">
                 <div className="overflow-hidden border border-gray-200 sm:rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">                      <tr>
+                    <thead className="bg-gray-50"><tr>
                         {isSelectionMode && (
                           <th scope="col" className="pl-6 pr-2 py-3 w-12">
                             <div className="flex items-center">
@@ -946,8 +946,7 @@ function AdminPage() {
                         <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
                         </th>
-                      </tr>
-                    </thead>
+                      </tr></thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {filteredSections.map((section) => (                        <tr 
                           key={section.id} 
@@ -1483,4 +1482,4 @@ function AdminPage() {
   );
 }
 
-export default AdminPage;
+export default AdminPage; 

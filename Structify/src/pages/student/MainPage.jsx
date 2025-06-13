@@ -109,7 +109,7 @@ function MainPage() {
                       <div className="absolute -inset-[0.5px] rounded-xl bg-gradient-to-r from-blue-400/30 to-indigo-400/30 opacity-0 group-hover/select:opacity-100 blur-[1px] transition-opacity duration-300 pointer-events-none"></div>
                       
                       {/* Style overrides for dropdown list */}
-                      <style jsx>{`
+                      <style>{`
                         select option {
                           background-color: #1a2142 !important;
                           color: white;

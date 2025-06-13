@@ -741,25 +741,7 @@ function ViewClassPage() {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                           {filteredStudents.map((student, index) => (
-                            <tr key={student.id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                              {isEditMode && (
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <div
-                                    onClick={() => toggleStudentSelection(student.id)}
-                                    className="h-4 w-4 rounded border border-gray-300 flex items-center justify-center cursor-pointer"
-                                    style={{
-                                      backgroundColor: selectedStudents.includes(student.id)
-                                        ? '#141a35'
-                                        : 'transparent',
-                                    }}
-                                  >
-                                    {selectedStudents.includes(student.id) && (
-                                      <div className="text-white text-xs">✓</div>
-                                    )}
-                                  </div>
-                                </td>
-                              )}
-                              <td className="px-6 py-4 whitespace-nowrap">
+                            <tr key={student.id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}><td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
                                   <div className="h-8 w-8 rounded-full bg-[#141a35] text-white flex items-center justify-center font-medium text-sm">
                                     {student.name ? student.name.charAt(0) : '?'}
@@ -770,10 +752,9 @@ function ViewClassPage() {
                                     </div>
                                   </div>
                                 </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
+                              </td><td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm text-gray-900">{student.email || 'No email'}</div>
-                              </td>                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              </td><td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 {isEditMode ? (
                                   <div className="flex justify-end space-x-2">
                                     <button
@@ -796,8 +777,7 @@ function ViewClassPage() {
                                     View Details
                                   </button>
                                 )}
-                              </td>
-                            </tr>
+                              </td></tr>
                           ))}
                         </tbody>
                       </table>

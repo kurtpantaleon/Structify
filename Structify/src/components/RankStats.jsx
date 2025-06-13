@@ -601,7 +601,7 @@ const RankStats = () => {
       </div>
 
       {/* Add custom CSS for animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes progress-bar-stripes {
           from { background-position: 20px 0; }
           to { background-position: 0 0; }
