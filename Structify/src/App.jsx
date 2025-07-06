@@ -5,6 +5,12 @@ import Login from './pages/Login'
 import { useContext } from 'react'
 import { AuthContext } from './context/authContext'
 
+// Custom instructor-created content views
+import StudentQuizView from './pages/student/StudentQuizView'
+import StudentActivityView from './pages/student/StudentActivityView'
+import StudentCodingActivityView from './pages/student/StudentCodingActivityView'
+import StudentProgressView from './pages/student/StudentProgressView'
+
 /*WEEK 1 */
 import MainPage from './pages/student/MainPage'
 {/*Week 1 Activities */}
@@ -277,6 +283,9 @@ import CodeChallengeLobby from './components/CodeChallengeLobby'
 import Match from './pages/PvP/Match'
 import ClassField from './pages/ClassField'
 
+import StructifyLessonTemplate from './components/StructifyLessonTemplate'; // Adjust the path if needed
+// ...other imports
+
 function App() {
   const { currentUser, role } = useContext(AuthContext);
 
@@ -516,12 +525,12 @@ function App() {
       {/* Week 10&11 lesson 2 pages */}
       <Route path="/week10L2Page1" element={<ProtectedRoute allowedRoles={['student']}><Week10L2Page1 /></ProtectedRoute>} />
       <Route path="/week10L2Page2" element={<ProtectedRoute allowedRoles={['student']}><Week10L2Page2 /></ProtectedRoute>} />
-      <Route path="/week10L2Page3" element={<ProtectedRoute allowedRoles={['student']}><Week10L2Page3 /></ProtectedRoute>} />
-      <Route path="/week10L2Page4" element={<ProtectedRoute allowedRoles={['student']}><Week10L2Page4 /></ProtectedRoute>} />
-      <Route path="/week10L2Page5" element={<ProtectedRoute allowedRoles={['student']}><Week10L2Page5 /></ProtectedRoute>} />
-      <Route path="/week10L2Page6" element={<ProtectedRoute allowedRoles={['student']}><Week10L2Page6 /></ProtectedRoute>} />
-      <Route path="/week10L2Page7" element={<ProtectedRoute allowedRoles={['student']}><Week10L2Page7 /></ProtectedRoute>} />
-      <Route path="/week10L2Page8" element={<ProtectedRoute allowedRoles={['student']}><Week10L2Page8 /></ProtectedRoute>} />
+      
+      {/* Custom instructor-created content routes */}
+      <Route path="/quiz/:quizId" element={<ProtectedRoute allowedRoles={['student']}><StudentQuizView /></ProtectedRoute>} />
+      <Route path="/activity/:activityId" element={<ProtectedRoute allowedRoles={['student']}><StudentActivityView /></ProtectedRoute>} />
+      <Route path="/coding-activity/:activityId" element={<ProtectedRoute allowedRoles={['student']}><StudentCodingActivityView /></ProtectedRoute>} />
+      <Route path="/my-progress" element={<ProtectedRoute allowedRoles={['student']}><StudentProgressView /></ProtectedRoute>} />
       {/* Week 10&11 lesson 3 pages */}
       <Route path="/week10L3Page1" element={<ProtectedRoute allowedRoles={['student']}><Week10L3Page1 /></ProtectedRoute>} />
       <Route path="/week10L3Page2" element={<ProtectedRoute allowedRoles={['student']}><Week10L3Page2 /></ProtectedRoute>} />
@@ -557,6 +566,9 @@ function App() {
       <Route path="/CodeChallengeLobby" element={<CodeChallengeLobby />} />
       <Route path="/PvP/Match" element={<Match />} />
       <Route path="/ClassField" element={<ClassField />} />
+
+      {/* Instructor-edited lessons */}
+      <Route path="/instructor-lesson/:id" element={<StructifyLessonTemplate />} />
     </Routes> 
   )
 }

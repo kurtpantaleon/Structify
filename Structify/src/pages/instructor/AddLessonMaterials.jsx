@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
 import { useAuth } from '../../context/authContextProvider';
-import { useNavigate } from 'react-router-dom';
-import Header from '../../components/AdminHeader';
-import AdminSubHeading from '../../components/AdminSubHeading';
-import AdminNavigationBar from '../../components/InstructorNavigationBar';
+import { useNavigate, Link } from 'react-router-dom';
+import Header from '../../components/admin/AdminHeader';
+import AdminSubHeading from '../../components/admin/AdminSubHeading';
+import InstructorNavigationBar from '../../components/instructor/InstructorNavigationBar';
 import LessonForm from './LessonForm';
 import ActivityForm from './ActivityForm';
 import QuizForm from './QuizForm';
-import useFileUpload from './useFileUpload';
+import EditStructifyLesson from './EditStructifyLesson';
+import useFileUpload from '../../hooks/useFileUpload';
 import { getStorage, ref, deleteObject } from 'firebase/storage';
-import { BookOpen, FileText, HelpCircle, Plus, Loader, CheckCircle, AlertCircle, X, BarChart2 } from 'lucide-react';
+import { BookOpen, FileText, HelpCircle, Plus, Loader, CheckCircle, AlertCircle, X, BarChart2, Edit, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AddLessonMaterials = () => {
@@ -21,6 +22,13 @@ const AddLessonMaterials = () => {
     const [activeTab, setActiveTab] = useState('lessons');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [notification, setNotification] = useState({ show: false, type: '', message: '' });
+    
+    // Add delete modal state
+    const [deleteModal, setDeleteModal] = useState({
+        isOpen: false,
+        lessonId: null,
+        lessonTitle: ''
+    });
 
     // Lesson state
     const [lessonContent, setLessonContent] = useState({
@@ -72,6 +80,10 @@ const AddLessonMaterials = () => {
         activities: []
     });
     const [isLoadingScores, setIsLoadingScores] = useState(false);
+
+    // My Structify Lessons state
+    const [myStructifyLessons, setMyStructifyLessons] = useState([]);
+    const [isLoadingMyLessons, setIsLoadingMyLessons] = useState(false);
 
     // Add question handler
     const handleAddQuestion = () => {
@@ -150,9 +162,9 @@ const AddLessonMaterials = () => {
                 throw new Error('Title is required');
             }
             
-            if (activityContent.questions.length === 0) {
-                throw new Error('Add at least one question');
-            }
+            // if (activityContent.questions.length === 0) {
+            //     throw new Error('Add at least one question');
+            // }
             
             await addDoc(collection(db, 'activities'), {
                 ...activityContent,
@@ -300,20 +312,67 @@ const AddLessonMaterials = () => {
         }
     }, [activeTab]);
 
+    // Fetch instructor's edited structify lessons
+    const fetchMyStructifyLessons = async () => {
+        setIsLoadingMyLessons(true);
+        try {
+            const q = query(
+                collection(db, 'structifyLessons'),
+                where('instructorId', '==', currentUser.uid)
+            );
+            const snapshot = await getDocs(q);
+            setMyStructifyLessons(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        } catch (err) {
+            showNotification('error', 'Failed to fetch your edited lessons');
+        } finally {
+            setIsLoadingMyLessons(false);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'mystructify') {
+            fetchMyStructifyLessons();
+        }
+    }, [activeTab]);
+
+    // Delete a structify lesson - Updated to use modal
+    const handleDeleteStructifyLesson = async (lessonId) => {
+        try {
+            // Remove lesson from Firestore
+            await deleteDoc(doc(db, 'structifyLessons', lessonId));
+            setMyStructifyLessons(prev => prev.filter(lesson => lesson.id !== lessonId));
+            showNotification('success', 'Lesson deleted successfully');
+            
+            // Close the modal
+            setDeleteModal({ isOpen: false, lessonId: null, lessonTitle: '' });
+        } catch (err) {
+            showNotification('error', 'Failed to delete lesson');
+        }
+    };
+
+    // Open delete confirmation modal
+    const openDeleteModal = (lesson) => {
+        setDeleteModal({
+            isOpen: true,
+            lessonId: lesson.id,
+            lessonTitle: lesson.title
+        });
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200">
             <Header />
             <AdminSubHeading toggleNav={() => setIsNavOpen(!isNavOpen)} title="Add Learning Materials" />
-            
-            <div className="flex">
+
+            <div className="flex min-h-[calc(100vh-120px)]">
                 {isNavOpen && (
                     <motion.div 
                         initial={{ width: 0, opacity: 0 }}
                         animate={{ width: '220px', opacity: 1 }}
                         exit={{ width: 0, opacity: 0 }}
-                        className="border-r border-white/20 bg-[#141a35] h-[calc(100vh-120px)]"
+                        className="h-full bg-[#141a35] text-white overflow-hidden transition-all duration-300"
                     >
-                        <AdminNavigationBar />
+                        <InstructorNavigationBar />
                     </motion.div>
                 )}
                 
@@ -387,18 +446,29 @@ const AddLessonMaterials = () => {
                                 </button>
                                 <button
                                     className={`px-4 py-3 rounded-t-lg flex items-center space-x-2 font-medium transition-all ${
-                                        activeTab === 'scores' ? 
-                                        'bg-white text-orange-600 shadow-sm border-t border-r border-l border-gray-200' : 
+                                        activeTab === 'structify' ? 
+                                        'bg-white text-blue-600 shadow-sm border-t border-r border-l border-gray-200' : 
                                         'text-gray-600 hover:bg-gray-100'
                                     }`}
-                                    onClick={() => setActiveTab('scores')}
+                                    onClick={() => setActiveTab('structify')}
                                 >
-                                    <BarChart2 size={18} />
-                                    <span>Scores</span>
+                                    <Edit size={18} />
+                                    <span>Upload Structify Lessons</span>
+                                </button>
+                                <button
+                                    className={`px-4 py-3 rounded-t-lg flex items-center space-x-2 font-medium transition-all ${
+                                        activeTab === 'mystructify' ? 
+                                        'bg-white text-blue-700 shadow-sm border-t border-r border-l border-gray-200' : 
+                                        'text-gray-600 hover:bg-gray-100'
+                                    }`}
+                                    onClick={() => setActiveTab('mystructify')}
+                                >
+                                    <BookOpen size={18} />
+                                    <span>Uploaded Structify Lessons</span>
                                 </button>
                             </div>
                         </div>
-                        
+
                         {/* Tab content area */}
                         <div className="p-6 h-[calc(100vh-280px)] overflow-y-auto">
                             {/* Error/Success messages */}
@@ -421,18 +491,21 @@ const AddLessonMaterials = () => {
                                     activeTab === 'lessons' ? 'text-blue-700' : 
                                     activeTab === 'activities' ? 'text-purple-700' : 
                                     activeTab === 'quizzes' ? 'text-green-700' :
-                                    'text-orange-700'
+                                    activeTab === 'structify' ? 'text-blue-700' :
+                                    'text-blue-700'
                                 }`}>
                                     {activeTab === 'lessons' ? 'Create New Lesson' : 
                                     activeTab === 'activities' ? 'Create New Activity' : 
                                     activeTab === 'quizzes' ? 'Create New Quiz' :
-                                    'View Scores & Results'}
+                                    activeTab === 'structify' ? 'Edit Structify Lessons' :
+                                    'My Edited Structify Lessons'}
                                 </h2>
                                 <p className="text-gray-600 mt-1">
                                     {activeTab === 'lessons' ? 'Add lesson content, media, and resources for your students.' : 
                                     activeTab === 'activities' ? 'Create interactive activities for skill practice.' : 
                                     activeTab === 'quizzes' ? 'Build assessments to test student knowledge.' :
-                                    'Monitor student performance and track progress.'}
+                                    activeTab === 'structify' ? 'Edit and customize Structify lessons for your students.' :
+                                    ''}
                                 </p>
                             </div>
                             
@@ -492,100 +565,63 @@ const AddLessonMaterials = () => {
                                         />
                                     </motion.div>
                                 )}
-                                {activeTab === 'scores' && (
+                                {activeTab === 'structify' && (
                                     <motion.div
-                                        key="scores"
+                                        key="structify"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
                                     >
-                                        {isLoadingScores ? (
-                                            <div className="flex items-center justify-center h-64">
-                                                <Loader className="animate-spin text-orange-600" size={32} />
+                                        <EditStructifyLesson />
+                                    </motion.div>
+                                )}
+                                {activeTab === 'mystructify' && (
+                                    <motion.div
+                                        key="mystructify"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                    >
+                                        
+                                        {isLoadingMyLessons ? (
+                                            <div className="flex justify-center items-center py-8">
+                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                                             </div>
+                                        ) : myStructifyLessons.length === 0 ? (
+                                            <div className="text-gray-500 text-center py-8">No edited lessons found.</div>
                                         ) : (
-                                            <div className="space-y-6">
-                                                {/* Quiz Scores Section */}
-                                                <div className="bg-white rounded-lg shadow p-6">
-                                                    <h3 className="text-xl font-semibold text-green-700 mb-4">Quiz Results</h3>
-                                                    {scoresData.quizzes.length === 0 ? (
-                                                        <p className="text-gray-500">No quiz submissions yet.</p>
-                                                    ) : (
-                                                        <div className="overflow-x-auto">
-                                                            <table className="min-w-full divide-y divide-gray-200">
-                                                                <thead className="bg-gray-50">
-                                                                    <tr>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quiz Title</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody className="bg-white divide-y divide-gray-200">
-                                                                    {scoresData.quizzes.map((quiz) => (
-                                                                        <tr key={quiz.id}>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">{quiz.studentName}</td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">{quiz.quizTitle}</td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">{quiz.score}%</td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                                {new Date(quiz.submittedAt?.toDate()).toLocaleDateString()}
-                                                                            </td>
-                                                                        </tr>
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
+                                            <div className="space-y-4">
+                                                {myStructifyLessons.map(lesson => (
+                                                    <div key={lesson.id} className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between">
+                                                        <div>
+                                                            <div className="font-semibold text-blue-900 text-lg">{lesson.title}</div>
+                                                            <div className="text-blue-700 text-sm">{lesson.week}</div>
                                                         </div>
-                                                    )}
-                                                </div>
-
-                                                {/* Activity Scores Section */}
-                                                <div className="bg-white rounded-lg shadow p-6">
-                                                    <h3 className="text-xl font-semibold text-purple-700 mb-4">Activity Results</h3>
-                                                    {scoresData.activities.length === 0 ? (
-                                                        <p className="text-gray-500">No activity submissions yet.</p>
-                                                    ) : (
-                                                        <div className="overflow-x-auto">
-                                                            <table className="min-w-full divide-y divide-gray-200">
-                                                                <thead className="bg-gray-50">
-                                                                    <tr>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity Title</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody className="bg-white divide-y divide-gray-200">
-                                                                    {scoresData.activities.map((activity) => (
-                                                                        <tr key={activity.id}>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">{activity.studentName}</td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">{activity.activityTitle}</td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                                                    activity.status === 'completed' ? 'bg-green-100 text-green-800' : 
-                                                                                    activity.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' : 
-                                                                                    'bg-gray-100 text-gray-800'
-                                                                                }`}>
-                                                                                    {activity.status}
-                                                                                </span>
-                                                                            </td>
-                                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                                {new Date(activity.submittedAt?.toDate()).toLocaleDateString()}
-                                                                            </td>
-                                                                        </tr>
-                                                                    ))}
-                                                                </tbody>
-                                                            </table>
+                                                        <div className="flex gap-2 mt-2 sm:mt-0">
+                                                            <Link
+                                                                to={`/instructor-lesson/${lesson.id}`}
+                                                                className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                                                            >
+                                                                View Lesson
+                                                            </Link>
+                                                            <button
+                                                                className="inline-flex items-center bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md font-medium transition-colors"
+                                                                onClick={() => openDeleteModal(lesson)}
+                                                                title="Delete Lesson"
+                                                            >
+                                                                <Trash2 size={18} className="mr-1" /> Delete
+                                                            </button>
                                                         </div>
-                                                    )}
-                                                </div>
+                                                    </div>
+                                                ))}
                                             </div>
                                         )}
                                     </motion.div>
                                 )}
                             </AnimatePresence>
-                            
+
                             {/* Submit button footer */}
-                            {activeTab !== 'scores' && (
+                            {['lessons', 'activities', 'quizzes'].includes(activeTab) && (
                                 <div className="mt-8 pt-6 border-t border-gray-200 flex justify-end">
                                     <button
                                         onClick={() => {
@@ -621,58 +657,120 @@ const AddLessonMaterials = () => {
                                     </button>
                                 </div>
                             )}
-                        </div>
-                    </div>
-                    
-                    {/* Quick help section */}
-                    <div className="max-w-6xl mx-auto mt-6 mb-10">
-                        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm text-blue-800">
-                            <div className="flex items-start">
-                                <div className="bg-blue-100 p-2 rounded-full mr-3">
-                                    <HelpCircle size={20} className="text-blue-600" />
+
+                            {/* Quick help section */}
+                            {activeTab !== 'mystructify' && (
+                                <div className="max-w-6xl mx-auto mt-6 mb-10">
+                                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm text-blue-800">
+                                        <div className="flex items-start">
+                                            <div className="bg-blue-100 p-2 rounded-full mr-3">
+                                                <HelpCircle size={20} className="text-blue-600" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold text-blue-900 mb-1">Creating {activeTab} tips:</h3>
+                                                <ul className="list-disc list-inside space-y-1 ml-1 text-blue-700">
+                                                    {activeTab === 'lessons' && (
+                                                        <>
+                                                            <li>Include clear and concise lesson objectives</li>
+                                                            <li>Upload relevant resources (PDFs, images, videos)</li>
+                                                            <li>Format text using the rich text editor</li>
+                                                            <li>Specify the week number for proper sequencing</li>
+                                                        </>
+                                                    )}
+                                                    {activeTab === 'activities' && (
+                                                        <>
+                                                            <li>Define clear instructions in the description</li>
+                                                            <li>Create a variety of question types for engagement</li>
+                                                            <li>Preview questions before adding them to the activity</li>
+                                                            <li>Ensure activities align with lesson content</li>
+                                                        </>
+                                                    )}
+                                                    {activeTab === 'quizzes' && (
+                                                        <>
+                                                            <li>Set an appropriate time limit based on question count</li>
+                                                            <li>Include a mix of difficulty levels</li>
+                                                            <li>Assign appropriate point values to questions</li>
+                                                            <li>Create clear and unambiguous question text</li>
+                                                        </>
+                                                    )}
+                                                    {activeTab === 'structify' && (
+                                                        <>
+                                                            <li>Edit existing Structify lessons to match your teaching style</li>
+                                                            <li>Add or modify slides to better suit your students' needs</li>
+                                                            <li>Upload relevant images to enhance the learning experience</li>
+                                                            <li>Ensure the content aligns with your course objectives</li>
+                                                        </>
+                                                    )}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-semibold text-blue-900 mb-1">Creating {activeTab} tips:</h3>
-                                    <ul className="list-disc list-inside space-y-1 ml-1 text-blue-700">
-                                        {activeTab === 'lessons' && (
-                                            <>
-                                                <li>Include clear and concise lesson objectives</li>
-                                                <li>Upload relevant resources (PDFs, images, videos)</li>
-                                                <li>Format text using the rich text editor</li>
-                                                <li>Specify the week number for proper sequencing</li>
-                                            </>
-                                        )}
-                                        {activeTab === 'activities' && (
-                                            <>
-                                                <li>Define clear instructions in the description</li>
-                                                <li>Create a variety of question types for engagement</li>
-                                                <li>Preview questions before adding them to the activity</li>
-                                                <li>Ensure activities align with lesson content</li>
-                                            </>
-                                        )}
-                                        {activeTab === 'quizzes' && (
-                                            <>
-                                                <li>Set an appropriate time limit based on question count</li>
-                                                <li>Include a mix of difficulty levels</li>
-                                                <li>Assign appropriate point values to questions</li>
-                                                <li>Create clear and unambiguous question text</li>
-                                            </>
-                                        )}
-                                        {activeTab === 'scores' && (
-                                            <>
-                                                <li>Monitor student performance across all assessments</li>
-                                                <li>Track completion rates for activities</li>
-                                                <li>Identify areas where students may need additional support</li>
-                                                <li>Use the data to improve future lessons and activities</li>
-                                            </>
-                                        )}
-                                    </ul>
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteModal.isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 backdrop-blur flex items-center justify-center z-50 p-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+                        >
+                            <div className="text-center mb-6">
+                                <div className="mx-auto flex items-center justify-center h-16 w-16 bg-red-100 rounded-full mb-4">
+                                    <AlertCircle size={30} className="text-red-600" />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                                    Delete Lesson
+                                </h3>
+                                <p className="text-gray-600">
+                                    Are you sure you want to delete <span className="font-medium">{deleteModal.lessonTitle}</span>?
+                                    This action cannot be undone.
+                                </p>
+                            </div>
+                            
+                            <div className="bg-red-50 p-4 rounded mb-6">
+                                <div className="flex items-start">
+                                    <AlertCircle size={20} className="text-red-600 mr-2 mt-0.5" />
+                                    <div>
+                                        <p className="text-sm text-red-800">
+                                            Deleting this lesson will remove it permanently from your collection. 
+                                            Students will no longer be able to access this content.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={() => setDeleteModal({ isOpen: false, lessonId: null, lessonTitle: '' })}
+                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition font-medium"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteStructifyLesson(deleteModal.lessonId)}
+                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium flex items-center"
+                                >
+                                    <Trash2 size={18} className="mr-2" />
+                                    Delete Permanently
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

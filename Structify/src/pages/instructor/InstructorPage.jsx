@@ -3,11 +3,11 @@ import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firesto
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../services/firebaseConfig';
 import { useAuth } from '../../context/authContextProvider';
-import Header from '../../components/AdminHeader';
-import AdminSubHeading from '../../components/AdminSubHeading';
+import Header from '../../components/admin/AdminHeader';
+import AdminSubHeading from '../../components/admin/AdminSubHeading';
 import { motion, AnimatePresence } from 'framer-motion';
-import AdminNavigationBar from '../../components/InstructorNavigationBar';
-import SectionCard from '../../components/AdminSectionCard';
+import AdminNavigationBar from '../../components/instructor/InstructorNavigationBar';
+import SectionCard from '../../components/admin/AdminSectionCard';
 import { BookOpen, Users, FileText, Menu, Plus, Calendar, Search } from 'lucide-react';
 
 function InstructorPage() {

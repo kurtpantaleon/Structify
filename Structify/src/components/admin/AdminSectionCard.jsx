@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Menu from '../assets/images/Threedot Icon.png';
+import Menu from '../../assets/images/Threedot Icon.png';
 import { Users, BookOpen, UserCheck, Calendar } from 'lucide-react';
 
 function SectionCard({ sectionName, instructor, studentCount, academicYear, students = [], isAllYearsView = false, onClick, onEdit, onDelete, hideMenu = false }) {

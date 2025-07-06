@@ -1,6 +1,6 @@
 import React from 'react';
-import Logo from '../assets/images/Logo Structify.png';
-import profile from '../assets/images/sample profile.png';
+import Logo from '../../assets/images/Logo Structify.png';
+import profile from '../../assets/images/sample profile.png';
 import { useNavigate } from 'react-router-dom';
 
 function AdminHeader() {

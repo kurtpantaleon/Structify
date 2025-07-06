@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { useAuth } from '../../context/authContextProvider';
+import { useAuth } from '../context/authContextProvider';
 
 const useFileUpload = () => {
   const { currentUser } = useAuth();

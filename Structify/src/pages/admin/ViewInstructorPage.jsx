@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, where, doc, setDoc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, deleteUser, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { db, secondaryAuth, adminDeleteUser } from '../../services/firebaseConfig';
-import Header from '../../components/AdminHeader';
-import AdminNavigationBar from '../../components/AdminNavigationBar';
-import AdminSubHeading from '../../components/AdminSubHeading';
+import Header from '../../components/admin/AdminHeader';
+import AdminNavigationBar from '../../components/admin/AdminNavigationBar';
+import AdminSubHeading from '../../components/admin/AdminSubHeading';
 import { deleteDoc } from 'firebase/firestore';
 import { 
   UserPlus, Upload, Users, UserCheck, Trash2, Edit3, 

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Header from '../../components/AdminHeader';
-import AdminSubHeading from '../../components/AdminSubHeading';
-import AdminNavigationBar from '../../components/InstructorNavigationBar';
+import Header from '../../components/admin/AdminHeader';
+import AdminSubHeading from '../../components/admin/AdminSubHeading';
+import AdminNavigationBar from '../../components/instructor/InstructorNavigationBar';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
 import { ChevronDown, Check, X, Loader } from 'lucide-react';

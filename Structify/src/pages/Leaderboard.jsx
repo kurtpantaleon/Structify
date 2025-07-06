@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { collection, query, where, orderBy, onSnapshot, getDocs } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom'; 
 import { db } from '../services/firebaseConfig';
-import Header from '../components/AdminHeader';
+import Header from '../components/admin/AdminHeader';
 import Goldrank from '../assets/images/Gold Rank.png';
 import Silverrank from '../assets/images/Silver Rank.png';
 import Bronzerank from '../assets/images/Bronze Rank.png';
@@ -631,7 +631,7 @@ function Leaderboard() {
                 </div>
                 
                 <p className="text-gray-300 mt-4 text-center">
-                  You've completed 20 out of 24 activities
+                  You've completed 20 out of 24 Activities
                 </p>
               </div>
               
@@ -646,7 +646,7 @@ function Leaderboard() {
                   {/* Individual progress bars */}
                   <div>
                     <div className="flex justify-between mb-2">
-                      <span className="text-gray-300">Assignments</span>
+                      <span className="text-gray-300">Activities</span>
                       <span className="text-indigo-300 font-semibold">8/10</span>
                     </div>
                     <div className="w-full bg-[#2d356c] rounded-full h-2.5">
@@ -663,16 +663,7 @@ function Leaderboard() {
                       <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: '83%' }}></div>
                     </div>
                   </div>
-                  
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-gray-300">Activities</span>
-                      <span className="text-indigo-300 font-semibold">3/4</span>
-                    </div>
-                    <div className="w-full bg-[#2d356c] rounded-full h-2.5">
-                      <div className="bg-purple-500 h-2.5 rounded-full" style={{ width: '75%' }}></div>
-                    </div>
-                  </div>
+              
                   
                   <div>
                     <div className="flex justify-between mb-2">
@@ -810,7 +801,7 @@ function Leaderboard() {
                       <BookOpen className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h4 className="text-white font-medium">Submitted Assignment #8</h4>
+                      <h4 className="text-white font-medium">Submitted Activities #8</h4>
                       <p className="text-xs text-blue-300">Yesterday, 6:45 PM</p>
                     </div>
                     <div className="ml-auto text-green-400 font-bold">+25 pts</div>
@@ -865,7 +856,7 @@ function Leaderboard() {
                 <div className="space-y-5">
                   <div>
                     <div className="flex justify-between mb-1">
-                      <span className="text-gray-300">Assignments</span>
+                      <span className="text-gray-300">Activities</span>
                       <span className="text-indigo-300 font-semibold">245 pts</span>
                     </div>
                     <div className="w-full bg-[#2d356c] rounded-full h-2">
@@ -880,16 +871,6 @@ function Leaderboard() {
                     </div>
                     <div className="w-full bg-[#2d356c] rounded-full h-2">
                       <div className="bg-blue-500 h-2 rounded-full" style={{ width: '35%' }}></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-gray-300">Activities</span>
-                      <span className="text-indigo-300 font-semibold">75 pts</span>
-                    </div>
-                    <div className="w-full bg-[#2d356c] rounded-full h-2">
-                      <div className="bg-purple-500 h-2 rounded-full" style={{ width: '15%' }}></div>
                     </div>
                   </div>
                   
@@ -973,7 +954,7 @@ function Leaderboard() {
         )}
       </div>
         {/* CSS for animations */}
-      <style jsx="true">{`
+      <style>{`
         .highlight-rank {
           animation: highlight-pulse 2s ease-in-out;
         }
