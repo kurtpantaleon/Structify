@@ -38,7 +38,8 @@ function SubHeading({ toggleNav, toggleLearningPath, title }) {
       {/* Left: Navigation Toggle Button with improved styling */}
       <button 
         onClick={toggleNav}
-        className="flex items-center justify-center h-9 w-9 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 active:bg-blue-600/40 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+        className="flex items-center justify-center h-9 w-9 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 active:bg-blue-600/40 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50
+        hidden md:flex"
         aria-label="Toggle Navigation"
         title="Toggle Navigation"
       >
@@ -47,7 +48,7 @@ function SubHeading({ toggleNav, toggleLearningPath, title }) {
 
       {/* Center: Subheading Title with enhanced animation */}
       <div className="relative min-h-[1.75rem] flex items-center justify-center">
-        <h2 className="text-white font-bold text-lg tracking-wide px-3 py-1 rounded-lg bg-blue-900/20 backdrop-blur-sm">
+        <h2 className="text-white font-bold text-lg tracking-wide px-3 py-1 rounded-lg bg-blue-900/20 backdrop-blur-sm ml-6 md:ml-0 ">
           {displayText}
           <span className={`${typingComplete ? 'animate-pulse' : 'animate-blink'} ml-0.5 inline-block`}>|</span>
         </h2>
