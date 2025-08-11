@@ -27,7 +27,7 @@ const QuizWeek7 = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("https://structify.tech")
+    fetch("https://structify.tech/api/quiz/week7-8")
       .then((response) => {
         if (!response.ok) throw new Error("Network response was not ok");
         return response.json();

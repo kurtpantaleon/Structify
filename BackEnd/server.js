@@ -96,6 +96,35 @@ app.get("/health", (req, res) => {
   res.send(health);
 });
 
+// Import QuizData.json for quiz questions
+const db = require("./QuizData.json");
+
+// Dynamic endpoint for quiz questions by week
+app.get("/api/quiz/week:weekNumber", (req, res) => {
+  const week = parseInt(req.params.weekNumber, 10);
+  if (isNaN(week)) {
+    return res.status(400).json({ error: "Invalid week number" });
+  }
+  const weekQuestions = db.questions.filter((q) => q.week === week);
+  res.json(weekQuestions);
+});
+
+// For merged weeks, just use the first week number
+app.get("/api/quiz/week4-5", (req, res) => {
+  const weekQuestions = db.questions.filter((q) => q.week === 4);
+  res.json(weekQuestions);
+});
+
+app.get("/api/quiz/week7-8", (req, res) => {
+  const weekQuestions = db.questions.filter((q) => q.week === 7);
+  res.json(weekQuestions);
+});
+
+app.get("/api/quiz/week10-11", (req, res) => {
+  const weekQuestions = db.questions.filter((q) => q.week === 10);
+  res.json(weekQuestions);
+});
+
 const PORT = process.env.PORT || 3001;
 
 // Handle server errors
