@@ -27,7 +27,7 @@ const QuizWeek3 = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("http://146.190.80.179:5173")
+    fetch("https://structify.tech")
       .then((response) => {
         if (!response.ok) throw new Error("Network response was not ok");
         return response.json();

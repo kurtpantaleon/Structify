@@ -66,7 +66,7 @@ export function getSocket(force = false) {
     }
 
     console.log("Creating new socket connection");
-    socket = io("http://146.190.80.179:5173", socketOptions);
+    socket = io("https://structify.tech", socketOptions);
 
     // Set up default listeners
     socket.on("connect", () => {

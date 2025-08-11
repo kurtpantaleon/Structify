@@ -35,7 +35,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://127.0.0.1:5173",
-      "http://146.190.80.179:5173",
+      "https://structify.tech",
       "https://structify.studio",
       "https://structify-f712f.firebaseapp.com",
       "https://structify-f712f.web.app",
@@ -51,22 +51,28 @@ app.use(express.json({ limit: "1mb" })); // Limit JSON payload size
 
 const server = http.createServer(app);
 
-// Optimize Socket.IO configuration
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    origin: [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "https://structify.tech",
+      "https://structify.studio",
+      "https://structify-f712f.firebaseapp.com",
+      "https://structify-f712f.web.app",
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
-  connectTimeout: 5000, // Reduced from 10000 to 5000 for faster connection attempts
-  pingTimeout: 20000, // Reduced from 30000 to 20000 for faster detection of disconnections
-  pingInterval: 10000, // Reduced from 25000 to 10000 for more frequent connection checks
-  transports: ["websocket", "polling"], // Prefer WebSocket, fallback to polling
-  allowEIO3: true, // Allow Engine.IO v3 clients
-  maxHttpBufferSize: 1e6, // Limit message size to 1MB
-  path: "/socket.io/", // Explicit path
-  serveClient: false, // Don't serve the client
-  cookie: false, // Disable cookies
+  connectTimeout: 5000,
+  pingTimeout: 20000,
+  pingInterval: 10000,
+  transports: ["websocket", "polling"],
+  allowEIO3: true,
+  maxHttpBufferSize: 1e6,
+  path: "/socket.io/",
+  serveClient: false,
+  cookie: false,
 });
 
 // Initialize socket handlers
