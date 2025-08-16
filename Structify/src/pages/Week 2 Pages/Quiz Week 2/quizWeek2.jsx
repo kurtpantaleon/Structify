@@ -19,19 +19,6 @@ const QuizWeek2 = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [answerFeedback, setAnswerFeedback] = useState(null);
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetchQuizQuestions(WEEK_NUMBER)
-      .then((questions) => {
-        setQuestions(shuffleArray(questions));
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to load quiz questions");
-        setIsLoading(false);
-      });
-  }, []);
-
   const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -42,13 +29,10 @@ const QuizWeek2 = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("https://structify.tech/api/quiz/week2")
-      .then((response) => {
-        if (!response.ok) throw new Error("Network response was not ok");
-        return response.json();
-      })
+    fetchQuizQuestions(2)
       .then((data) => {
-        setQuestions(shuffleArray(data));
+        console.log("Quiz Data:", data);
+        setQuestions(shuffleArray(data.questions));
         setIsLoading(false);
       })
       .catch(() => {

@@ -18,19 +18,6 @@ const QuizWeek3 = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [answerFeedback, setAnswerFeedback] = useState(null);
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetchQuizQuestions(WEEK_NUMBER)
-      .then((questions) => {
-        setQuestions(shuffleArray(questions));
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to load quiz questions");
-        setIsLoading(false);
-      });
-  }, []);
-
   const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -41,13 +28,10 @@ const QuizWeek3 = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("https://structify.tech/api/quiz/week3")
-      .then((response) => {
-        if (!response.ok) throw new Error("Network response was not ok");
-        return response.json();
-      })
+    fetchQuizQuestions(3)
       .then((data) => {
-        setQuestions(shuffleArray(data));
+        console.log("Quiz Data:", data);
+        setQuestions(shuffleArray(data.questions));
         setIsLoading(false);
       })
       .catch(() => {
@@ -55,7 +39,6 @@ const QuizWeek3 = () => {
         setIsLoading(false);
       });
   }, []);
-
   const handleNextQuestion = () => {
     const currentQuestion = questions[currentQuestionIndex];
     let isCorrect = false;

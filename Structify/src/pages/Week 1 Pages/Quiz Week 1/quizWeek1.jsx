@@ -22,19 +22,6 @@ const QuizWeek1 = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [answerFeedback, setAnswerFeedback] = useState(null);
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetchQuizQuestions(1)
-      .then((questions) => {
-        setQuestions(shuffleArray(questions));
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to load quiz questions");
-        setIsLoading(false);
-      });
-  }, []);
-
   const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -43,22 +30,20 @@ const QuizWeek1 = () => {
     return array;
   };
 
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   fetch("http://146.190.80.179:5173")
-  //     .then((response) => {
-  //       if (!response.ok) throw new Error("Network response was not ok");
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       setQuestions(shuffleArray(data));
-  //       setIsLoading(false);
-  //     })
-  //     .catch(() => {
-  //       setError("Failed to load quiz questions");
-  //       setIsLoading(false);
-  //     });
-  // }, []);
+  // used to fetch quiz questions
+  useEffect(() => {
+    setIsLoading(true);
+    fetchQuizQuestions(1)
+      .then((data) => {
+        console.log("Quiz Data:", data);
+        setQuestions(shuffleArray(data.questions));
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to load quiz questions");
+        setIsLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
     if (activityScores && activityScores["quiz1"] !== undefined) {
@@ -130,6 +115,14 @@ const QuizWeek1 = () => {
         {error}
       </div>
     );
+
+  if (!isLoading && (!questions || questions.length === 0)) {
+    return (
+      <div className="flex justify-center items-center h-screen text-white text-xl font-semibold">
+        No quiz questions available.
+      </div>
+    );
+  }
 
   if (showResults) {
     return (
@@ -224,8 +217,10 @@ const QuizWeek1 = () => {
             </div>
           ) : (
             <div className="w-full max-w-md mx-auto">
-              <div className="flex items-center justify-center text-xl space-x-2">
-                <p>{currentQuestion && currentQuestion.preText}</p>
+              <div className="flex flex-col items-center justify-center text-xl space-y-2">
+                <p className="mb-2 text-center">
+                  {currentQuestion && currentQuestion.question}
+                </p>
                 <input
                   type="text"
                   value={textAnswer}
@@ -233,7 +228,6 @@ const QuizWeek1 = () => {
                   className="bg-[#1F274D] border-b-2 border-white px-2 py-1 w-32 text-center focus:outline-none"
                   placeholder="________"
                 />
-                <p>{currentQuestion && currentQuestion.postText}</p>
               </div>
             </div>
           )}

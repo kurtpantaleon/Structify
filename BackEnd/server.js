@@ -106,7 +106,7 @@ app.get("/api/quiz/week:weekNumber", (req, res) => {
     return res.status(400).json({ error: "Invalid week number" });
   }
   const weekQuestions = db.questions.filter((q) => q.week === week);
-  res.json(weekQuestions);
+  res.json({ questions: weekQuestions });
 });
 
 // For merged weeks, just use the first week number
