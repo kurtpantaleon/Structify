@@ -24,7 +24,7 @@ const QuizWeek1 = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetchQuizQuestions(WEEK_NUMBER)
+    fetchQuizQuestions(1)
       .then((questions) => {
         setQuestions(shuffleArray(questions));
         setIsLoading(false);
@@ -43,22 +43,22 @@ const QuizWeek1 = () => {
     return array;
   };
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetch("http://146.190.80.179:5173")
-      .then((response) => {
-        if (!response.ok) throw new Error("Network response was not ok");
-        return response.json();
-      })
-      .then((data) => {
-        setQuestions(shuffleArray(data));
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to load quiz questions");
-        setIsLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   fetch("http://146.190.80.179:5173")
+  //     .then((response) => {
+  //       if (!response.ok) throw new Error("Network response was not ok");
+  //       return response.json();
+  //     })
+  //     .then((data) => {
+  //       setQuestions(shuffleArray(data));
+  //       setIsLoading(false);
+  //     })
+  //     .catch(() => {
+  //       setError("Failed to load quiz questions");
+  //       setIsLoading(false);
+  //     });
+  // }, []);
 
   useEffect(() => {
     if (activityScores && activityScores["quiz1"] !== undefined) {
