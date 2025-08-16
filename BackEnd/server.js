@@ -6,6 +6,9 @@ const { initializeSocket } = require("./socketHandlers");
 const userRoutes = require("./routes/userRoutes");
 const fs = require("fs");
 const path = require("path");
+const app = express();
+const quizRoutes = require("./routes/quizRoute");
+app.use("/api", quizRoutes);
 
 // Check if Firebase Admin service account key exists and warn if not
 const serviceAccountPath = path.join(
@@ -26,8 +29,6 @@ if (!fs.existsSync(serviceAccountPath)) {
     "⚠️  See README.md for setup instructions."
   );
 }
-
-const app = express();
 
 // Optimize CORS configuration
 app.use(
