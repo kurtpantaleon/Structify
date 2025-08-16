@@ -10,6 +10,22 @@ const app = express();
 const quizRoutes = require("./routes/quizRoute");
 app.use("/api", quizRoutes);
 
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "https://structify.tech",
+      "https://structify.studio",
+      "https://structify-f712f.firebaseapp.com",
+      "https://structify-f712f.web.app",
+    ], // Allow both localhost and IP
+    methods: ["GET", "POST"],
+    credentials: true,
+    maxAge: 86400, // Cache preflight requests for 24 hours
+  })
+);
+
 // Check if Firebase Admin service account key exists and warn if not
 const serviceAccountPath = path.join(
   __dirname,
@@ -29,23 +45,6 @@ if (!fs.existsSync(serviceAccountPath)) {
     "⚠️  See README.md for setup instructions."
   );
 }
-
-// Optimize CORS configuration
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-      "https://structify.tech",
-      "https://structify.studio",
-      "https://structify-f712f.firebaseapp.com",
-      "https://structify-f712f.web.app",
-    ], // Allow both localhost and IP
-    methods: ["GET", "POST"],
-    credentials: true,
-    maxAge: 86400, // Cache preflight requests for 24 hours
-  })
-);
 
 // Optimize JSON parsing
 app.use(express.json({ limit: "1mb" })); // Limit JSON payload size
