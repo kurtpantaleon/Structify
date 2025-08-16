@@ -97,8 +97,8 @@ app.get("/health", (req, res) => {
   res.send(health);
 });
 
-// Import QuizData.json for quiz questions
-const db = require("./QuizData.json");
+// Import db.json for quiz questions
+const db = require("./db.json");
 
 // Dynamic endpoint for quiz questions by week
 app.get("/api/quiz/week:weekNumber", (req, res) => {
