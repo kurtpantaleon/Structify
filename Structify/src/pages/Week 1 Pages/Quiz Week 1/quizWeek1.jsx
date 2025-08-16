@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useLessonProgress } from "../../../context/lessonProgressContext";
 import { CheckCircle, XCircle } from "lucide-react";
 import Confetti from "react-confetti";
+import { fetchQuizQuestions } from "../../../utils/fetchQuizQuestions";
 
 const QuizWeek1 = () => {
   const navigate = useNavigate();
@@ -21,6 +22,19 @@ const QuizWeek1 = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [answerFeedback, setAnswerFeedback] = useState(null);
 
+  useEffect(() => {
+    setIsLoading(true);
+    fetchQuizQuestions(1)
+      .then((questions) => {
+        setQuestions(shuffleArray(questions));
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to load quiz questions");
+        setIsLoading(false);
+      });
+  }, []);
+
   const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -29,22 +43,22 @@ const QuizWeek1 = () => {
     return array;
   };
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetch("https://structify.tech/api/quiz/week1")
-      .then((response) => {
-        if (!response.ok) throw new Error("Network response was not ok");
-        return response.json();
-      })
-      .then((data) => {
-        setQuestions(shuffleArray(data));
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to load quiz questions");
-        setIsLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   fetch("http://146.190.80.179:5173")
+  //     .then((response) => {
+  //       if (!response.ok) throw new Error("Network response was not ok");
+  //       return response.json();
+  //     })
+  //     .then((data) => {
+  //       setQuestions(shuffleArray(data));
+  //       setIsLoading(false);
+  //     })
+  //     .catch(() => {
+  //       setError("Failed to load quiz questions");
+  //       setIsLoading(false);
+  //     });
+  // }, []);
 
   useEffect(() => {
     if (activityScores && activityScores["quiz1"] !== undefined) {

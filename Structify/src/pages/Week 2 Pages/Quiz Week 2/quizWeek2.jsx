@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useLessonProgress } from "../../../context/lessonProgressContext";
 import { CheckCircle, XCircle } from "lucide-react";
 import Confetti from "react-confetti";
+import { fetchQuizQuestions } from "../../../utils/fetchQuizQuestions";
 
 const QuizWeek2 = () => {
   const navigate = useNavigate();
@@ -17,6 +18,19 @@ const QuizWeek2 = () => {
   const [showResults, setShowResults] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [answerFeedback, setAnswerFeedback] = useState(null);
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchQuizQuestions(WEEK_NUMBER)
+      .then((questions) => {
+        setQuestions(shuffleArray(questions));
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to load quiz questions");
+        setIsLoading(false);
+      });
+  }, []);
 
   const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
